@@ -32,6 +32,7 @@ class AuthController {
     }
 
     public registerUser: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+        res.send("Registering user...");
         // if (!req.body.username || !req.body.password) {
         //     return next(createError(400, "Incomplete request"));
         // }

@@ -4,7 +4,7 @@ import { IUser } from "../models/user";
 
 class UserService implements IDataService<IUser> {
     public get(id: string) {
-        console.log("");
+        return "some cool user";
     }
 
     public getByFields(fields: object) {
@@ -16,7 +16,7 @@ class UserService implements IDataService<IUser> {
     }
 
     public getAll() {
-        console.log("getAll");
+        return "some cool users";
     }
 
     public getAllByFields(fields: object) {

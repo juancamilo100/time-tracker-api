@@ -6,8 +6,6 @@
 import { debug } from "debug";
 import http from "http";
 import app from "../app";
-import { databaseInit } from "../src/mongo/initDb";
-import databaseStreamsInit from "../src/mongo/streams";
 
 /**
  * Get port from environment and store in Express.
@@ -20,8 +18,6 @@ app.set("port", normalizedPort);
  * Create HTTP server.
  */
 
-databaseInit();
-databaseStreamsInit();
 const server = http.createServer(app);
 
 /**

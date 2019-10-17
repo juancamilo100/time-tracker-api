@@ -11,12 +11,12 @@ class UsersController {
     constructor(private userService: IDataService<IUser>) {}
 
     public getUsers: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        res.send("getting Users");
+        res.send("getting Users: " + this.userService.getAll());
     }
 
     // TODO: Add authorization to this endpoint.  Only admin user should be able to get any user by id
     public getUserById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        res.send("getting User by id");
+        res.send(`getting User by id: ${req.params.id}`);
     }
 
     // TODO: Add authorization to this endpoint.  Only admin user should be able to perform this action

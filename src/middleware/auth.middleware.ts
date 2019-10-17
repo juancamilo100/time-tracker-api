@@ -9,7 +9,7 @@ import { NextFunction, Request, RequestHandler, Response } from "express";
 
 const authenticateUser: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
     console.log("Authenticating user....");
-    
+    next();
 	// const token = req.header("authorization");
 	// if (!token) {
 	// 	return next(createError(401, "Unauthorized"));
