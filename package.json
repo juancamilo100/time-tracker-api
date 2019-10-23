@@ -22,7 +22,6 @@
         "express": "^4.17.1",
         "http-errors": "~1.6.2",
         "jsonwebtoken": "^8.5.1",
-        "mongoose": "^5.5.9",
         "morgan": "~1.9.0",
         "swagger-ui-express": "^4.0.7",
         "ts-node": "^8.4.1",

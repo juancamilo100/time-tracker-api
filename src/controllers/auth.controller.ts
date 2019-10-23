@@ -63,10 +63,10 @@ class AuthController {
     }
 
     private userExists = (username: string, email: string) => {
-        return this.userService.getByEitherFields([
-            { email },
-            { username }
-        ]);
+        // return this.userService.getByEitherFields([
+        //     { email },
+        //     { username }
+        // ]);
     }
 }
 
