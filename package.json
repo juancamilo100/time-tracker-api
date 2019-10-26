@@ -5,9 +5,12 @@
     "author": "JuanEspinosa <juancamilo100@hotmail.com>",
     "license": "MIT",
     "scripts": {
+        "prebuild": "tslint -c tslint.json -p tsconfig.json",
+        "build": "tsc",
+        "prestart": "npm run build",
         "lint": "tslint -c tslint.json -p tsconfig.json",
-        "serve": "NODE_ENV=development && ts-node-dev --respawn --no-notify --transpileOnly ./bin/www",
-        "start": "ts-node ./bin/www",
+        "serve": "NODE_ENV=development && nodemon ./bin/www",
+        "start": "node ./build/bin/www",
         "test": "jest --coverage --runInBand",
         "test:watch": "jest --coverage --runInBand --watch",
         "pretty": "tslint --fix -c tslint.json -p tsconfig.json"
@@ -47,7 +50,7 @@
         "nodemon": "^1.19.0",
         "supertest": "^4.0.2",
         "ts-jest": "^24.0.2",
-        "ts-node-dev": "^1.0.0-pre.43",
-        "tslint": "^5.18.0"
+        "tslint": "^5.18.0",
+        "ts-node-dev": "^1.0.0-pre.43"
     }
 }
