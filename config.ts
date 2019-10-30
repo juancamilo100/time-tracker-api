@@ -1,24 +1,23 @@
 import dotenv from "dotenv";
-import path from "path";
+// import path from "path";
 
 let configPath;
 
-switch (process.env.NODE_ENV) {
-  case "test":
-    configPath = path.resolve(process.cwd(), ".env.test");
-    break;
-  case "production":
-    configPath = path.resolve(process.cwd(), ".env.production");
-    break;
-  default:
-    configPath = path.resolve(process.cwd(), ".env.development");
-}
+// export const NODE_ENV) 
+//   case "test":
+//     export const ), ".env.test")
+//     break;
+//   case "production":
+//     export const ), ".env.production")
+//     break;
+//   default:
+//     export const ), ".env.development")
+// }
 
 dotenv.config({ path: configPath });
 
-export const SECRET_KEY = process.env.SECRET_KEY || "";
-export const DB_NAME = process.env.DB_NAME || "";
-export const DB_URL = process.env.DB_URL || "";
-export const STOCKS_API_BASE_URL = process.env.STOCKS_API_BASE_URL || "";
-export const STOCKS_API_TOKEN = process.env.STOCKS_API_TOKEN || "";
-
+export const POSTGRES_PORT = process.env.POSTGRES_PORT
+export const POSTGRES_HOST = process.env.POSTGRES_HOST
+export const POSTGRES_USER = process.env.POSTGRES_USER
+export const POSTGRES_PASSWORD = process.env.POSTGRES_PASSWORD
+export const POSTGRES_DB = process.env.POSTGRES_DB

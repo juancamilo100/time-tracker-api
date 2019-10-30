@@ -2,7 +2,6 @@ import bcrypt from "bcryptjs";
 import { NextFunction, Request, RequestHandler, Response } from "express";
 import createError from "http-errors";
 import jwt from "jsonwebtoken";
-import { SECRET_KEY } from "../../config";
 import IDataService from "../interfaces/dataService.interface";
 import { IUser } from "../models/user";
 
