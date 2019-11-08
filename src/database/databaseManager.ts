@@ -1,7 +1,7 @@
 import { createConnection } from 'typeorm';
 import config from './ormconfig'
 
-export class DatabaseManager {
+class DatabaseManager {
     connect() {
         console.log("Connecting to DB");
         
@@ -16,3 +16,5 @@ export class DatabaseManager {
         })();
     }
 }
+
+export default new DatabaseManager();
