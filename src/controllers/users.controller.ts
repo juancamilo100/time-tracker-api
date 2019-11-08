@@ -3,15 +3,17 @@ import {
     Request,
     RequestHandler,
     Response } from "express";
-import createError from "http-errors";
 import IDataService from "../interfaces/dataService.interface";
-import { IUser } from "../models/user";
+import User from '../database/entities/user.entity';
 
 class UsersController {
-    constructor(private userService: IDataService<IUser>) {}
+    constructor(private userService: IDataService<User>) {}
 
     public getUsers: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        res.send("getting Users: " + this.userService.getAll());
+        const users = await this.userService.getAll()
+        console.log("Returning Users: ");
+        
+        res.send(users);
     }
 
     public getUserById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {

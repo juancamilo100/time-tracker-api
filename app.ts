@@ -7,6 +7,7 @@ import yaml from "yamljs";
 import apiRoutes from "./src/api";
 import errorHandler from "./src/middleware/errorHandler.middleware";
 import notFoundHandler from "./src/middleware/notFoundHandler.middleware";
+// import { DatabaseManager } from './src/database/databaseManager';
 
 const swaggerDocument = yaml.load("./swagger.yml");
 const app = express();

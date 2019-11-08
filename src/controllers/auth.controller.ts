@@ -3,10 +3,10 @@ import { NextFunction, Request, RequestHandler, Response } from "express";
 import createError from "http-errors";
 import jwt from "jsonwebtoken";
 import IDataService from "../interfaces/dataService.interface";
-import { IUser } from "../models/user";
+import User from '../database/entities/user.entity';
 
 class AuthController {
-    constructor(private userService: IDataService<IUser>) {}
+    constructor(private userService: IDataService<User>) {}
 
     public loginUser: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         res.send("Logging user in");

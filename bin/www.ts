@@ -3,13 +3,13 @@ import { debug } from "debug";
 import http from "http";
 import app from "../app";
 import { DatabaseManager } from '../src/database/databaseManager';
-
-const normalizedPort = normalizePort(process.env.PORT || "3000");
-app.set("port", normalizedPort);
-console.log("Connecting to DB");
+import 'reflect-metadata';
 
 const databaseManager = new DatabaseManager();
 databaseManager.connect();
+
+const normalizedPort = normalizePort(process.env.PORT || "3000");
+app.set("port", normalizedPort);
 
 const server = http.createServer(app);
 
