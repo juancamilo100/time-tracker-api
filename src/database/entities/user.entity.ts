@@ -1,5 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
- 
+import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn } from 'typeorm';
+
+export enum UserRole {
+    ADMIN = "admin",
+    DEV = "dev"
+}
+
 @Entity()
 class User {
     @PrimaryGeneratedColumn()
@@ -18,12 +23,14 @@ class User {
     public password: string;
     
     @Column()
-    public company_id: string;
+    public company_id: number;
     
-    @Column()
-    public role: string;
+    @Column({
+        default: UserRole.DEV
+    })
+    public role: UserRole
     
-    @Column()
+    @CreateDateColumn()
     public created_at: string;
 }
  

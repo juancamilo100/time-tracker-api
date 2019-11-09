@@ -1,27 +1,25 @@
 import { NextFunction, Request, RequestHandler, Response } from "express";
-// import createError from "http-errors";
-// import jwt from "jsonwebtoken";
-// import { SECRET_KEY } from "../../config";
+import createError from "http-errors";
+import jwt from "jsonwebtoken";
+import { ENCRYPTION_KEY } from "../../config";
 
-// interface IDecodedToken {
-// 	userId: string;
-// }
+interface IDecodedToken {
+	userId: string;
+}
 
 const authenticateUser: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-    console.log("Authenticating user....");
-    next();
-	// const token = req.header("authorization");
-	// if (!token) {
-	// 	return next(createError(401, "Unauthorized"));
-	// }
+	const token = req.header("authorization");
+	if (!token) {
+		return next(createError(401, "Unauthorized"));
+	}
 
-	// try {
-	// 	const decodedToken = jwt.verify(token, SECRET_KEY) as IDecodedToken;
-	// 	req.userId = decodedToken.userId;
-	// 	next();
-	// } catch (error) {
-	// 	return next(createError(401, "Unauthorized"));
-	// }
+	try {
+		const decodedToken = jwt.verify(token, ENCRYPTION_KEY!) as IDecodedToken;
+		req.userId = decodedToken.userId;
+		next();
+	} catch (error) {
+		return next(createError(401, "Unauthorized"));
+	}
 };
 
 export { authenticateUser };

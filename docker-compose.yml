@@ -8,6 +8,7 @@ services:
         ports:
             - 3000:3000
         environment: 
+            - ENCRYPTION_KEY=uMlZlHeAEU3w3X+sDQLT9Q==
             - POSTGRES_USER=admin
             - POSTGRES_HOST=postgres
             - POSTGRES_PORT=5432
@@ -15,8 +16,8 @@ services:
             - POSTGRES_DB=tutorial
             - PGADMIN_DEFAULT_EMAIL=admin@admin.com
             - PGADMIN_DEFAULT_PASSWORD=admin
-        networks:
-            - postgres
+        # networks:
+        #     - postgres
         
     postgres:
         image: postgres:11.5
@@ -30,9 +31,9 @@ services:
             - POSTGRES_DB=tutorial
             - PGADMIN_DEFAULT_EMAIL=admin@admin.com
             - PGADMIN_DEFAULT_PASSWORD=admin
-        networks:
-        - postgres
+        # networks:
+        # - postgres
 
-networks:
-  postgres:
-    driver: bridge
+# networks:
+#   postgres:
+#     driver: bridge

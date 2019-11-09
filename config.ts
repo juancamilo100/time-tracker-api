@@ -1,21 +1,4 @@
-import dotenv from "dotenv";
-// import path from "path";
-
-let configPath;
-
-// export const NODE_ENV) 
-//   case "test":
-//     export const ), ".env.test")
-//     break;
-//   case "production":
-//     export const ), ".env.production")
-//     break;
-//   default:
-//     export const ), ".env.development")
-// }
-
-dotenv.config({ path: configPath });
-
+export const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY;
 export const POSTGRES_PORT = process.env.POSTGRES_PORT
 export const POSTGRES_HOST = process.env.POSTGRES_HOST
 export const POSTGRES_USER = process.env.POSTGRES_USER
