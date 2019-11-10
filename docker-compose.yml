@@ -16,8 +16,6 @@ services:
             - POSTGRES_DB=tutorial
             - PGADMIN_DEFAULT_EMAIL=admin@admin.com
             - PGADMIN_DEFAULT_PASSWORD=admin
-        # networks:
-        #     - postgres
         
     postgres:
         image: postgres:11.5
@@ -31,9 +29,3 @@ services:
             - POSTGRES_DB=tutorial
             - PGADMIN_DEFAULT_EMAIL=admin@admin.com
             - PGADMIN_DEFAULT_PASSWORD=admin
-        # networks:
-        # - postgres
-
-# networks:
-#   postgres:
-#     driver: bridge

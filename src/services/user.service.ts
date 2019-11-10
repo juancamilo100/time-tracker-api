@@ -1,8 +1,7 @@
-import IDataService from "../interfaces/dataService.interface";
-import { getRepository, Repository, getConnection } from "typeorm";
-import User from '../database/entities/user.entity';
-// import { createError } from 'http-errors';
-import { camelToSnake } from '../utils/formatter';
+import { getRepository } from "typeorm";
+import User from "../database/entities/user.entity";
+import IDataService, { QueryOptions } from "../interfaces/dataService.interface";
+import { camelToSnake } from "../utils/formatter";
 
 class UserService implements IDataService<User> {
     private user = new User();
@@ -11,17 +10,17 @@ class UserService implements IDataService<User> {
         return Promise.resolve(this.user);
     }
 
-    public getByFields(fields: object) {
-        const clause = this.buildWhereClause(fields, 'AND');
-        console.log("****CLAUSE:");
-        
-        console.log(clause);
-        
-        return getRepository(User)
-            .createQueryBuilder("user")
-            .where(clause, fields)
-            .getOne();
-        // return Promise.resolve(this.user);
+    public getByFields(fields: object, options: QueryOptions = {}) {
+        const clause = this.buildWhereClause(fields, "AND");
+        let query = getRepository(User)
+            .createQueryBuilder("user")     
+            .where(clause, fields);
+
+        if(options.showPassword) {
+            query = query.addSelect("user.password");
+        }
+
+        return query.getOne();
     }
 
     public getByEitherFields(fields: object[]) {
@@ -29,7 +28,6 @@ class UserService implements IDataService<User> {
     }
 
     public getAll() {
-        console.log("Getting Users: ");
         return getRepository(User).find();
     }
 
@@ -52,7 +50,7 @@ class UserService implements IDataService<User> {
     }
 
     private buildWhereClause(fields: object, operator: string) {
-        let clause = '';
+        let clause = "";
         Object.keys(fields).forEach((field, index) => {
             clause += `user.${camelToSnake(field)} = :${camelToSnake(field)}`;
             if (index !== Object.keys(fields).length - 1) {

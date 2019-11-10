@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import { debug } from "debug";
 import http from "http";
+import "reflect-metadata";
 import app from "../app";
-import databaseManager from '../src/database/databaseManager';
-import 'reflect-metadata';
+import databaseManager from "../src/database/databaseManager";
 
 const normalizedPort = normalizePort(process.env.PORT || "3000");
 app.set("port", normalizedPort);

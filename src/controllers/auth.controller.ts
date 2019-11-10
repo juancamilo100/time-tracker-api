@@ -2,9 +2,9 @@ import bcrypt from "bcryptjs";
 import { NextFunction, Request, RequestHandler, Response } from "express";
 import createError from "http-errors";
 import jwt from "jsonwebtoken";
+import { ENCRYPTION_KEY } from "../../config";
+import User from "../database/entities/user.entity";
 import IDataService from "../interfaces/dataService.interface";
-import User from '../database/entities/user.entity';
-import { ENCRYPTION_KEY } from '../../config';
 
 class AuthController {
     constructor(private userService: IDataService<User>) {}
@@ -15,15 +15,24 @@ class AuthController {
         }
 
         try {
-            const user =  await this.userService.getByFields({ email: req.body.email });
+            const user =  await this.userService.getByFields(
+                { email: req.body.email }, 
+                { showPassword: true }
+            );
+            
+            console.log("USER:");
+            
+            console.log(user);
+            
+
             if (!user) { return next(createError(404, "User not found")); }
 
             const passwordIsValid = bcrypt.compareSync(req.body.password, user.password);
             if (!passwordIsValid) { return next(createError(401, "Unauthorized")); }
 
             const token = jwt.sign(
-                { userId: user.id }, 
-                ENCRYPTION_KEY!, 
+                { userId: user.id },
+                ENCRYPTION_KEY!,
                 { expiresIn: 3600 }
             );
 
@@ -34,7 +43,7 @@ class AuthController {
     }
 
     public registerUser: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        if (!req.body.email || 
+        if (!req.body.email ||
             !req.body.password ||
             !req.body.firstName ||
             !req.body.lastName ||
@@ -64,21 +73,18 @@ class AuthController {
 
             const createdUser = await this.userService.create(newUser);
             const token = jwt.sign(
-                {id: createdUser.id}, 
-                ENCRYPTION_KEY!, 
+                {id: createdUser.id},
+                ENCRYPTION_KEY!,
                 { expiresIn: 3600 }
             );
             res.send({ auth: true, token });
-            // res.send(createdUser);
         } catch (error) {
             return next(createError(500, error));
         }
     }
 
     private userExists = (email: string) => {
-        return this.userService.getByFields(
-            { email }
-        );
+        return this.userService.getByFields({ email });
     }
 }
 
