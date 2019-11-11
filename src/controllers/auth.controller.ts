@@ -20,11 +20,6 @@ class AuthController {
                 { showPassword: true }
             );
             
-            console.log("USER:");
-            
-            console.log(user);
-            
-
             if (!user) { return next(createError(404, "User not found")); }
 
             const passwordIsValid = bcrypt.compareSync(req.body.password, user.password);

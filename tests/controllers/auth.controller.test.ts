@@ -25,7 +25,7 @@ describe("Auth Controller", () => {
 
             const req: any = {
                 body: {
-                    username: "someuser",
+                    email: "someemail@email.com",
                     password: "somepassword"
                 }
             };
@@ -84,7 +84,7 @@ describe("Auth Controller", () => {
         });
     });
 
-    describe("Login", () => { 
+    describe("Registration", () => { 
         it("registers the user", async () => { 
             userService.getByEitherFields = jest.fn().mockImplementation((id: string) => null);
             userService.create = jest.fn();
@@ -93,7 +93,9 @@ describe("Auth Controller", () => {
 
             const req: any = {
                 body: {
-                    username: "someuser",
+                    firstName: "someName",
+                    lastName: "someLastName",
+                    companyId: "companyId",
                     password: "somepassword",
                     email: "someemail"
                 }
@@ -107,13 +109,13 @@ describe("Auth Controller", () => {
             expect(userService.create).toHaveBeenCalled();
         });
 
-        it("throws error when username or password is missing", async () => { 
+        it("throws error when email or password is missing", async () => { 
             userService.getByEitherFields = jest.fn().mockImplementation((id: string) => null);
+            userService.create = jest.fn();
             const nextFunction = jest.fn();
 
             let req: any = {
                 body: {
-                    password: "somepassword",
                     email: "someemail"
                 }
             };
@@ -127,8 +129,7 @@ describe("Auth Controller", () => {
 
             req = {
                 body: {
-                    username: "someuser",
-                    email: "someemail"
+                    password: "somepassword",
                 }
             };
 
@@ -140,17 +141,19 @@ describe("Auth Controller", () => {
         it("throws error if user already exists", async () => { 
             userService.getByEitherFields = jest.fn().mockImplementation((id: string) => {
                 return { 
-                    username: "someexistinguser",
-                    password: "someexistingpassword",
+                    firstName: "exisitingName",
+                    lastName: "exisitingLastName",
+                    companyId: "companyId",
+                    password: "somepassword",
                     email: "someemail"
                 }
             });
+            userService.create = jest.fn();
 
             const nextFunction = jest.fn();
 
             let req: any = {
                 body: {
-                    username: "someexistinguser",
                     password: "somepassword",
                     email: "someemail"
                 }
