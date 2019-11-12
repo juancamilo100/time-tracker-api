@@ -3,15 +3,11 @@ import config from "./ormconfig";
 
 class DatabaseManager {
     public connect() {
-        console.log("Connecting to DB");
-
         (async () => {
             try {
               await createConnection(config);
-              console.log("CONNECTED TO DB!");
-
             } catch (error) {
-              console.log("Error while connecting to the database", error);
+              console.error("Error while connecting to the database", error);
             }
         })();
     }
