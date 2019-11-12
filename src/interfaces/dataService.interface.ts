@@ -1,10 +1,14 @@
+export interface QueryOptions {
+    [key: string]: any
+}
+
 export default interface IDataService<T> {
-    get(id: string): string;
-    getByFields(fields: object): void;
-    getByEitherFields(fields: object[]): void;
-    getAll(): string;
-    getAllByFields(fields: object): void;
-    create(entity: T): void;
-    update(entity: T): void;
-    delete(id: string): void;
+    get(id: string, options?: QueryOptions): Promise<T | undefined>;
+    getByFields(fields: object, options?: QueryOptions): Promise<T | undefined>;
+    getByEitherFields(fields: object, options?: QueryOptions): Promise<T | undefined>;
+    getAll(options?: QueryOptions): Promise<T[]>;
+    getAllByFields(fields: object, options?: QueryOptions): Promise<T[]>;
+    create(entity: T, options?: QueryOptions): Promise<T>;
+    update(entity: T, options?: QueryOptions): Promise<T | undefined>;
+    delete(id: string, options?: QueryOptions): Promise<T | undefined>;
 }

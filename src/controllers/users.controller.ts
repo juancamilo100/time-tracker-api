@@ -3,15 +3,15 @@ import {
     Request,
     RequestHandler,
     Response } from "express";
-import createError from "http-errors";
+import User from "../database/entities/user.entity";
 import IDataService from "../interfaces/dataService.interface";
-import { IUser } from "../models/user";
 
 class UsersController {
-    constructor(private userService: IDataService<IUser>) {}
+    constructor(private userService: IDataService<User>) {}
 
     public getUsers: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        res.send("getting Users: " + this.userService.getAll());
+        const users = await this.userService.getAll({ showPassword: true });
+        res.send(users);
     }
 
     public getUserById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
@@ -20,7 +20,7 @@ class UsersController {
 
     public deleteUser: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         res.send("deleting User");
-    }   
+    }
 }
 
 export default UsersController;

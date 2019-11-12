@@ -5,9 +5,13 @@
     "author": "JuanEspinosa <juancamilo100@hotmail.com>",
     "license": "MIT",
     "scripts": {
+        "prebuild": "tslint -c tslint.json -p tsconfig.json",
+        "build": "tsc",
+        "prestart": "npm run build",
         "lint": "tslint -c tslint.json -p tsconfig.json",
-        "serve": "NODE_ENV=development && ts-node-dev --respawn --no-notify --transpileOnly ./bin/www",
-        "start": "ts-node ./bin/www",
+        "serve": "NODE_ENV=development && nodemon ./bin/www",
+        "start": "node ./build/bin/www",
+        "start:prod": "node ./build/bin/www",
         "test": "jest --coverage --runInBand",
         "test:watch": "jest --coverage --runInBand --watch",
         "pretty": "tslint --fix -c tslint.json -p tsconfig.json"
@@ -23,8 +27,11 @@
         "http-errors": "~1.6.2",
         "jsonwebtoken": "^8.5.1",
         "morgan": "~1.9.0",
+        "pg": "^7.12.1",
+        "reflect-metadata": "^0.1.13",
         "swagger-ui-express": "^4.0.7",
         "ts-node": "^8.4.1",
+        "typeorm": "^0.2.20",
         "typescript": "^3.6.4",
         "yamljs": "^0.3.0"
     },
@@ -47,7 +54,7 @@
         "nodemon": "^1.19.0",
         "supertest": "^4.0.2",
         "ts-jest": "^24.0.2",
-        "ts-node-dev": "^1.0.0-pre.43",
-        "tslint": "^5.18.0"
+        "tslint": "^5.18.0",
+        "ts-node-dev": "^1.0.0-pre.43"
     }
 }
