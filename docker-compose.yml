@@ -13,7 +13,7 @@ services:
             - POSTGRES_HOST=postgres
             - POSTGRES_PORT=5432
             - POSTGRES_PASSWORD=admin
-            - POSTGRES_DB=tutorial
+            - POSTGRES_DB=time-tracker
             - PGADMIN_DEFAULT_EMAIL=admin@admin.com
             - PGADMIN_DEFAULT_PASSWORD=admin
         
@@ -26,6 +26,6 @@ services:
         environment:
             - POSTGRES_USER=admin
             - POSTGRES_PASSWORD=admin
-            - POSTGRES_DB=tutorial
+            - POSTGRES_DB=time-tracker
             - PGADMIN_DEFAULT_EMAIL=admin@admin.com
-            - PGADMIN_DEFAULT_PASSWORD=admin
+            - PGADMIN_DEFAULT_PASSWORD=admin  
