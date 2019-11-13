@@ -13,10 +13,10 @@ class UserService implements IDataService<User> {
     public getByFields(fields: object, options: QueryOptions = {}) {
         const clause = this.buildWhereClause(fields, "AND");
         let query = getRepository(User)
-            .createQueryBuilder("user")     
+            .createQueryBuilder("user")
             .where(clause, fields);
 
-        if(options.showPassword) {
+        if (options.showPassword) {
             query = query.addSelect("user.password");
         }
 

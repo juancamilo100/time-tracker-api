@@ -11,7 +11,8 @@
         "no-console": {
             "severity": "none"
         },
-        "variable-name": false
+        "variable-name": false,
+        "interface-name": false
     },
     "rulesDirectory": []
 }

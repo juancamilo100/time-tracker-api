@@ -16,10 +16,10 @@ class AuthController {
 
         try {
             const user =  await this.userService.getByFields(
-                { email: req.body.email }, 
+                { email: req.body.email },
                 { showPassword: true }
             );
-            
+
             if (!user) { return next(createError(404, "User not found")); }
 
             const passwordIsValid = bcrypt.compareSync(req.body.password, user.password);

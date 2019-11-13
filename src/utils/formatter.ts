@@ -1,5 +1,5 @@
 export const camelToSnake = (string: string) => {
-    return string.replace(/[\w]([A-Z])/g, function(m) {
+    return string.replace(/[\w]([A-Z])/g, (m) => {
         return m[0] + "_" + m[1];
     }).toLowerCase();
 };

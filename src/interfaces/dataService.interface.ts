@@ -1,5 +1,5 @@
 export interface QueryOptions {
-    [key: string]: any
+    [key: string]: any;
 }
 
 export default interface IDataService<T> {
