@@ -11,17 +11,6 @@ import notFoundHandler from "./src/middleware/notFoundHandler.middleware";
 const swaggerDocument = yaml.load("./swagger.yml");
 const app = express();
 
-console.log("-----------------------------");
-console.log("ENV vars:");
-console.log(process.env.ENCRYPTION_KEY);
-console.log(process.env.POSTGRES_PORT);
-console.log(process.env.POSTGRES_HOST);
-console.log(process.env.POSTGRES_USER);
-console.log(process.env.POSTGRES_PASSWORD);
-console.log(process.env.POSTGRES_DB);
-console.log("-----------------------------");
-
-
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
