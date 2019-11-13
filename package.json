@@ -1,6 +1,6 @@
 {
     "name": "time-tracker-api",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "repository": "https://github.com/juancamilo100/time-tracker-api.git",
     "author": "JuanEspinosa <juancamilo100@hotmail.com>",
     "license": "MIT",
@@ -11,7 +11,7 @@
         "lint": "tslint -c tslint.json -p tsconfig.json",
         "serve": "NODE_ENV=development && nodemon ./bin/www",
         "start": "node ./build/bin/www",
-        "start:prod": "pm2 start ./build/bin/www.js --name \"time-tracker-api\"",
+        "start:prod": "pm2 start ./build/bin/www.js --name $APP_NAME",
         "test": "jest --coverage --runInBand",
         "test:watch": "jest --coverage --runInBand --watch",
         "pretty": "tslint --fix -c tslint.json -p tsconfig.json"
