@@ -11,7 +11,7 @@
         "lint": "tslint -c tslint.json -p tsconfig.json",
         "serve": "NODE_ENV=development && nodemon ./bin/www",
         "start": "node ./build/bin/www",
-        "start:prod": "pm2 start ./build/bin/www",
+        "start:prod": "pm2 start ./build/bin/www.js",
         "test": "jest --coverage --runInBand",
         "test:watch": "jest --coverage --runInBand --watch",
         "pretty": "tslint --fix -c tslint.json -p tsconfig.json"
