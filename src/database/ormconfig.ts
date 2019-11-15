@@ -14,10 +14,14 @@ const config: ConnectionOptions = {
   username: POSTGRES_USER,
   password: POSTGRES_PASSWORD,
   database: POSTGRES_DB,
+  synchronize: false,
   entities: [
     __dirname + "/entities/*.entity{.ts,.js}",
   ],
-  synchronize: true,
+  migrations: [__dirname + "/../../migrations/*{.ts,.js}"],
+  cli: {
+      "migrationsDir": "migrations"
+  }
 };
 
-export default config;
+export = config;

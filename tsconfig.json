@@ -64,7 +64,8 @@
     },
     "include": [                                                                                                                                                                                       
         "./src/**/*.ts",
-        "./bin/*"
+        "./bin/*",
+        "./migrations/*.ts"
     ],   
     "exclude": [
         "node_modules",

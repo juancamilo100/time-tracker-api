@@ -1,21 +1,21 @@
-export const testUsers = [
+export const testEmployees = [
     {
         id: '123456',
-        firstName: 'testuser1',
-        lastName: 'testuserlastname1',
-        email: 'testuser1@email.com',
+        firstName: 'testemployee1',
+        lastName: 'testemployeelastname1',
+        email: 'testemployee1@email.com',
         password: 'somepassword1',
     },
     {
         id: '123456',
-        firstName: 'testuser1',
-        lastName: 'testuserlastname2',
-        email: 'testuser2@email.com',
+        firstName: 'testemployee1',
+        lastName: 'testemployeelastname2',
+        email: 'testemployee2@email.com',
         password: 'somepassword2',
     }
 ]
 
-export const testUsersWithoutPassword = JSON.parse(JSON.stringify(testUsers))
-testUsersWithoutPassword.forEach((user: any) => {
-    delete user.password;
+export const testEmployeesWithoutPassword = JSON.parse(JSON.stringify(testEmployees))
+testEmployeesWithoutPassword.forEach((employee: any) => {
+    delete employee.password;
 });

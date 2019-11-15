@@ -1,12 +1,12 @@
 import AuthController from '../../src/controllers/auth.controller'
-import userService from '../../src/services/user.service'
+import employeeService from '../../src/services/employee.service'
 import bcrypt from "bcryptjs";
 
 describe("Auth Controller", () => {  
     let authController: AuthController;
     
     beforeAll(() => {
-        authController = new AuthController(userService);
+        authController = new AuthController(employeeService);
     })
 
     beforeEach(() => {
@@ -14,8 +14,8 @@ describe("Auth Controller", () => {
     })
     
     describe("Login", () => {
-        it("logs in the user", async () => {
-            userService.getByFields = jest.fn().mockImplementation((id: string) => {
+        it("logs in the employee", async () => {
+            employeeService.getByFields = jest.fn().mockImplementation((id: string) => {
                 return {
                     password: bcrypt.hashSync("somepassword")
                 };
@@ -34,17 +34,17 @@ describe("Auth Controller", () => {
                 send: jest.fn()
             };
             
-            await authController.loginUser(req, res, nextFunction);
+            await authController.loginEmployee(req, res, nextFunction);
             expect(res.send).toHaveBeenCalled();
         });
 
-        it("Throws error when user is not found", async () => {
-            userService.getByFields = jest.fn().mockImplementation((id: string) => null);
+        it("Throws error when employee is not found", async () => {
+            employeeService.getByFields = jest.fn().mockImplementation((id: string) => null);
             const nextFunction = jest.fn();
 
             const req: any = {
                 body: {
-                    username: "someuser",
+                    employeename: "someemployee",
                     password: "somepassword"
                 }
             };
@@ -53,13 +53,13 @@ describe("Auth Controller", () => {
                 send: jest.fn()
             };
 
-            await authController.loginUser(req, res, nextFunction);
+            await authController.loginEmployee(req, res, nextFunction);
             expect(nextFunction).toHaveBeenCalled();
             expect(res.send).toHaveBeenCalledTimes(0);
         });
 
         it("Throws error when password is invalid", async () => { 
-            userService.getByFields = jest.fn().mockImplementation((id: string) => {
+            employeeService.getByFields = jest.fn().mockImplementation((id: string) => {
                 return {
                     password: bcrypt.hashSync("wrongpassword")
                 };
@@ -69,7 +69,7 @@ describe("Auth Controller", () => {
 
             const req: any = {
                 body: {
-                    username: "someuser",
+                    employeename: "someemployee",
                     password: "somepassword"
                 }
             };
@@ -78,16 +78,16 @@ describe("Auth Controller", () => {
                 send: jest.fn()
             };
             
-            await authController.loginUser(req, res, nextFunction);
+            await authController.loginEmployee(req, res, nextFunction);
             expect(nextFunction).toHaveBeenCalled();
             expect(res.send).toHaveBeenCalledTimes(0);
         });
     });
 
     describe("Registration", () => { 
-        it("registers the user", async () => { 
-            userService.getByEitherFields = jest.fn().mockImplementation((id: string) => null);
-            userService.create = jest.fn();
+        it("registers the employee", async () => { 
+            employeeService.getByEitherFields = jest.fn().mockImplementation((id: string) => null);
+            employeeService.create = jest.fn();
 
             const nextFunction = jest.fn();
 
@@ -105,13 +105,13 @@ describe("Auth Controller", () => {
                 send: jest.fn()
             };
             
-            await authController.registerUser(req, res, nextFunction);
-            expect(userService.create).toHaveBeenCalled();
+            await authController.registerEmployee(req, res, nextFunction);
+            expect(employeeService.create).toHaveBeenCalled();
         });
 
         it("throws error when email or password is missing", async () => { 
-            userService.getByEitherFields = jest.fn().mockImplementation((id: string) => null);
-            userService.create = jest.fn();
+            employeeService.getByEitherFields = jest.fn().mockImplementation((id: string) => null);
+            employeeService.create = jest.fn();
             const nextFunction = jest.fn();
 
             let req: any = {
@@ -124,7 +124,7 @@ describe("Auth Controller", () => {
                 send: jest.fn()
             };
 
-            await authController.registerUser(req, res, nextFunction);
+            await authController.registerEmployee(req, res, nextFunction);
             expect(nextFunction).toHaveBeenCalled();
 
             req = {
@@ -133,13 +133,13 @@ describe("Auth Controller", () => {
                 }
             };
 
-            await authController.registerUser(req, res, nextFunction);
+            await authController.registerEmployee(req, res, nextFunction);
             expect(nextFunction).toHaveBeenCalled();
-            expect(userService.create).toHaveBeenCalledTimes(0);
+            expect(employeeService.create).toHaveBeenCalledTimes(0);
         });
 
-        it("throws error if user already exists", async () => { 
-            userService.getByEitherFields = jest.fn().mockImplementation((id: string) => {
+        it("throws error if employee already exists", async () => { 
+            employeeService.getByEitherFields = jest.fn().mockImplementation((id: string) => {
                 return { 
                     firstName: "exisitingName",
                     lastName: "exisitingLastName",
@@ -148,7 +148,7 @@ describe("Auth Controller", () => {
                     email: "someemail"
                 }
             });
-            userService.create = jest.fn();
+            employeeService.create = jest.fn();
 
             const nextFunction = jest.fn();
 
@@ -163,9 +163,9 @@ describe("Auth Controller", () => {
                 send: jest.fn()
             };
 
-            await authController.registerUser(req, res, nextFunction);
+            await authController.registerEmployee(req, res, nextFunction);
             expect(nextFunction).toHaveBeenCalled();
-            expect(userService.create).toHaveBeenCalledTimes(0);
+            expect(employeeService.create).toHaveBeenCalledTimes(0);
         });
     })
 });

@@ -1,12 +1,12 @@
 import AuthController from "./auth.controller";
-import UsersController from "./users.controller";
+import EmployeesController from "./employees.controller";
 
-import userService from "../services/user.service";
+import employeeService from "../services/employee.service";
 
-const authController = new AuthController(userService);
-const usersController = new UsersController(userService);
+const authController = new AuthController(employeeService);
+const employeesController = new EmployeesController(employeeService);
 
 export {
     authController,
-    usersController,
+    employeesController,
 };
