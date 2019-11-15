@@ -97,7 +97,9 @@ describe("Auth Controller", () => {
                     lastName: "someLastName",
                     companyId: "companyId",
                     password: "somepassword",
-                    email: "someemail"
+                    email: "someemail",
+                    hourlyRate: 12,
+                    customerId: 1234
                 }
             };
     

@@ -29,11 +29,14 @@ class EmployeesController {
 
     private formatEmployeeProps(employee: Employee) {
         return {
-            ...employee,
+            id: employee.id,
             firstName: employee.first_name,
             lastName: employee.last_name,
+            email: employee.email,
+            password: employee.password,
+            customerId: employee.customer_id,
             hourlyRate: employee.hourly_rate,
-            customerId: employee.customer_id
+            role: employee.role
         }
     }
 }

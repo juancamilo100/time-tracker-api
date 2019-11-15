@@ -53,6 +53,10 @@ class AuthController {
                 return next(createError(409, "Employee already exists"));
             }
         } catch (error) {
+            console.log("Error: ");
+            console.log(error);
+            
+            
             return next(createError(500, "Something went wrong"));
         }
 
