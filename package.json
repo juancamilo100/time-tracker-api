@@ -9,7 +9,7 @@
         "lint": "tslint -c tslint.json -p tsconfig.json",
         "serve": "NODE_ENV=development && nodemon ./bin/www",
         "start": "ts-node ./bin/www",
-        "start:prod": "NODE_ENV=production pm2 start --no-daemon ./build/bin/www.js --name $APP_NAME",
+        "start:prod": "NODE_ENV=production BUILD_ID=dontKillMe pm2 start --no-daemon ./build/bin/www.js --name $APP_NAME &",
         "test": "jest --coverage --runInBand",
         "test:watch": "jest --coverage --runInBand --watch",
         "pretty": "tslint --fix -c tslint.json -p tsconfig.json",
