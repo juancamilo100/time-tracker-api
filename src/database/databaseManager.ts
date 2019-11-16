@@ -5,7 +5,8 @@ class DatabaseManager {
     public connect() {
         (async () => {
             try {
-              await createConnection(config);
+                await createConnection(config);
+                console.log("Successfully connected to database");
             } catch (error) {
               console.error("Error while connecting to the database", error);
             }

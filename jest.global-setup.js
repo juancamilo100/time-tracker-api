@@ -1,9 +1,5 @@
 const globalSetup = () => {
-    setEnvironment();
-}
-
-function setEnvironment() {
-    process.env.ENCRYPTION_KEY = "someKey"
+    process.env.NODE_ENV = 'test'
 }
 
 module.exports = globalSetup;

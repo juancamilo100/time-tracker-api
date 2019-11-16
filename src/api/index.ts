@@ -1,11 +1,11 @@
 import express from "express";
-import { authenticateUser } from "../middleware/auth.middleware";
+import { authenticateEmployee } from "../middleware/auth.middleware";
 import authRouter from "../routes/auth.routes";
-import usersRouter from "../routes/users.routes";
+import employeesRouter from "../routes/employees.routes";
 
 const router = express.Router();
 
 router.use("/auth", authRouter);
-router.use("/users", authenticateUser, usersRouter);
+router.use("/employees", authenticateEmployee, employeesRouter);
 
 export default router;

@@ -9,12 +9,12 @@ info:
 host: 'localhost:3000'
 basePath: /api
 tags:
-  - name: Users
-    description: API for users in the system
+  - name: Employees
+    description: API for employees in the system
   - name: Portfolios
-    description: API for users' portfolios
+    description: API for employees' portfolios
   - name: Auth
-    description: API for user access management
+    description: API for employee access management
 schemes:
   - http
 securityDefinitions:
@@ -29,13 +29,13 @@ paths:
     post:
       tags:
         - Auth
-      description: Login User
+      description: Login Employee
       parameters:
-        - name: user
+        - name: employee
           in: body
-          description: User to login
+          description: Employee to login
           schema:
-            $ref: '#/definitions/UserLoginRequest'
+            $ref: '#/definitions/EmployeeLoginRequest'
       produces:
         - application/json
       responses:
@@ -48,34 +48,34 @@ paths:
         '401':
           description: Unauthorized
         '404':
-          description: User not found
+          description: Employee not found
         '500':
           description: Something went wrong
   /auth/register:
     post:
       tags:
         - Auth
-      description: Create new user in system
+      description: Create new employee in system
       parameters:
-        - name: user
+        - name: employee
           in: body
-          description: User that we want to create
+          description: Employee that we want to create
           schema:
-            $ref: '#/definitions/UserCreate'
+            $ref: '#/definitions/EmployeeCreate'
       produces:
         - application/json
       responses:
         '200':
-          description: New user is created
+          description: New employee is created
           schema:
             $ref: '#/definitions/TokenResponse'
         '400':
           description: Incomplete request
         '409':
-          description: User already exists
+          description: Employee already exists
         '500':
           description: Something went wrong
-  /users:
+  /employees:
     parameters:
       - name: Authorization
         in: header
@@ -83,21 +83,21 @@ paths:
         required: true
     get:
       tags:
-        - Users
-      summary: Get all users in system
+        - Employees
+      summary: Get all employees in system
       responses:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/UsersWithNoPasswordResponse'
+            $ref: '#/definitions/EmployeesWithNoPasswordResponse'
         '500':
           description: Something went wrong
-  '/users/{userId}':
+  '/employees/{employeeId}':
     parameters:
-      - name: userId
+      - name: employeeId
         in: path
         required: true
-        description: ID of user that we want to find
+        description: ID of employee that we want to find
         type: string
       - name: Authorization
         in: header
@@ -105,61 +105,61 @@ paths:
         required: true
     get:
       tags:
-        - Users
-      summary: Get user with given ID
+        - Employees
+      summary: Get employee with given ID
       responses:
         '200':
-          description: User is found
+          description: Employee is found
           schema:
-            $ref: '#/definitions/UserWithNoPasswordResponse'
+            $ref: '#/definitions/EmployeeWithNoPasswordResponse'
         '500':
           description: Something went wrong
     delete:
-      summary: Delete user with given ID
+      summary: Delete employee with given ID
       tags:
-        - Users
+        - Employees
       responses:
         '200':
-          description: User is deleted
+          description: Employee is deleted
           schema:
-            $ref: '#/definitions/UserWithNoPasswordResponse'
+            $ref: '#/definitions/EmployeeWithNoPasswordResponse'
         '500':
           description: Something went wrong
 definitions:
-  UserCreate:
+  EmployeeCreate:
     required:
-      - username
+      - employeename
       - password
     properties:
       email:
         type: string
         uniqueItems: true
-      username:
+      employeename:
         type: string
         uniqueItems: true
       password:
         type: string
-  UserWithNoPasswordResponse:
+  EmployeeWithNoPasswordResponse:
     required:
-      - username
+      - employeename
       - password
     properties:
       email:
         type: string
         uniqueItems: true
-      username:
+      employeename:
         type: string
         uniqueItems: true
-  UsersWithNoPasswordResponse:
+  EmployeesWithNoPasswordResponse:
     type: array
     items:
-      $ref: '#/definitions/UserWithNoPasswordResponse'
-  UserLoginRequest:
+      $ref: '#/definitions/EmployeeWithNoPasswordResponse'
+  EmployeeLoginRequest:
     required:
-      - username
+      - employeename
       - password
     properties:
-      username:
+      employeename:
         type: string
         uniqueItems: true
       password:

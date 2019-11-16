@@ -1,12 +1,12 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-export enum UserRole {
+export enum EmployeeRole {
     ADMIN = "admin",
     DEV = "dev"
 }
 
 @Entity()
-class User {
+class Employee {
     @PrimaryGeneratedColumn()
     public id: number;
 
@@ -23,15 +23,18 @@ class User {
     public password: string;
 
     @Column()
-    public company_id: number;
+    public customer_id: number;
+
+    @Column()
+    public hourly_rate: number;
 
     @Column({
-        default: UserRole.DEV
+        default: EmployeeRole.DEV
     })
-    public role: UserRole;
+    public role: EmployeeRole;
 
     @CreateDateColumn()
     public created_at: string;
 }
 
-export default User;
+export default Employee;
