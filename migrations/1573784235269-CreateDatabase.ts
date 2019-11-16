@@ -3,7 +3,7 @@ import { MigrationInterface, QueryRunner } from "typeorm";
 export class CreateDatabase1573784235269 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<any> {
         await queryRunner.query(` 
-            CREATE TABLE "employee" (
+            CREATE TABLE employee (
                 "id" SERIAL UNIQUE PRIMARY KEY,
                 "first_name" varchar,
                 "last_name" varchar,
@@ -15,7 +15,7 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
                 "created_at" timestamp
             );
             
-            CREATE TABLE "customer" (
+            CREATE TABLE customer (
                 "id" SERIAL UNIQUE PRIMARY KEY,
                 "name" varchar NOT NULL,
                 "address" varchar,
@@ -25,7 +25,7 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
                 "created_at" timestamp
             );
             
-            CREATE TABLE "report" (
+            CREATE TABLE report (
                 "id" SERIAL UNIQUE PRIMARY KEY,
                 "customer_id" int,
                 "employee_id" int,
@@ -33,7 +33,7 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
                 "created_at" varchar
             );
             
-            CREATE TABLE "task" (
+            CREATE TABLE task (
                 "id" SERIAL UNIQUE PRIMARY KEY,
                 "report_id" int,
                 "hours" int,
@@ -42,13 +42,19 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
                 "created_at" timestamp
             );
             
-            ALTER TABLE "employee" ADD FOREIGN KEY ("customer_id") REFERENCES "customer" ("id");
-            ALTER TABLE "report" ADD FOREIGN KEY ("customer_id") REFERENCES "customer" ("id");
-            ALTER TABLE "report" ADD FOREIGN KEY ("employee_id") REFERENCES "employee" ("id");
-            ALTER TABLE "task" ADD FOREIGN KEY ("report_id") REFERENCES "report" ("id");
+            ALTER TABLE employee ADD FOREIGN KEY ("customer_id") REFERENCES customer ("id");
+            ALTER TABLE report ADD FOREIGN KEY ("customer_id") REFERENCES customer ("id");
+            ALTER TABLE report ADD FOREIGN KEY ("employee_id") REFERENCES employee ("id");
+            ALTER TABLE task ADD FOREIGN KEY ("report_id") REFERENCES report ("id");
         `);
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {
+        await queryRunner.query(` 
+            DROP TABLE employee;
+            DROP TABLE customer;
+            DROP TABLE report;
+            DROP TABLE task;
+        `);
     }
 }
