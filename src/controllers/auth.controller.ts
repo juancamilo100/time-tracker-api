@@ -26,7 +26,10 @@ class AuthController {
             if (!passwordIsValid) { return next(createError(401, "Unauthorized")); }
 
             const token = jwt.sign(
-                { employeeId: employee.id },
+                { 
+                    employeeId: employee.id,
+                    role: employee.role
+                },
                 ENCRYPTION_KEY!,
                 { expiresIn: 3600 }
             );
@@ -53,10 +56,6 @@ class AuthController {
                 return next(createError(409, "Employee already exists"));
             }
         } catch (error) {
-            console.log("Error: ");
-            console.log(error);
-            
-            
             return next(createError(500, "Something went wrong"));
         }
 

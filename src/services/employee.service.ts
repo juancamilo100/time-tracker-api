@@ -13,11 +13,11 @@ class EmployeeService implements IDataService<Employee> {
     public getByFields(fields: object, options: QueryOptions = {}) {
         const clause = this.buildWhereClauseFromFields(fields, "AND");
         let query = getRepository(Employee)
-            .createQueryBuilder("employees")
+            .createQueryBuilder("employee")
             .where(clause, fields);
 
         if (options.showPassword) {
-            query = query.addSelect("employees.password");
+            query = query.addSelect("employee.password");
         }
 
         return query.getOne();
@@ -52,7 +52,7 @@ class EmployeeService implements IDataService<Employee> {
     private buildWhereClauseFromFields(fields: object, operator: string) {
         let clause = "";
         Object.keys(fields).forEach((field, index) => {
-            clause += `employees.${camelToSnake(field)} = :${camelToSnake(field)}`;
+            clause += `employee.${camelToSnake(field)} = :${camelToSnake(field)}`;
             if (index !== Object.keys(fields).length - 1) {
                 clause += ` ${operator} `;
             }
