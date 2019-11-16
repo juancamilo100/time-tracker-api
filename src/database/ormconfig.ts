@@ -15,6 +15,7 @@ const config: ConnectionOptions = {
   password: POSTGRES_PASSWORD,
   database: POSTGRES_DB,
   synchronize: false,
+  migrationsRun: true,
   entities: [
     __dirname + "/entities/*.entity{.ts,.js}",
   ],

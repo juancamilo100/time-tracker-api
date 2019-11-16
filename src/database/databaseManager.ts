@@ -5,12 +5,8 @@ class DatabaseManager {
     public connect() {
         (async () => {
             try {
-                console.log("Connecting to database....");
-                
-              const connect = await createConnection(config);
-              console.log("Successfully connected to database");
-              
-              await connect.runMigrations();
+                await createConnection(config);
+                console.log("Successfully connected to database");
             } catch (error) {
               console.error("Error while connecting to the database", error);
             }

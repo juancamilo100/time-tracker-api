@@ -11,8 +11,6 @@ class EmployeesController {
 
     public getEmployees: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         let employees = await this.employeeService.getAll({ showPassword: true });
-        console.log("Role of this employee:");
-        console.log(req.role);
 
         res.send(employees.map((employee) => {
             return this.formatEmployeeProps(employee)

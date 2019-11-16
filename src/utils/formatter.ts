@@ -4,7 +4,7 @@ export const camelToSnake = (string: string) => {
     }).toLowerCase();
 };
 
-export const toCamel = (string: string) => {
+export const toCamelCase = (string: string) => {
     return string.replace(/([-_][a-z])/ig, (m) => {
       return m.toUpperCase()
         .replace('-', '')
