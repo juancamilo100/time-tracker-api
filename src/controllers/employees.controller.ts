@@ -22,7 +22,7 @@ class EmployeesController {
     }
 
     public deleteEmployee: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        res.send("deleting Employee");
+        res.send(`Deleting Employee with id: ${req.params.id}`);
     }
 
     private formatEmployeeProps(employee: Employee) {
