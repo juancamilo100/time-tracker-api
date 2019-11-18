@@ -4,7 +4,7 @@ import { authorizeAdminEmployee } from "../middleware/admin.auth.middleware";
 
 const router = express.Router();
 
-router.get("/", controller.getEmployees);
+router.get("/", authorizeAdminEmployee, controller.getEmployees);
 router.get("/:id", controller.getEmployeeById);
 router.delete("/:id", authorizeAdminEmployee, controller.deleteEmployee);
 

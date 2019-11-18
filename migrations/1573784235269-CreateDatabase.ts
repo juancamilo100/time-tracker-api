@@ -1,7 +1,10 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
 export class CreateDatabase1573784235269 implements MigrationInterface {
+    
     public async up(queryRunner: QueryRunner): Promise<any> {
+        console.log(process.env.DEFAULT_ADMIN_EMAIL);
+        console.log(process.env.DEFAULT_ADMIN_PASSWORD);
         await queryRunner.query(` 
             CREATE TABLE employee (
                 "id" SERIAL UNIQUE PRIMARY KEY,
@@ -12,7 +15,7 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
                 "customer_id" int,
                 "role" varchar,
                 "hourly_rate" int,
-                "created_at" timestamp
+                "created_at" timestamp DEFAULT (now())
             );
             
             CREATE TABLE customer (
@@ -22,7 +25,7 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
                 "city" varchar,
                 "state" varchar,
                 "email" varchar NOT NULL,
-                "created_at" timestamp
+                "created_at" timestamp DEFAULT (now())
             );
             
             CREATE TABLE report (
@@ -30,7 +33,7 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
                 "customer_id" int,
                 "employee_id" int,
                 "total_hours" int,
-                "created_at" varchar
+                "created_at" timestamp DEFAULT (now())
             );
             
             CREATE TABLE task (
@@ -39,13 +42,26 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
                 "hours" int,
                 "description" varchar,
                 "date" date,
-                "created_at" timestamp
+                "created_at" timestamp DEFAULT (now())
             );
             
             ALTER TABLE employee ADD FOREIGN KEY ("customer_id") REFERENCES customer ("id");
             ALTER TABLE report ADD FOREIGN KEY ("customer_id") REFERENCES customer ("id");
             ALTER TABLE report ADD FOREIGN KEY ("employee_id") REFERENCES employee ("id");
             ALTER TABLE task ADD FOREIGN KEY ("report_id") REFERENCES report ("id");
+
+            INSERT INTO customer (id, name, city, state, email)
+            VALUES (1, 'Lulosoft', 'Louisville', 'KY', 'contact@lulosoft.com');
+
+            INSERT INTO employee (first_name, last_name, email, password, customer_id, role) 
+            VALUES (
+                'Default', 
+                'Admin', 
+                '${process.env.DEFAULT_ADMIN_EMAIL}',
+                '${process.env.DEFAULT_ADMIN_PASSWORD}',
+                1,
+                'admin'
+            );
         `);
     }
 
