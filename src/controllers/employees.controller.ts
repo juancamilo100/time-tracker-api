@@ -19,10 +19,22 @@ class EmployeesController {
     }
 
     public getEmployeeById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        if(req.params.id === '') {
+        if(!req.params.id) {
             return next(createError(400, "Incomplete request"));
         }
-        res.send(`getting Employee by id: ${req.params.id}`);
+        try {
+            const employee =  await this.employeeService.getByFields(
+                { id: req.params.id }
+            );
+
+            if(!employee) {
+                return next(createError(404, "Employee not found"));
+            }
+            
+            res.send(employee);
+        } catch (error) {
+            return next(createError(500, "Something went wrong"));
+        }
     }
 
     public deleteEmployeeById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
