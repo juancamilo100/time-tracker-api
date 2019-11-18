@@ -1,10 +1,9 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
+import bcrypt from "bcryptjs";
 
 export class CreateDatabase1573784235269 implements MigrationInterface {
     
     public async up(queryRunner: QueryRunner): Promise<any> {
-        console.log(process.env.DEFAULT_ADMIN_EMAIL);
-        console.log(process.env.DEFAULT_ADMIN_PASSWORD);
         await queryRunner.query(` 
             CREATE TABLE employee (
                 "id" SERIAL UNIQUE PRIMARY KEY,
@@ -58,7 +57,7 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
                 'Default', 
                 'Admin', 
                 '${process.env.DEFAULT_ADMIN_EMAIL}',
-                '${process.env.DEFAULT_ADMIN_PASSWORD}',
+                '${bcrypt.hashSync(process.env.DEFAULT_ADMIN_PASSWORD!)}',
                 1,
                 'admin'
             );

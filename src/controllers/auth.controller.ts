@@ -14,10 +14,6 @@ class AuthController {
             return next(createError(400, "Incomplete request"));
         }
 
-        console.log(req.body.email);
-        console.log(req.body.password);
-        
-
         try {
             const employee =  await this.employeeService.getByFields(
                 { email: req.body.email },
@@ -54,9 +50,6 @@ class AuthController {
         ) {
             return next(createError(400, "Incomplete request"));
         }
-
-        console.log(req.body.email);
-        console.log(req.body.password);
 
         try {
             if (await this.employeeExists(req.body.email)) {

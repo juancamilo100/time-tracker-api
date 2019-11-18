@@ -2,6 +2,7 @@ import { getRepository } from "typeorm";
 import Employee from "../database/entities/employee.entity";
 import IDataService, { QueryOptions } from "../interfaces/dataService.interface";
 import { camelToSnake } from "../utils/formatter";
+import { ObjectLiteral } from "../../types/generics";
 
 class EmployeeService implements IDataService<Employee> {
     private employee = new Employee();
@@ -11,28 +12,19 @@ class EmployeeService implements IDataService<Employee> {
     }
 
     public getByFields(fields: object, options: QueryOptions = {}) {
-        const clause = this.buildWhereClauseFromFields(fields, "AND");
-        let query = getRepository(Employee)
-            .createQueryBuilder("employee")
-            .where(clause, fields);
-
-        if (options.showPassword) {
-            query = query.addSelect("employee.password");
-        }
-
-        return query.getOne();
+        return this.buildSelectOneQuery(fields, options, 'AND');
     }
 
-    public getByEitherFields(fields: object[]) {
-        return Promise.resolve(this.employee);
+    public getByEitherFields(fields: object, options: QueryOptions = {}) {
+        return this.buildSelectOneQuery(fields, options, 'OR');
     }
 
     public getAll() {
         return getRepository(Employee).find();
     }
 
-    public getAllByFields(fields: object) {
-        return Promise.resolve([this.employee]);
+    public getAllByFields(fields: object, options: QueryOptions = {}) {
+        return this.buildSelectManyQuery(fields, options, 'AND');
     }
 
     public create(entity: Employee) {
@@ -42,11 +34,59 @@ class EmployeeService implements IDataService<Employee> {
     }
 
     public update(entity: Employee) {
-        return Promise.resolve(this.employee);
+        return (async () => {
+            let entityLiteral = entity as ObjectLiteral;
+            let fieldsToUpdate = {} as ObjectLiteral;
+
+            Object.keys(entity).forEach((field) => { 
+                fieldsToUpdate[camelToSnake(field)] = entityLiteral[field];
+            });
+
+            const result = await getRepository(Employee)
+                .createQueryBuilder()
+                .update(Employee)
+                .set(fieldsToUpdate)
+                .where("id = :id", { id: entity.id })
+                .execute();
+            
+            return Promise.resolve(result.generatedMaps as unknown as Employee)
+        })()
     }
 
     public delete(id: string) {
-        return Promise.resolve(this.employee);
+        return (async () => {
+            const result = await getRepository(Employee)
+                .createQueryBuilder()
+                .delete()
+                .from(Employee)
+                .where("id = :id", { id })
+                .execute();
+            
+            return Promise.resolve(result as unknown as Employee)
+        })()
+    }
+
+    private buildSelectOneQuery(fields: object, options: QueryOptions, operand: string) {
+        let query = this.buildSelectQuery(fields, operand, options);
+        return query.getOne();
+    }
+
+    private buildSelectManyQuery(fields: object, options: QueryOptions, operand: string) {
+        let query = this.buildSelectQuery(fields, operand, options);
+        return query.getMany();
+    }
+
+    private buildSelectQuery(fields: object, operand: string, options: QueryOptions) {
+        const clause = this.buildWhereClauseFromFields(fields, operand);
+        let query = getRepository(Employee)
+            .createQueryBuilder("employee")
+            .where(clause, fields);
+
+        if (options.showPassword) {
+            query = query.addSelect("employee.password");
+        }
+
+        return query;
     }
 
     private buildWhereClauseFromFields(fields: object, operator: string) {
