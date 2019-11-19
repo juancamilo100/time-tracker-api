@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { ObjectLiteral } from '../../../types/generics';
 
 export enum EmployeeRole {
@@ -36,6 +36,9 @@ class Employee implements ObjectLiteral {
 
     @CreateDateColumn()
     public created_at: string;
+
+    @UpdateDateColumn()
+    public updated_at: string;
 }
 
 export default Employee;

@@ -14,7 +14,8 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
                 "customer_id" int,
                 "role" varchar,
                 "hourly_rate" int,
-                "created_at" timestamp DEFAULT (now())
+                "created_at" timestamp DEFAULT (now()),
+                "updated_at" timestamp DEFAULT current_timestamp
             );
             
             CREATE TABLE customer (
@@ -24,7 +25,8 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
                 "city" varchar,
                 "state" varchar,
                 "email" varchar NOT NULL,
-                "created_at" timestamp DEFAULT (now())
+                "created_at" timestamp DEFAULT (now()),
+                "updated_at" timestamp DEFAULT current_timestamp
             );
             
             CREATE TABLE report (
@@ -32,7 +34,8 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
                 "customer_id" int,
                 "employee_id" int,
                 "total_hours" int,
-                "created_at" timestamp DEFAULT (now())
+                "created_at" timestamp DEFAULT (now()),
+                "updated_at" timestamp DEFAULT current_timestamp
             );
             
             CREATE TABLE task (
@@ -41,7 +44,8 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
                 "hours" int,
                 "description" varchar,
                 "date" date,
-                "created_at" timestamp DEFAULT (now())
+                "created_at" timestamp DEFAULT (now()),
+                "updated_at" timestamp DEFAULT current_timestamp
             );
             
             ALTER TABLE employee ADD FOREIGN KEY ("customer_id") REFERENCES customer ("id");
