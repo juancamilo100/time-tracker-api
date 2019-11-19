@@ -6,7 +6,7 @@ import { authorizeEmployeeById } from "../middleware/id.authorization.middleware
 const router = express.Router();
 
 router.get("/", authorizeAdminEmployee, controller.getEmployees);
-router.get("/:id", controller.getEmployeeById);
+router.get("/:id", authorizeEmployeeById, controller.getEmployeeById);
 router.patch("/:id", authorizeEmployeeById, controller.updateEmployeeById);
 router.patch("/:id/password", authorizeEmployeeById, controller.updateEmployeePasswordById);
 router.delete("/:id", authorizeAdminEmployee, controller.deleteEmployeeById);

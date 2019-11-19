@@ -26,7 +26,7 @@ class AuthController {
             if (!passwordIsValid) { return next(createError(401, "Unauthorized")); }
 
             const token = jwt.sign(
-                { 
+                {
                     employeeId: employee.id,
                     role: employee.role
                 },
@@ -74,7 +74,7 @@ class AuthController {
 
             const createdEmployee = await this.employeeService.create(newEmployee);
             const token = jwt.sign(
-                { 
+                {
                     employeeId: createdEmployee.id,
                     role: req.body.role
                 },

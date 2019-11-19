@@ -1,5 +1,5 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { ObjectLiteral } from '../../../types/generics';
+import { ObjectLiteral } from "../../../types/generics";
 
 export enum EmployeeRole {
     ADMIN = "admin",
@@ -7,7 +7,7 @@ export enum EmployeeRole {
 }
 
 @Entity()
-class Employee implements ObjectLiteral {
+class Employee {
     @PrimaryGeneratedColumn()
     public id: number;
 

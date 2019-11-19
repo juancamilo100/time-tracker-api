@@ -1,6 +1,6 @@
 declare namespace Express {
     export interface Request {
-        employeeId: string | undefined,
+        employeeId: number | undefined,
         role: string | undefined
     }
 }

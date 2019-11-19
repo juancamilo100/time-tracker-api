@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import { ENCRYPTION_KEY } from "../../config";
 
 interface IDecodedToken {
-    employeeId: string;
+    employeeId: number;
     role: string;
 }
 
@@ -16,8 +16,8 @@ const authenticateEmployee: RequestHandler = async (req: Request, res: Response,
 
 	try {
 		const decodedToken = jwt.verify(token, ENCRYPTION_KEY!) as IDecodedToken;
-        req.employeeId = decodedToken.employeeId;
-        req.role = decodedToken.role;
+  req.employeeId = decodedToken.employeeId;
+  req.role = decodedToken.role;
 		next();
 	} catch (error) {
 		return next(createError(401, "Unauthorized"));

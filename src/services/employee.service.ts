@@ -1,8 +1,8 @@
 import { getRepository } from "typeorm";
+import { ObjectLiteral } from "../../types/generics";
 import Employee from "../database/entities/employee.entity";
 import IDataService, { QueryOptions } from "../interfaces/dataService.interface";
 import { camelToSnake } from "../utils/formatter";
-import { ObjectLiteral } from "../../types/generics";
 
 class EmployeeService implements IDataService<Employee> {
     private employee = new Employee();
@@ -12,11 +12,11 @@ class EmployeeService implements IDataService<Employee> {
     }
 
     public getByFields(fields: object, options: QueryOptions = {}) {
-        return this.buildSelectOneQuery(fields, options, 'AND');
+        return this.buildSelectOneQuery(fields, options, "AND");
     }
 
     public getByEitherFields(fields: object, options: QueryOptions = {}) {
-        return this.buildSelectOneQuery(fields, options, 'OR');
+        return this.buildSelectOneQuery(fields, options, "OR");
     }
 
     public getAll() {
@@ -24,7 +24,7 @@ class EmployeeService implements IDataService<Employee> {
     }
 
     public getAllByFields(fields: object, options: QueryOptions = {}) {
-        return this.buildSelectManyQuery(fields, options, 'AND');
+        return this.buildSelectManyQuery(fields, options, "AND");
     }
 
     public create(entity: Employee) {
@@ -35,10 +35,10 @@ class EmployeeService implements IDataService<Employee> {
 
     public update(entity: Employee) {
         return (async () => {
-            let entityLiteral = entity as ObjectLiteral;
-            let fieldsToUpdate = {} as ObjectLiteral;
+            const entityLiteral = entity as ObjectLiteral;
+            const fieldsToUpdate = {} as ObjectLiteral;
 
-            Object.keys(entity).forEach((field) => { 
+            Object.keys(entity).forEach((field) => {
                 fieldsToUpdate[camelToSnake(field)] = entityLiteral[field];
             });
 
@@ -48,9 +48,9 @@ class EmployeeService implements IDataService<Employee> {
                 .set(fieldsToUpdate)
                 .where("id = :id", { id: entity.id })
                 .execute();
-            
-            return Promise.resolve(result.generatedMaps as unknown as Employee)
-        })()
+
+            return Promise.resolve(result as any);
+        })();
     }
 
     public delete(id: string) {
@@ -61,18 +61,18 @@ class EmployeeService implements IDataService<Employee> {
                 .from(Employee)
                 .where("id = :id", { id })
                 .execute();
-            
-            return Promise.resolve(result as unknown as Employee)
-        })()
+
+            return Promise.resolve(result as any);
+        })();
     }
 
     private buildSelectOneQuery(fields: object, options: QueryOptions, operand: string) {
-        let query = this.buildSelectQuery(fields, operand, options);
+        const query = this.buildSelectQuery(fields, operand, options);
         return query.getOne();
     }
 
     private buildSelectManyQuery(fields: object, options: QueryOptions, operand: string) {
-        let query = this.buildSelectQuery(fields, operand, options);
+        const query = this.buildSelectQuery(fields, operand, options);
         return query.getMany();
     }
 

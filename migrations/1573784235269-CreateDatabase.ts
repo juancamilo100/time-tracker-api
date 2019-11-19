@@ -1,10 +1,10 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
 import bcrypt from "bcryptjs";
+import { MigrationInterface, QueryRunner } from "typeorm";
 
 export class CreateDatabase1573784235269 implements MigrationInterface {
-    
+
     public async up(queryRunner: QueryRunner): Promise<any> {
-        await queryRunner.query(` 
+        await queryRunner.query(`
             CREATE TABLE employee (
                 "id" SERIAL UNIQUE PRIMARY KEY,
                 "first_name" varchar,
@@ -17,7 +17,7 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
                 "created_at" timestamp DEFAULT current_timestamp,
                 "updated_at" timestamp DEFAULT current_timestamp
             );
-            
+
             CREATE TABLE customer (
                 "id" SERIAL UNIQUE PRIMARY KEY,
                 "name" varchar NOT NULL,
@@ -28,7 +28,7 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
                 "created_at" timestamp DEFAULT current_timestamp,
                 "updated_at" timestamp DEFAULT current_timestamp
             );
-            
+
             CREATE TABLE report (
                 "id" SERIAL UNIQUE PRIMARY KEY,
                 "customer_id" int,
@@ -37,7 +37,7 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
                 "created_at" timestamp DEFAULT current_timestamp,
                 "updated_at" timestamp DEFAULT current_timestamp
             );
-            
+
             CREATE TABLE task (
                 "id" SERIAL UNIQUE PRIMARY KEY,
                 "report_id" int,
@@ -47,7 +47,7 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
                 "created_at" timestamp DEFAULT current_timestamp,
                 "updated_at" timestamp DEFAULT current_timestamp
             );
-            
+
             ALTER TABLE employee ADD FOREIGN KEY ("customer_id") REFERENCES customer ("id");
             ALTER TABLE report ADD FOREIGN KEY ("customer_id") REFERENCES customer ("id");
             ALTER TABLE report ADD FOREIGN KEY ("employee_id") REFERENCES employee ("id");
@@ -56,10 +56,10 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
             INSERT INTO customer (id, name, city, state, email)
             VALUES (1, 'Lulosoft', 'Louisville', 'KY', 'contact@lulosoft.com');
 
-            INSERT INTO employee (first_name, last_name, email, password, customer_id, role) 
+            INSERT INTO employee (first_name, last_name, email, password, customer_id, role)
             VALUES (
-                'Default', 
-                'Admin', 
+                'Default',
+                'Admin',
                 '${process.env.DEFAULT_ADMIN_EMAIL}',
                 '${bcrypt.hashSync(process.env.DEFAULT_ADMIN_PASSWORD!)}',
                 1,
@@ -69,7 +69,7 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {
-        await queryRunner.query(` 
+        await queryRunner.query(`
             DROP TABLE employee;
             DROP TABLE customer;
             DROP TABLE report;

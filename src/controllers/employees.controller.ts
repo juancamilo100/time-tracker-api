@@ -1,28 +1,28 @@
+import bcrypt from "bcryptjs";
 import {
     NextFunction,
     Request,
     RequestHandler,
     Response } from "express";
+import createError from "http-errors";
+import { ObjectLiteral } from "../../types/generics";
 import Employee from "../database/entities/employee.entity";
 import IDataService from "../interfaces/dataService.interface";
-import createError from 'http-errors';
-import bcrypt from 'bcryptjs';
 import { toCamelCase } from "../utils/formatter";
-import { ObjectLiteral } from '../../types/generics';
 
 class EmployeesController {
     constructor(private employeeService: IDataService<Employee>) {}
 
     public getEmployees: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        let employees = await this.employeeService.getAll({ showPassword: true });
+        const employees = await this.employeeService.getAll({ showPassword: true });
 
         res.send(employees.map((employee) => {
-            return this.formatEmployeeProps(employee)
+            return this.formatEmployeeProps(employee);
         }));
     }
 
     public getEmployeeById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        if(!req.params.id) {
+        if (!req.params.id) {
             return next(createError(400, "Incomplete request"));
         }
 
@@ -31,7 +31,7 @@ class EmployeesController {
                 { id: req.params.id }
             );
 
-            if(!employee) {
+            if (!employee) {
                 return next(createError(404, "Employee not found"));
             }
 
@@ -42,7 +42,7 @@ class EmployeesController {
     }
 
     public deleteEmployeeById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        if(!req.params.id) {
+        if (!req.params.id) {
             return next(createError(400, "Incomplete request"));
         }
 
@@ -55,11 +55,11 @@ class EmployeesController {
     }
 
     public updateEmployeeById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        if(!req.params.id) {
+        if (!req.params.id) {
             return next(createError(400, "Incomplete request"));
         }
 
-        if(Object.keys(req.body).includes('password')) {
+        if (Object.keys(req.body).includes("password")) {
             return next(createError(400, "Cannot change password"));
         }
 
@@ -72,11 +72,10 @@ class EmployeesController {
         }
     }
 
-    public updateEmployeePasswordById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => { 
-        if(!req.params.id || 
+    public updateEmployeePasswordById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+        if (!req.params.id ||
             !req.body.oldPassword ||
-            !req.body.newPassword) 
-        {
+            !req.body.newPassword) {
             return next(createError(400, "Must provide old and new password"));
         }
 
@@ -85,7 +84,7 @@ class EmployeesController {
             { showPassword: true }
         );
 
-        if(!employee) {
+        if (!employee) {
             return next(createError(404, "Employee not found"));
         }
 
@@ -96,7 +95,7 @@ class EmployeesController {
             const fieldsToUpdate = {
                 id: req.params.id,
                 password: bcrypt.hashSync(req.body.newPassword)
-            }
+            };
 
             await this.employeeService.update(fieldsToUpdate as any);
             res.send(200);
@@ -106,8 +105,8 @@ class EmployeesController {
     }
 
     private formatEmployeeProps(employee: Employee) {
-        let employeeToReturn: ObjectLiteral = {};
-        let employeeLiteral: ObjectLiteral = employee;
+        const employeeToReturn: ObjectLiteral = {};
+        const employeeLiteral: ObjectLiteral = employee;
 
         Object.keys(employee).forEach((field) => {
             employeeToReturn[toCamelCase(field)] = employeeLiteral[field];
@@ -115,7 +114,7 @@ class EmployeesController {
 
         delete employeeToReturn.createdAt;
         delete employeeToReturn.updatedAt;
-        
+
         return employeeToReturn;
     }
 }
