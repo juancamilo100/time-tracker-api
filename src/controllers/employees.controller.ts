@@ -45,7 +45,6 @@ class EmployeesController {
         }
 
         try {
-            req.body.id = req.params.id;
             await this.employeeService.delete(req.params.id);
             res.send(200);
         } catch (error) {
@@ -54,7 +53,7 @@ class EmployeesController {
     }
 
     public updateEmployeeById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        if(!req.params.id || req.params.id === "") {
+        if(!req.params.id) {
             return next(createError(400, "Incomplete request"));
         }
 
@@ -73,11 +72,10 @@ class EmployeesController {
 
     public updateEmployeePasswordById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => { 
         if(!req.params.id || 
-            req.params.id === "" ||
             !req.body.oldPassword ||
             !req.body.newPassword) 
         {
-            return next(createError(400, "Incomplete request"));
+            return next(createError(400, "Must provide old and new password"));
         }
 
         const employee =  await this.employeeService.getByFields(
@@ -93,12 +91,12 @@ class EmployeesController {
         if (!oldPasswordIsValid) { return next(createError(401, "Unauthorized")); }
 
         try {
-            req.body = {
+            const fieldsToUpdate = {
                 id: req.params.id,
                 password: bcrypt.hashSync(req.body.newPassword)
             }
 
-            await this.employeeService.update(req.body);
+            await this.employeeService.update(fieldsToUpdate as any);
             res.send(200);
         } catch (error) {
             return next(createError(500, "Something went wrong"));
