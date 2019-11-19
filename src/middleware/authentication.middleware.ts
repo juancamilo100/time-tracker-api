@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import { ENCRYPTION_KEY } from "../../config";
 
 interface IDecodedToken {
-    employeeId: string;
+    employeeId: number;
     role: string;
 }
 

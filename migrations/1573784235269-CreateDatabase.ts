@@ -1,8 +1,10 @@
+import bcrypt from "bcryptjs";
 import { MigrationInterface, QueryRunner } from "typeorm";
 
 export class CreateDatabase1573784235269 implements MigrationInterface {
+
     public async up(queryRunner: QueryRunner): Promise<any> {
-        await queryRunner.query(` 
+        await queryRunner.query(`
             CREATE TABLE employee (
                 "id" SERIAL UNIQUE PRIMARY KEY,
                 "first_name" varchar,
@@ -12,9 +14,10 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
                 "customer_id" int,
                 "role" varchar,
                 "hourly_rate" int,
-                "created_at" timestamp
+                "created_at" timestamp DEFAULT current_timestamp,
+                "updated_at" timestamp DEFAULT current_timestamp
             );
-            
+
             CREATE TABLE customer (
                 "id" SERIAL UNIQUE PRIMARY KEY,
                 "name" varchar NOT NULL,
@@ -22,35 +25,51 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
                 "city" varchar,
                 "state" varchar,
                 "email" varchar NOT NULL,
-                "created_at" timestamp
+                "created_at" timestamp DEFAULT current_timestamp,
+                "updated_at" timestamp DEFAULT current_timestamp
             );
-            
+
             CREATE TABLE report (
                 "id" SERIAL UNIQUE PRIMARY KEY,
                 "customer_id" int,
                 "employee_id" int,
                 "total_hours" int,
-                "created_at" varchar
+                "created_at" timestamp DEFAULT current_timestamp,
+                "updated_at" timestamp DEFAULT current_timestamp
             );
-            
+
             CREATE TABLE task (
                 "id" SERIAL UNIQUE PRIMARY KEY,
                 "report_id" int,
                 "hours" int,
                 "description" varchar,
                 "date" date,
-                "created_at" timestamp
+                "created_at" timestamp DEFAULT current_timestamp,
+                "updated_at" timestamp DEFAULT current_timestamp
             );
-            
+
             ALTER TABLE employee ADD FOREIGN KEY ("customer_id") REFERENCES customer ("id");
             ALTER TABLE report ADD FOREIGN KEY ("customer_id") REFERENCES customer ("id");
             ALTER TABLE report ADD FOREIGN KEY ("employee_id") REFERENCES employee ("id");
             ALTER TABLE task ADD FOREIGN KEY ("report_id") REFERENCES report ("id");
+
+            INSERT INTO customer (id, name, city, state, email)
+            VALUES (1, 'Lulosoft', 'Louisville', 'KY', 'contact@lulosoft.com');
+
+            INSERT INTO employee (first_name, last_name, email, password, customer_id, role)
+            VALUES (
+                'Default',
+                'Admin',
+                '${process.env.DEFAULT_ADMIN_EMPLOYEE_EMAIL}',
+                '${bcrypt.hashSync(process.env.DEFAULT_ADMIN_EMPLOYEE_PASSWORD!)}',
+                1,
+                'admin'
+            );
         `);
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {
-        await queryRunner.query(` 
+        await queryRunner.query(`
             DROP TABLE employee;
             DROP TABLE customer;
             DROP TABLE report;

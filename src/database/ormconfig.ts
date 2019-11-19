@@ -21,7 +21,7 @@ const config: ConnectionOptions = {
   ],
   migrations: [__dirname + "/../../migrations/*{.ts,.js}"],
   cli: {
-      "migrationsDir": "migrations"
+      migrationsDir: "migrations"
   }
 };
 

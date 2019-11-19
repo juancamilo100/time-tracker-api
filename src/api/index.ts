@@ -1,5 +1,5 @@
 import express from "express";
-import { authenticateEmployee } from "../middleware/auth.middleware";
+import { authenticateEmployee } from "../middleware/authentication.middleware";
 import authRouter from "../routes/auth.routes";
 import employeesRouter from "../routes/employees.routes";
 
