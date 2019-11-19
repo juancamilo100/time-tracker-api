@@ -6,6 +6,7 @@ import {
 import Employee from "../database/entities/employee.entity";
 import IDataService from "../interfaces/dataService.interface";
 import createError from 'http-errors';
+import bcrypt from 'bcryptjs';
 
 class EmployeesController {
     constructor(private employeeService: IDataService<Employee>) {}
@@ -22,6 +23,7 @@ class EmployeesController {
         if(!req.params.id) {
             return next(createError(400, "Incomplete request"));
         }
+
         try {
             const employee =  await this.employeeService.getByFields(
                 { id: req.params.id }
@@ -30,7 +32,7 @@ class EmployeesController {
             if(!employee) {
                 return next(createError(404, "Employee not found"));
             }
-            
+
             res.send(employee);
         } catch (error) {
             return next(createError(500, "Something went wrong"));
@@ -56,8 +58,46 @@ class EmployeesController {
             return next(createError(400, "Incomplete request"));
         }
 
+        if(Object.keys(req.body).includes('password')) {
+            return next(createError(400, "Cannot change password"));
+        }
+
         try {
             req.body.id = req.params.id;
+            await this.employeeService.update(req.body);
+            res.send(200);
+        } catch (error) {
+            return next(createError(500, "Something went wrong"));
+        }
+    }
+
+    public updateEmployeePasswordById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => { 
+        if(!req.params.id || 
+            req.params.id === "" ||
+            !req.body.oldPassword ||
+            !req.body.newPassword) 
+        {
+            return next(createError(400, "Incomplete request"));
+        }
+
+        const employee =  await this.employeeService.getByFields(
+            { id: req.params.id },
+            { showPassword: true }
+        );
+
+        if(!employee) {
+            return next(createError(404, "Employee not found"));
+        }
+
+        const oldPasswordIsValid = bcrypt.compareSync(req.body.oldPassword, employee.password);
+        if (!oldPasswordIsValid) { return next(createError(401, "Unauthorized")); }
+
+        try {
+            req.body = {
+                id: req.params.id,
+                password: bcrypt.hashSync(req.body.newPassword)
+            }
+
             await this.employeeService.update(req.body);
             res.send(200);
         } catch (error) {
