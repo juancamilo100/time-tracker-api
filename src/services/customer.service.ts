@@ -1,12 +1,14 @@
 import { getRepository } from "typeorm";
 import { ObjectLiteral } from "../../types/generics";
-import Employee from "../database/entities/employee.entity";
+import Customer from "../database/entities/employee.entity";
 import IDataService, { QueryOptions } from "../interfaces/dataService.interface";
 import { camelToSnake } from "../utils/formatter";
 
-class EmployeeService implements IDataService<Employee> {
-    public get(id: string, options: QueryOptions = {}) {
-        return this.getByFields({ id }, options);
+class CustomerService implements IDataService<Customer> {
+    private employee = new Customer();
+
+    public get(id: string) {
+        return Promise.resolve(this.employee);
     }
 
     public getByFields(fields: object, options: QueryOptions = {}) {
@@ -18,20 +20,20 @@ class EmployeeService implements IDataService<Employee> {
     }
 
     public getAll() {
-        return getRepository(Employee).find();
+        return getRepository(Customer).find();
     }
 
     public getAllByFields(fields: object, options: QueryOptions = {}) {
         return this.buildSelectManyQuery(fields, options, "AND");
     }
 
-    public create(entity: Employee) {
-        const employeeRepo = getRepository(Employee);
-        const newEmployee = employeeRepo.create(entity);
-        return employeeRepo.save(newEmployee);
+    public create(entity: Customer) {
+        const employeeRepo = getRepository(Customer);
+        const newCustomer = employeeRepo.create(entity);
+        return employeeRepo.save(newCustomer);
     }
 
-    public update(entity: Employee) {
+    public update(entity: Customer) {
         return (async () => {
             const entityLiteral = entity as ObjectLiteral;
             const fieldsToUpdate = {} as ObjectLiteral;
@@ -40,9 +42,9 @@ class EmployeeService implements IDataService<Employee> {
                 fieldsToUpdate[camelToSnake(field)] = entityLiteral[field];
             });
 
-            const result = await getRepository(Employee)
+            const result = await getRepository(Customer)
                 .createQueryBuilder()
-                .update(Employee)
+                .update(Customer)
                 .set(fieldsToUpdate)
                 .where("id = :id", { id: entity.id })
                 .execute();
@@ -53,10 +55,10 @@ class EmployeeService implements IDataService<Employee> {
 
     public delete(id: string) {
         return (async () => {
-            const result = await getRepository(Employee)
+            const result = await getRepository(Customer)
                 .createQueryBuilder()
                 .delete()
-                .from(Employee)
+                .from(Customer)
                 .where("id = :id", { id })
                 .execute();
 
@@ -76,7 +78,7 @@ class EmployeeService implements IDataService<Employee> {
 
     private buildSelectQuery(fields: object, operand: string, options: QueryOptions) {
         const clause = this.buildWhereClauseFromFields(fields, operand);
-        let query = getRepository(Employee)
+        let query = getRepository(Customer)
             .createQueryBuilder("employee")
             .where(clause, fields);
 
@@ -99,4 +101,4 @@ class EmployeeService implements IDataService<Employee> {
     }
 }
 
-export default new EmployeeService();
+export default new CustomerService();

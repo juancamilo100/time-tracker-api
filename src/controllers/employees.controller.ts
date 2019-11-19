@@ -27,9 +27,7 @@ class EmployeesController {
         }
 
         try {
-            const employee =  await this.employeeService.getByFields(
-                { id: req.params.id }
-            );
+            const employee = await this.employeeService.get(req.params.id);
 
             if (!employee) {
                 return next(createError(404, "Employee not found"));
@@ -79,8 +77,8 @@ class EmployeesController {
             return next(createError(400, "Must provide old and new password"));
         }
 
-        const employee =  await this.employeeService.getByFields(
-            { id: req.params.id },
+        const employee = await this.employeeService.get(
+            req.params.id,
             { showPassword: true }
         );
 
