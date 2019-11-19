@@ -7,6 +7,8 @@ import Employee from "../database/entities/employee.entity";
 import IDataService from "../interfaces/dataService.interface";
 import createError from 'http-errors';
 import bcrypt from 'bcryptjs';
+import { toCamelCase } from "../utils/formatter";
+import { ObjectLiteral } from '../../types/generics';
 
 class EmployeesController {
     constructor(private employeeService: IDataService<Employee>) {}
@@ -104,16 +106,17 @@ class EmployeesController {
     }
 
     private formatEmployeeProps(employee: Employee) {
-        return {
-            id: employee.id,
-            firstName: employee.first_name,
-            lastName: employee.last_name,
-            email: employee.email,
-            password: employee.password,
-            customerId: employee.customer_id,
-            hourlyRate: employee.hourly_rate,
-            role: employee.role
-        }
+        let employeeToReturn: ObjectLiteral = {};
+        let employeeLiteral: ObjectLiteral = employee;
+
+        Object.keys(employee).forEach((field) => {
+            employeeToReturn[toCamelCase(field)] = employeeLiteral[field];
+        });
+
+        delete employeeToReturn.createdAt;
+        delete employeeToReturn.updatedAt;
+        
+        return employeeToReturn;
     }
 }
 
