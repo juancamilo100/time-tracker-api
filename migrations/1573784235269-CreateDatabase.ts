@@ -60,8 +60,8 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
             VALUES (
                 'Default',
                 'Admin',
-                '${process.env.DEFAULT_ADMIN_EMAIL}',
-                '${bcrypt.hashSync(process.env.DEFAULT_ADMIN_PASSWORD!)}',
+                '${process.env.DEFAULT_ADMIN_EMPLOYEE_EMAIL}',
+                '${bcrypt.hashSync(process.env.DEFAULT_ADMIN_EMPLOYEE_PASSWORD!)}',
                 1,
                 'admin'
             );
