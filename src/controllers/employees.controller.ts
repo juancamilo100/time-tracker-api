@@ -7,14 +7,15 @@ import {
 import createError from "http-errors";
 import { ObjectLiteral } from "../../types/generics";
 import Employee from "../database/entities/employee.entity";
-import IDataService from "../interfaces/dataService.interface";
+// import IDataService from "../interfaces/dataService.interface";
 import { toCamelCase } from "../utils/formatter";
+import { EmployeeService } from '../services/employee.service';
 
 class EmployeesController {
-    constructor(private employeeService: IDataService<Employee>) {}
+    constructor(private employeeService: EmployeeService) {}
 
     public getEmployees: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        const employees = await this.employeeService.getAll({ showPassword: true });
+        const employees = await this.employeeService.getAll();
 
         res.send(employees.map((employee) => {
             return this.formatEmployeeProps(employee);
@@ -62,8 +63,7 @@ class EmployeesController {
         }
 
         try {
-            req.body.id = req.params.id;
-            await this.employeeService.update(req.body);
+            await this.employeeService.update(req.params.id, req.body);
             res.send(200);
         } catch (error) {
             return next(createError(500, "Something went wrong"));
@@ -79,7 +79,7 @@ class EmployeesController {
 
         const employee = await this.employeeService.get(
             req.params.id,
-            { showPassword: true }
+            { hiddenFieldsToShow: ['password'] }
         );
 
         if (!employee) {
@@ -91,11 +91,10 @@ class EmployeesController {
 
         try {
             const fieldsToUpdate = {
-                id: req.params.id,
                 password: bcrypt.hashSync(req.body.newPassword)
             };
 
-            await this.employeeService.update(fieldsToUpdate as any);
+            await this.employeeService.update(req.params.id, fieldsToUpdate as any);
             res.send(200);
         } catch (error) {
             return next(createError(500, "Something went wrong"));

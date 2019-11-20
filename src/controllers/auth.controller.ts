@@ -4,10 +4,11 @@ import createError from "http-errors";
 import jwt from "jsonwebtoken";
 import { ENCRYPTION_KEY } from "../../config";
 import Employee from "../database/entities/employee.entity";
-import IDataService from "../interfaces/dataService.interface";
+// import IDataService from "../interfaces/dataService.interface";
+import { EmployeeService } from '../services/employee.service';
 
 class AuthController {
-    constructor(private employeeService: IDataService<Employee>) {}
+    constructor(private employeeService: EmployeeService) {}
 
     public loginEmployee: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         if (!req.body.email || !req.body.password) {
@@ -17,7 +18,7 @@ class AuthController {
         try {
             const employee =  await this.employeeService.getByFields(
                 { email: req.body.email },
-                { showPassword: true }
+                { hiddenFieldsToShow: ['password'] }
             );
 
             if (!employee) { return next(createError(404, "Employee not found")); }
