@@ -2,7 +2,7 @@ import { getRepository, EntitySchema } from "typeorm";
 import { ObjectLiteral } from "../../types/generics";
 // import this.entity.schema from "../database/entities/customer.entity";
 import IDataService, { QueryOptions } from "../interfaces/dataService.interface";
-import { camelToSnake, toSnakeCaseAllProps, toLowerCaseAllPropsValues } from "../utils/formatter";
+import { camelToSnake, toSnakeCaseAllProps } from "../utils/formatter";
 
 interface IGenericEntity {
     schema: EntitySchema,
@@ -76,7 +76,6 @@ class BaseDataService<T> implements IDataService<T> {
     }
 
     private buildSelectQuery(fields: object, operand: string, options: QueryOptions) {
-        fields = toLowerCaseAllPropsValues(fields as ObjectLiteral, ['password']);
         const clause = this.buildWhereClauseFromFields(fields, operand);
 
         let query = getRepository(this.entity.schema)
