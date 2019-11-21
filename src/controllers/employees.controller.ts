@@ -7,9 +7,9 @@ import {
 import createError from "http-errors";
 import { ObjectLiteral } from "../../types/generics";
 import Employee from "../database/entities/employee.entity";
+import { EmployeeService } from "../services/employee.service";
 // import IDataService from "../interfaces/dataService.interface";
 import { toCamelCaseAllProps } from "../utils/formatter";
-import { EmployeeService } from '../services/employee.service';
 
 class EmployeesController {
     constructor(private employeeService: EmployeeService) {}
@@ -85,7 +85,7 @@ class EmployeesController {
 
         const employee = await this.employeeService.get(
             req.params.id,
-            { hiddenFieldsToShow: ['password'] }
+            { hiddenFieldsToShow: ["password"] }
         );
 
         if (!employee) {

@@ -7,10 +7,10 @@ import {
 import createError from "http-errors";
 import { ObjectLiteral } from "../../types/generics";
 import Customer from "../database/entities/customer.entity";
+import { CustomerService } from "../services/customer.service";
 // import IDataService from "../interfaces/dataService.interface";
 import { toCamelCase } from "../utils/formatter";
-import { CustomerService } from '../services/customer.service';
-import { toCamelCaseAllProps } from '../utils/formatter';
+import { toCamelCaseAllProps } from "../utils/formatter";
 
 class CustomersController {
     constructor(private customerService: CustomerService) {}
@@ -70,7 +70,7 @@ class CustomersController {
         }
     }
 
-    public createCustomer: RequestHandler = async (req: Request, res: Response, next: NextFunction) => { 
+    public createCustomer: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         if (!req.body.name || !req.body.email) {
             return next(createError(400, "Incomplete request"));
         }

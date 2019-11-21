@@ -6,12 +6,12 @@ import { transformBodyPropsValuesToLowerCase } from "../middleware/body.transfor
 
 const router = express.Router();
 
-router.post("/login", 
-    transformBodyPropsValuesToLowerCase, 
+router.post("/login",
+    transformBodyPropsValuesToLowerCase,
     controller.loginEmployee
 );
-router.post("/register", 
-    [transformBodyPropsValuesToLowerCase, authenticateEmployee, authorizeAdminEmployee], 
+router.post("/register",
+    [transformBodyPropsValuesToLowerCase, authenticateEmployee, authorizeAdminEmployee],
     controller.registerEmployee
 );
 

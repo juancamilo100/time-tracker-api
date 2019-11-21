@@ -1,9 +1,9 @@
-import { 
-    Column, 
-    CreateDateColumn, 
-    Entity, 
-    PrimaryGeneratedColumn, 
-    UpdateDateColumn 
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn
 } from "typeorm";
 
 @Entity()
@@ -19,7 +19,7 @@ class Customer {
 
     @Column()
     public city: string;
-    
+
     @Column()
     public state: string;
 

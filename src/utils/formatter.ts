@@ -1,4 +1,4 @@
-import { ObjectLiteral } from '../../types/generics';
+import { ObjectLiteral } from "../../types/generics";
 
 export const camelToSnake = (string: string) => {
     return string.replace(/[\w]([A-Z])/g, (m) => {
@@ -22,7 +22,7 @@ export const toCamelCaseAllProps = (object: ObjectLiteral) => {
     });
 
     return transformedObject;
-}
+};
 
 export const toSnakeCaseAllProps = (object: ObjectLiteral) => {
     const transformedObject = {} as ObjectLiteral;
@@ -32,16 +32,16 @@ export const toSnakeCaseAllProps = (object: ObjectLiteral) => {
     });
 
     return transformedObject;
-}
+};
 
 export const toLowerCaseAllPropsValues = (object: ObjectLiteral, propsToExclude?: string[]) => {
     const objectLiteral = object as ObjectLiteral;
 
     Object.keys(object).forEach((field) => {
-        if(typeof objectLiteral[field] === 'string' && !propsToExclude!.includes(field)) {
+        if (typeof objectLiteral[field] === "string" && !propsToExclude!.includes(field)) {
             objectLiteral[field] = objectLiteral[field].toLowerCase();
         }
     });
 
     return objectLiteral;
-}
+};

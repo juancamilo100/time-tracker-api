@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 import { ENCRYPTION_KEY } from "../../config";
 import Employee from "../database/entities/employee.entity";
 // import IDataService from "../interfaces/dataService.interface";
-import { EmployeeService } from '../services/employee.service';
+import { EmployeeService } from "../services/employee.service";
 
 class AuthController {
     constructor(private employeeService: EmployeeService) {}
@@ -18,7 +18,7 @@ class AuthController {
         try {
             const employee =  await this.employeeService.getByFields(
                 { email: req.body.email },
-                { hiddenFieldsToShow: ['password'] }
+                { hiddenFieldsToShow: ["password"] }
             );
 
             if (!employee) { return next(createError(404, "Employee not found")); }

@@ -1,9 +1,9 @@
 import express from "express";
+import { authorizeAdminEmployee } from "../middleware/admin.authorization.middleware";
 import { authenticateEmployee } from "../middleware/authentication.middleware";
 import authRouter from "../routes/auth.routes";
-import employeesRouter from "../routes/employees.routes";
 import customersRouter from "../routes/customers.routes";
-import { authorizeAdminEmployee } from "../middleware/admin.authorization.middleware";
+import employeesRouter from "../routes/employees.routes";
 
 const router = express.Router();
 
