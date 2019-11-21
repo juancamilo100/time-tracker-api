@@ -1,8 +1,7 @@
 import { EntitySchema, getRepository } from "typeorm";
 import { ObjectLiteral } from "../../types/generics";
-// import this.entity.schema from "../database/entities/customer.entity";
 import IDataService, { QueryOptions } from "../interfaces/dataService.interface";
-import { camelToSnake, toSnakeCaseAllProps } from "../utils/formatter";
+import { camelToSnake, toSnakeCaseAllPropsKeys } from "../utils/formatter";
 
 interface IGenericEntity {
     schema: EntitySchema;
@@ -40,7 +39,7 @@ class BaseDataService<T> implements IDataService<T> {
 
     public update(id: string, entity: T) {
         return (async () => {
-            const fieldsToUpdate = toSnakeCaseAllProps(entity as ObjectLiteral);
+            const fieldsToUpdate = toSnakeCaseAllPropsKeys(entity as ObjectLiteral);
             const result = await getRepository(this.entity.schema)
                 .createQueryBuilder()
                 .update(this.entity.schema)

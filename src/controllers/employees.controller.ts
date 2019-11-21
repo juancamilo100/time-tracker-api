@@ -8,7 +8,7 @@ import createError from "http-errors";
 import { ObjectLiteral } from "../../types/generics";
 import Employee from "../database/entities/employee.entity";
 import IDataService from "../interfaces/dataService.interface";
-import { toCamelCaseAllProps } from "../utils/formatter";
+import { toCamelCaseAllPropsKeys } from "../utils/formatter";
 
 class EmployeesController {
     constructor(private employeeService: IDataService<Employee>) {}
@@ -107,7 +107,7 @@ class EmployeesController {
     }
 
     private formatEmployeeProps(employee: Employee) {
-        const formattedEmployee = toCamelCaseAllProps(employee as ObjectLiteral);
+        const formattedEmployee = toCamelCaseAllPropsKeys(employee as ObjectLiteral);
 
         delete formattedEmployee.createdAt;
         delete formattedEmployee.updatedAt;

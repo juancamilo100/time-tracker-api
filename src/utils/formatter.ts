@@ -14,7 +14,7 @@ export const toCamelCase = (string: string) => {
     });
 };
 
-export const toCamelCaseAllProps = (object: ObjectLiteral) => {
+export const toCamelCaseAllPropsKeys = (object: ObjectLiteral) => {
     const transformedObject = {} as ObjectLiteral;
 
     Object.keys(object).forEach((field) => {
@@ -24,7 +24,7 @@ export const toCamelCaseAllProps = (object: ObjectLiteral) => {
     return transformedObject;
 };
 
-export const toSnakeCaseAllProps = (object: ObjectLiteral) => {
+export const toSnakeCaseAllPropsKeys = (object: ObjectLiteral) => {
     const transformedObject = {} as ObjectLiteral;
 
     Object.keys(object).forEach((field) => {

@@ -6,7 +6,7 @@ const authorizeAdminEmployee: RequestHandler = async (req: Request, res: Respons
 	if (req.role !== EmployeeRole.ADMIN) {
 		return next(createError(401, "Unauthorized"));
     }
- next();
+    next();
 };
 
 export { authorizeAdminEmployee };

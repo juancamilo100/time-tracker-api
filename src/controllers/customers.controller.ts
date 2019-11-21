@@ -6,7 +6,7 @@ import {
 import createError from "http-errors";
 import { ObjectLiteral } from "../../types/generics";
 import Customer from "../database/entities/customer.entity";
-import { toCamelCaseAllProps } from "../utils/formatter";
+import { toCamelCaseAllPropsKeys } from "../utils/formatter";
 import IDataService from "../interfaces/dataService.interface";
 
 class CustomersController {
@@ -93,7 +93,7 @@ class CustomersController {
     }
 
     private formatCustomerProps(customer: Customer) {
-        const formattedCustomer = toCamelCaseAllProps(customer as ObjectLiteral);
+        const formattedCustomer = toCamelCaseAllPropsKeys(customer as ObjectLiteral);
 
         delete formattedCustomer.createdAt;
         delete formattedCustomer.updatedAt;
