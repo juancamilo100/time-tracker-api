@@ -54,7 +54,7 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
             ALTER TABLE task ADD FOREIGN KEY ("report_id") REFERENCES report ("id") ON DELETE CASCADE;
 
             INSERT INTO customer (id, name, city, state, email)
-            VALUES (1, 'Lulosoft', 'Louisville', 'KY', 'contact@lulosoft.com');
+            VALUES (0, 'Lulosoft', 'Louisville', 'KY', 'contact@lulosoft.com');
 
             INSERT INTO employee (first_name, last_name, email, password, customer_id, role)
             VALUES (
@@ -62,7 +62,7 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
                 'Admin',
                 '${process.env.DEFAULT_ADMIN_EMPLOYEE_EMAIL}',
                 '${bcrypt.hashSync(process.env.DEFAULT_ADMIN_EMPLOYEE_PASSWORD!)}',
-                1,
+                0,
                 'admin'
             );
         `);

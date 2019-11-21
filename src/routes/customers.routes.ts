@@ -14,6 +14,10 @@ router.get("/:id",
     authorizeEmployeeByCustomerId, 
     controller.getCustomerById
 );
+router.post("/",
+    [transformBodyPropsValuesToLowerCase, authorizeAdminEmployee], 
+    controller.createCustomer
+);
 router.patch("/:id", 
     [transformBodyPropsValuesToLowerCase, authorizeAdminEmployee], 
     controller.updateCustomerById

@@ -71,18 +71,12 @@ class CustomersController {
     }
 
     public createCustomer: RequestHandler = async (req: Request, res: Response, next: NextFunction) => { 
-        if (!req.body.email ||
-            !req.body.password ||
-            !req.body.firstName ||
-            !req.body.lastName ||
-            !req.body.customerId ||
-            !req.body.hourlyRate
-        ) {
+        if (!req.body.name || !req.body.email) {
             return next(createError(400, "Incomplete request"));
         }
 
         try {
-            if (await this.customerExists(req.body.email)) {
+            if (await this.customerExists(req.body.name, req.body.email)) {
                 return next(createError(409, "Customer already exists"));
             }
         } catch (error) {
@@ -91,14 +85,14 @@ class CustomersController {
 
         try {
             const createdCustomer = await this.customerService.create(req.body);
-            res.send(createdCustomer);
+            res.send(this.formatCustomerProps(createdCustomer));
         } catch (error) {
             return next(createError(500, error));
         }
     }
 
-    private customerExists = (email: string) => {
-        return this.customerService.getByFields({ email });
+    private customerExists = (name: string, email: string) => {
+        return this.customerService.getByEitherFields({ name, email });
     }
 
     private formatCustomerProps(customer: Customer) {
