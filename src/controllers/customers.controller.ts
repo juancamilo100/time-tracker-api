@@ -1,4 +1,3 @@
-// import bcrypt from "bcryptjs";
 import {
     NextFunction,
     Request,
@@ -7,13 +6,11 @@ import {
 import createError from "http-errors";
 import { ObjectLiteral } from "../../types/generics";
 import Customer from "../database/entities/customer.entity";
-import { CustomerService } from "../services/customer.service";
-// import IDataService from "../interfaces/dataService.interface";
-import { toCamelCase } from "../utils/formatter";
 import { toCamelCaseAllProps } from "../utils/formatter";
+import IDataService from "../interfaces/dataService.interface";
 
 class CustomersController {
-    constructor(private customerService: CustomerService) {}
+    constructor(private customerService: IDataService<Customer>) {}
 
     public getCustomers: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         const customers = await this.customerService.getAll();
