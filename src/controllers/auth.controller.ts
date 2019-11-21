@@ -4,11 +4,10 @@ import createError from "http-errors";
 import jwt from "jsonwebtoken";
 import { ENCRYPTION_KEY } from "../../config";
 import Employee from "../database/entities/employee.entity";
-// import IDataService from "../interfaces/dataService.interface";
-import { EmployeeService } from "../services/employee.service";
+import IDataService from "../interfaces/dataService.interface";
 
 class AuthController {
-    constructor(private employeeService: EmployeeService) {}
+    constructor(private employeeService: IDataService<Employee>) {}
 
     public loginEmployee: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         if (!req.body.email || !req.body.password) {

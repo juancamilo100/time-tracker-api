@@ -7,12 +7,11 @@ import {
 import createError from "http-errors";
 import { ObjectLiteral } from "../../types/generics";
 import Employee from "../database/entities/employee.entity";
-import { EmployeeService } from "../services/employee.service";
-// import IDataService from "../interfaces/dataService.interface";
+import IDataService from "../interfaces/dataService.interface";
 import { toCamelCaseAllProps } from "../utils/formatter";
 
 class EmployeesController {
-    constructor(private employeeService: EmployeeService) {}
+    constructor(private employeeService: IDataService<Employee>) {}
 
     public getEmployees: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         const employees = await this.employeeService.getAll();
