@@ -9,6 +9,6 @@ export default interface IDataService<T> {
     getAll(options?: QueryOptions): Promise<T[]>;
     getAllByFields(fields: object, options?: QueryOptions): Promise<T[]>;
     create(entity: T, options?: QueryOptions): Promise<T>;
-    update(entity: T, options?: QueryOptions): Promise<T | undefined>;
+    update(id: string, entity: T, options?: QueryOptions): Promise<T | undefined>;
     delete(id: string, options?: QueryOptions): Promise<T | undefined>;
 }

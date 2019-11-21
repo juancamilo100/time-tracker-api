@@ -2,14 +2,14 @@ import { getRepository, EntitySchema } from "typeorm";
 import { ObjectLiteral } from "../../types/generics";
 // import this.entity.schema from "../database/entities/customer.entity";
 import IDataService, { QueryOptions } from "../interfaces/dataService.interface";
-import { camelToSnake } from "../utils/formatter";
+import { camelToSnake, toSnakeCaseAllProps, toLowerCaseAllPropsValues } from "../utils/formatter";
 
 interface IGenericEntity {
     schema: EntitySchema,
     alias: string
 }
 
-class BaseDataService<T> {
+class BaseDataService<T> implements IDataService<T> {
     constructor(private entity: IGenericEntity) {}
 
     public get(id: string, options: QueryOptions = {}) {
@@ -40,13 +40,7 @@ class BaseDataService<T> {
 
     public update(id: string, entity: T) {
         return (async () => {
-            const entityLiteral = entity as ObjectLiteral;
-            const fieldsToUpdate = {} as ObjectLiteral;
-
-            Object.keys(entity).forEach((field) => {
-                fieldsToUpdate[camelToSnake(field)] = entityLiteral[field];
-            });
-
+            let fieldsToUpdate = toSnakeCaseAllProps(entity as ObjectLiteral);
             const result = await getRepository(this.entity.schema)
                 .createQueryBuilder()
                 .update(this.entity.schema)
@@ -82,12 +76,14 @@ class BaseDataService<T> {
     }
 
     private buildSelectQuery(fields: object, operand: string, options: QueryOptions) {
+        fields = toLowerCaseAllPropsValues(fields as ObjectLiteral, ['password']);
         const clause = this.buildWhereClauseFromFields(fields, operand);
+
         let query = getRepository(this.entity.schema)
             .createQueryBuilder(this.entity.alias)
             .where(clause, fields);
 
-        if (options) {
+        if (options.hiddenFieldsToShow) {
             options.hiddenFieldsToShow.forEach((field: string) => {
                 query = query.addSelect(`${this.entity.alias}.${camelToSnake(field)}`);
             });

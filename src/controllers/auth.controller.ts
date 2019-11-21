@@ -23,7 +23,7 @@ class AuthController {
 
             if (!employee) { return next(createError(404, "Employee not found")); }
 
-            const passwordIsValid = bcrypt.compareSync(req.body.password, employee.password);
+            const passwordIsValid = bcrypt.compareSync(req.body.password.toLowerCase(), employee.password);
             if (!passwordIsValid) { return next(createError(401, "Unauthorized")); }
 
             const token = jwt.sign(

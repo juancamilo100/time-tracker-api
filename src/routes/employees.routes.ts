@@ -1,7 +1,7 @@
 import express from "express";
 import { employeesController as controller } from "../controllers";
 import { authorizeAdminEmployee } from "../middleware/admin.authorization.middleware";
-import { authorizeEmployeeById } from "../middleware/id.authorization.middleware";
+import { authorizeEmployeeById } from "../middleware/employeeId.authorization.middleware";
 
 const router = express.Router();
 

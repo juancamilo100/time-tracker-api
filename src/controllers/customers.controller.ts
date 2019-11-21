@@ -10,6 +10,7 @@ import Customer from "../database/entities/customer.entity";
 // import IDataService from "../interfaces/dataService.interface";
 import { toCamelCase } from "../utils/formatter";
 import { CustomerService } from '../services/customer.service';
+import { toCamelCaseAllProps } from '../utils/formatter';
 
 class CustomersController {
     constructor(private customerService: CustomerService) {}
@@ -18,11 +19,11 @@ class CustomersController {
         const customers = await this.customerService.getAll();
 
         res.send(customers.map((customer) => {
-            return this.formatCustomersProps(customer);
+            return this.formatCustomerProps(customer);
         }));
     }
 
-    public getCustomersById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+    public getCustomerById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         if (!req.params.id) {
             return next(createError(400, "Incomplete request"));
         }
@@ -36,13 +37,13 @@ class CustomersController {
                 return next(createError(404, "Customers not found"));
             }
 
-            res.send(customer);
+            res.send(this.formatCustomerProps(customer));
         } catch (error) {
             return next(createError(500, "Something went wrong"));
         }
     }
 
-    public deleteCustomersById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+    public deleteCustomerById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         if (!req.params.id) {
             return next(createError(400, "Incomplete request"));
         }
@@ -51,6 +52,7 @@ class CustomersController {
             await this.customerService.delete(req.params.id);
             res.send(200);
         } catch (error) {
+            console.log(error);
             return next(createError(500, "Something went wrong"));
         }
     }
@@ -68,18 +70,44 @@ class CustomersController {
         }
     }
 
-    private formatCustomersProps(customer: Customer) {
-        const customerToReturn: ObjectLiteral = {};
-        const customerLiteral: ObjectLiteral = customer;
+    public createCustomer: RequestHandler = async (req: Request, res: Response, next: NextFunction) => { 
+        if (!req.body.email ||
+            !req.body.password ||
+            !req.body.firstName ||
+            !req.body.lastName ||
+            !req.body.customerId ||
+            !req.body.hourlyRate
+        ) {
+            return next(createError(400, "Incomplete request"));
+        }
 
-        Object.keys(customer).forEach((field) => {
-            customerToReturn[toCamelCase(field)] = customerLiteral[field];
-        });
+        try {
+            if (await this.customerExists(req.body.email)) {
+                return next(createError(409, "Customer already exists"));
+            }
+        } catch (error) {
+            return next(createError(500, "Something went wrong"));
+        }
 
-        delete customerToReturn.createdAt;
-        delete customerToReturn.updatedAt;
+        try {
+            const createdCustomer = await this.customerService.create(req.body);
+            res.send(createdCustomer);
+        } catch (error) {
+            return next(createError(500, error));
+        }
+    }
 
-        return customerToReturn;
+    private customerExists = (email: string) => {
+        return this.customerService.getByFields({ email });
+    }
+
+    private formatCustomerProps(customer: Customer) {
+        const formattedCustomer = toCamelCaseAllProps(customer as ObjectLiteral);
+
+        delete formattedCustomer.createdAt;
+        delete formattedCustomer.updatedAt;
+
+        return formattedCustomer;
     }
 }
 

@@ -8,7 +8,7 @@ import createError from "http-errors";
 import { ObjectLiteral } from "../../types/generics";
 import Employee from "../database/entities/employee.entity";
 // import IDataService from "../interfaces/dataService.interface";
-import { toCamelCase } from "../utils/formatter";
+import { toCamelCaseAllProps } from "../utils/formatter";
 import { EmployeeService } from '../services/employee.service';
 
 class EmployeesController {
@@ -34,7 +34,7 @@ class EmployeesController {
                 return next(createError(404, "Employee not found"));
             }
 
-            res.send(employee);
+            res.send(this.formatEmployeeProps(employee));
         } catch (error) {
             return next(createError(500, "Something went wrong"));
         }
@@ -63,6 +63,12 @@ class EmployeesController {
         }
 
         try {
+            const employee = await this.employeeService.get(req.params.id);
+
+            if (!employee) {
+                return next(createError(404, "Employee not found"));
+            }
+
             await this.employeeService.update(req.params.id, req.body);
             res.send(200);
         } catch (error) {
@@ -102,17 +108,12 @@ class EmployeesController {
     }
 
     private formatEmployeeProps(employee: Employee) {
-        const employeeToReturn: ObjectLiteral = {};
-        const employeeLiteral: ObjectLiteral = employee;
+        const formattedEmployee = toCamelCaseAllProps(employee as ObjectLiteral);
 
-        Object.keys(employee).forEach((field) => {
-            employeeToReturn[toCamelCase(field)] = employeeLiteral[field];
-        });
+        delete formattedEmployee.createdAt;
+        delete formattedEmployee.updatedAt;
 
-        delete employeeToReturn.createdAt;
-        delete employeeToReturn.updatedAt;
-
-        return employeeToReturn;
+        return formattedEmployee;
     }
 }
 

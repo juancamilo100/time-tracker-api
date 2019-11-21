@@ -48,10 +48,10 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
                 "updated_at" timestamp DEFAULT current_timestamp
             );
 
-            ALTER TABLE employee ADD FOREIGN KEY ("customer_id") REFERENCES customer ("id");
-            ALTER TABLE report ADD FOREIGN KEY ("customer_id") REFERENCES customer ("id");
-            ALTER TABLE report ADD FOREIGN KEY ("employee_id") REFERENCES employee ("id");
-            ALTER TABLE task ADD FOREIGN KEY ("report_id") REFERENCES report ("id");
+            ALTER TABLE employee ADD FOREIGN KEY ("customer_id") REFERENCES customer ("id") ON DELETE CASCADE;
+            ALTER TABLE report ADD FOREIGN KEY ("customer_id") REFERENCES customer ("id") ON DELETE CASCADE;
+            ALTER TABLE report ADD FOREIGN KEY ("employee_id") REFERENCES employee ("id") ON DELETE CASCADE;
+            ALTER TABLE task ADD FOREIGN KEY ("report_id") REFERENCES report ("id") ON DELETE CASCADE;
 
             INSERT INTO customer (id, name, city, state, email)
             VALUES (1, 'Lulosoft', 'Louisville', 'KY', 'contact@lulosoft.com');
