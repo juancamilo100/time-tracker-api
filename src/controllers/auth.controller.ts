@@ -17,7 +17,7 @@ class AuthController {
         try {
             const employee =  await this.employeeService.getByFields(
                 { email: req.body.email },
-                { showPassword: true }
+                { hiddenFieldsToShow: ["password"] }
             );
 
             if (!employee) { return next(createError(404, "Employee not found")); }

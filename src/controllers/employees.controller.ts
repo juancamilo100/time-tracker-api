@@ -8,13 +8,13 @@ import createError from "http-errors";
 import { ObjectLiteral } from "../../types/generics";
 import Employee from "../database/entities/employee.entity";
 import IDataService from "../interfaces/dataService.interface";
-import { toCamelCase } from "../utils/formatter";
+import { toCamelCaseAllPropsKeys } from "../utils/formatter";
 
 class EmployeesController {
     constructor(private employeeService: IDataService<Employee>) {}
 
     public getEmployees: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        const employees = await this.employeeService.getAll({ showPassword: true });
+        const employees = await this.employeeService.getAll();
 
         res.send(employees.map((employee) => {
             return this.formatEmployeeProps(employee);
@@ -27,15 +27,13 @@ class EmployeesController {
         }
 
         try {
-            const employee =  await this.employeeService.getByFields(
-                { id: req.params.id }
-            );
+            const employee = await this.employeeService.get(req.params.id);
 
             if (!employee) {
                 return next(createError(404, "Employee not found"));
             }
 
-            res.send(employee);
+            res.send(this.formatEmployeeProps(employee));
         } catch (error) {
             return next(createError(500, "Something went wrong"));
         }
@@ -64,8 +62,13 @@ class EmployeesController {
         }
 
         try {
-            req.body.id = req.params.id;
-            await this.employeeService.update(req.body);
+            const employee = await this.employeeService.get(req.params.id);
+
+            if (!employee) {
+                return next(createError(404, "Employee not found"));
+            }
+
+            await this.employeeService.update(req.params.id, req.body);
             res.send(200);
         } catch (error) {
             return next(createError(500, "Something went wrong"));
@@ -79,9 +82,9 @@ class EmployeesController {
             return next(createError(400, "Must provide old and new password"));
         }
 
-        const employee =  await this.employeeService.getByFields(
-            { id: req.params.id },
-            { showPassword: true }
+        const employee = await this.employeeService.get(
+            req.params.id,
+            { hiddenFieldsToShow: ["password"] }
         );
 
         if (!employee) {
@@ -93,11 +96,10 @@ class EmployeesController {
 
         try {
             const fieldsToUpdate = {
-                id: req.params.id,
                 password: bcrypt.hashSync(req.body.newPassword)
             };
 
-            await this.employeeService.update(fieldsToUpdate as any);
+            await this.employeeService.update(req.params.id, fieldsToUpdate as any);
             res.send(200);
         } catch (error) {
             return next(createError(500, "Something went wrong"));
@@ -105,17 +107,12 @@ class EmployeesController {
     }
 
     private formatEmployeeProps(employee: Employee) {
-        const employeeToReturn: ObjectLiteral = {};
-        const employeeLiteral: ObjectLiteral = employee;
+        const formattedEmployee = toCamelCaseAllPropsKeys(employee as ObjectLiteral);
 
-        Object.keys(employee).forEach((field) => {
-            employeeToReturn[toCamelCase(field)] = employeeLiteral[field];
-        });
+        delete formattedEmployee.createdAt;
+        delete formattedEmployee.updatedAt;
 
-        delete employeeToReturn.createdAt;
-        delete employeeToReturn.updatedAt;
-
-        return employeeToReturn;
+        return formattedEmployee;
     }
 }
 

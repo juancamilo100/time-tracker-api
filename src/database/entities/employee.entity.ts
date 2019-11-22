@@ -1,5 +1,4 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { ObjectLiteral } from "../../../types/generics";
 
 export enum EmployeeRole {
     ADMIN = "admin",
