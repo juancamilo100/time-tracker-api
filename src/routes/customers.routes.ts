@@ -23,7 +23,7 @@ router.patch("/:id",
     controller.updateCustomerById
 );
 router.delete("/:id",
-    [transformBodyPropsValuesToLowerCase, authorizeAdminEmployee],
+    authorizeAdminEmployee,
     controller.deleteCustomerById
 );
 
