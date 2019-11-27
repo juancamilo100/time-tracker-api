@@ -19,7 +19,7 @@ router.post("/",
     controller.createReport
 );
 router.patch("/:id",
-[transformBodyPropsValuesToLowerCase, authorizeAdminEmployee],
+    [transformBodyPropsValuesToLowerCase, authorizeAdminEmployee],
     controller.updateReportById
 );
 router.delete("/:id",

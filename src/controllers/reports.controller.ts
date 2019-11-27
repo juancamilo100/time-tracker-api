@@ -110,27 +110,26 @@ class ReportsController {
         }
 
         let {tasks, ...report} = req.body;
+        tasks = tasks.map((task: Task) => {
+            return toSnakeCaseAllPropsKeys(task);
+        });
 
         try {
             await this.validateEmployeeCustomerRelation(
                 req.body.customerId, 
                 req.body.employeeId
             );
-            await this.validateTasksIds(tasks);
+            await this.validateTasksIds(tasks, Number.parseInt(req.params.id));
         } catch (error) {
             return next(createError(500, error));
         }
         
         try {
-            tasks = tasks.map((task: Task) => {
-                return toSnakeCaseAllPropsKeys(task);
-            });
-            
             for (const task of tasks) {
                 await this.taskService.update(task.id, task);
             }
 
-            const updatedReportTasks = await this.taskService.getByFields(
+            const updatedReportTasks = await this.taskService.getAllByFields(
                 {report_id: req.params.id}
             );
 
@@ -203,11 +202,16 @@ class ReportsController {
         }
     }
 
-    private async validateTasksIds(tasks: any) {
+    private async validateTasksIds(tasks: any, reportId: number) {
         for (const task of tasks) {
-            const foundTask = await this.taskService.getByFields({ id: task.id });
+            const foundTask = await this.taskService.getByFields(
+                { 
+                    id: task.id,
+                    report_id: reportId
+                }
+            );
             if (!foundTask) {
-                throw new Error(`Task with ID: ${task.id} not found`);
+                throw new Error(`Task with ID: ${task.id} not found or its report ID didn't match`);
             }
         }
     }
