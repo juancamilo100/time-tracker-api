@@ -15,7 +15,7 @@ router.get("/:id",
     controller.getReportById
 );
 router.post("/",
-[transformBodyPropsValuesToLowerCase, authorizeAdminEmployee],
+    [transformBodyPropsValuesToLowerCase, authorizeAdminEmployee],
     controller.createReport
 );
 router.patch("/:id",

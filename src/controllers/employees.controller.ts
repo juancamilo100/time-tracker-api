@@ -22,12 +22,12 @@ class EmployeesController {
     }
 
     public getEmployeeById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        if (!req.params.id) {
+        if (!req.params.employeeId) {
             return next(createError(400, "Incomplete request"));
         }
 
         try {
-            const employee = await this.employeeService.get(req.params.id);
+            const employee = await this.employeeService.get(req.params.employeeId);
 
             if (!employee) {
                 return next(createError(404, "Employee not found"));
@@ -40,12 +40,12 @@ class EmployeesController {
     }
 
     public deleteEmployeeById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        if (!req.params.id) {
+        if (!req.params.employeeId) {
             return next(createError(400, "Incomplete request"));
         }
 
         try {
-            await this.employeeService.delete(req.params.id);
+            await this.employeeService.delete(req.params.employeeId);
             res.send(200);
         } catch (error) {
             return next(createError(500, "Something went wrong"));
@@ -53,7 +53,7 @@ class EmployeesController {
     }
 
     public updateEmployeeById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        if (!req.params.id) {
+        if (!req.params.employeeId) {
             return next(createError(400, "Incomplete request"));
         }
 
@@ -62,13 +62,13 @@ class EmployeesController {
         }
 
         try {
-            const employee = await this.employeeService.get(req.params.id);
+            const employee = await this.employeeService.get(req.params.employeeId);
 
             if (!employee) {
                 return next(createError(404, "Employee not found"));
             }
 
-            await this.employeeService.update(req.params.id, req.body);
+            await this.employeeService.update(req.params.employeeId, req.body);
             res.send(200);
         } catch (error) {
             return next(createError(500, "Something went wrong"));
@@ -76,14 +76,14 @@ class EmployeesController {
     }
 
     public updateEmployeePasswordById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        if (!req.params.id ||
+        if (!req.params.employeeId ||
             !req.body.oldPassword ||
             !req.body.newPassword) {
             return next(createError(400, "Must provide old and new password"));
         }
 
         const employee = await this.employeeService.get(
-            req.params.id,
+            req.params.employeeId,
             { hiddenFieldsToShow: ["password"] }
         );
 
@@ -99,7 +99,7 @@ class EmployeesController {
                 password: bcrypt.hashSync(req.body.newPassword)
             };
 
-            await this.employeeService.update(req.params.id, fieldsToUpdate as any);
+            await this.employeeService.update(req.params.employeeId, fieldsToUpdate as any);
             res.send(200);
         } catch (error) {
             return next(createError(500, "Something went wrong"));

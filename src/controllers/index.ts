@@ -11,4 +11,4 @@ import taskService from "../services/task.service";
 export const authController = new AuthController(employeeService);
 export const employeesController = new EmployeesController(employeeService);
 export const customersController = new CustomersController(customerService);
-export const reportsController = new ReportsController(reportService, taskService);
+export const reportsController = new ReportsController(reportService, taskService, employeeService);

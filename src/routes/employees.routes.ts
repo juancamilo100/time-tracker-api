@@ -3,6 +3,7 @@ import { employeesController as controller } from "../controllers";
 import { authorizeAdminEmployee } from "../middleware/admin.authorization.middleware";
 import { transformBodyPropsValuesToLowerCase } from "../middleware/body.transform.lowercase.middleware";
 import { authorizeEmployeeById } from "../middleware/employeeId.authorization.middleware";
+import { reportsController } from "../controllers";
 
 const router = express.Router();
 
@@ -10,19 +11,23 @@ router.get("/",
     authorizeAdminEmployee,
     controller.getEmployees
 );
-router.get("/:id",
+router.get("/:employeeId",
     authorizeEmployeeById,
     controller.getEmployeeById
 );
-router.patch("/:id",
+router.get("/:employeeId/reports",
+    [transformBodyPropsValuesToLowerCase, authorizeEmployeeById],
+    reportsController.getReportsByEmployeeId
+);
+router.patch("/:employeeId",
     [transformBodyPropsValuesToLowerCase, authorizeEmployeeById],
     controller.updateEmployeeById
 );
-router.patch("/:id/password",
+router.patch("/:employeeId/password",
     [transformBodyPropsValuesToLowerCase, authorizeEmployeeById],
     controller.updateEmployeePasswordById
 );
-router.delete("/:id",
+router.delete("/:employeeId",
     authorizeAdminEmployee,
     controller.deleteEmployeeById
 );
