@@ -229,7 +229,7 @@ class ReportsController {
 
     private async getTasksByReportId(reportId: number) {
         let tasks = await this.taskService.getAllByFields({report_id: reportId});
-        return this.formatObjectsArrayProps(tasks);
+        return this.formatObjectsArrayPropsKeys(tasks);
     }
 
     private calculateTotalHours(tasks: any) {
@@ -251,7 +251,7 @@ class ReportsController {
             createdTasks.push(this.formatProps(createdTask) as Task);
         }
 
-        return this.formatObjectsArrayProps(createdTasks) as Task[];
+        return this.formatObjectsArrayPropsKeys(createdTasks) as Task[];
     }
 
     private formatProps(object: object) {
@@ -263,7 +263,7 @@ class ReportsController {
         return formattedObject;
     }
 
-    private formatObjectsArrayProps(arrayOfObjects: object[]) {
+    private formatObjectsArrayPropsKeys(arrayOfObjects: object[]) {
         const formatedArrayOfObjects = arrayOfObjects.map((task: ObjectLiteral) => {
             return this.formatProps(task);
         });
