@@ -7,7 +7,7 @@ const authorizeEmployeeByReportId: RequestHandler = async (req: Request, res: Re
     const report = await reportService.getByFields(
         {
             employee_id: req.employeeId,
-            id: req.params.id
+            id: req.params.reportId
         });
 
     if (!report && req.role !== EmployeeRole.ADMIN) { 
