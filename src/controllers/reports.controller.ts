@@ -211,7 +211,7 @@ class ReportsController {
                 }
             );
             if (!foundTask) {
-                throw new Error(`Task with ID: ${task.id} not found or its report ID didn't match`);
+                throw new Error(`Task with ID: ${task.id} not found or doesn't belong to report with ID: ${reportId}`);
             }
         }
     }

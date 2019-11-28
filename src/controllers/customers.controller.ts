@@ -21,13 +21,13 @@ class CustomersController {
     }
 
     public getCustomerById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        if (!req.params.id) {
+        if (!req.params.customerId) {
             return next(createError(400, "Incomplete request"));
         }
 
         try {
             const customer =  await this.customerService.getByFields(
-                { id: req.params.id }
+                { id: req.params.customerId }
             );
 
             if (!customer) {
@@ -41,12 +41,12 @@ class CustomersController {
     }
 
     public deleteCustomerById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        if (!req.params.id) {
+        if (!req.params.customerId) {
             return next(createError(400, "Incomplete request"));
         }
 
         try {
-            await this.customerService.delete(req.params.id);
+            await this.customerService.delete(req.params.customerId);
             res.send(200);
         } catch (error) {
             console.log(error);
@@ -55,12 +55,12 @@ class CustomersController {
     }
 
     public updateCustomerById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        if (!req.params.id) {
+        if (!req.params.customerId) {
             return next(createError(400, "Incomplete request"));
         }
 
         try {
-            await this.customerService.update(req.params.id, req.body);
+            await this.customerService.update(req.params.customerId, req.body);
             res.send(200);
         } catch (error) {
             return next(createError(500, "Something went wrong"));

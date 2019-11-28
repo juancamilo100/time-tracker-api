@@ -1,8 +1,8 @@
 import express from "express";
 import { reportsController as controller } from "../controllers";
 import { authorizeAdminEmployee } from "../middleware/admin.authorization.middleware";
-import { transformBodyPropsValuesToLowerCase } from "../middleware/body.transform.lowercase.middleware";
 import { authorizeEmployeeByReportId } from "../middleware/reportId.authorization.middleware";
+import { authorizeBodyEmployeeById } from "../middleware/body.employeeId.authorization.middleware";
 
 const router = express.Router();
 
@@ -15,15 +15,15 @@ router.get("/:reportId",
     controller.getReportById
 );
 router.post("/",
-    [transformBodyPropsValuesToLowerCase, authorizeAdminEmployee],
+    authorizeBodyEmployeeById,
     controller.createReport
 );
 router.patch("/:reportId",
-    [transformBodyPropsValuesToLowerCase, authorizeAdminEmployee],
+    authorizeBodyEmployeeById,
     controller.updateReportById
 );
 router.delete("/:reportId",
-    authorizeAdminEmployee,
+    authorizeBodyEmployeeById,
     controller.deleteReportById
 );
 
