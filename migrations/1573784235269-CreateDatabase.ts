@@ -43,7 +43,7 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
                 "report_id" int,
                 "hours" int,
                 "description" varchar,
-                "date" date,
+                "date_performed" date,
                 "created_at" timestamp DEFAULT current_timestamp,
                 "updated_at" timestamp DEFAULT current_timestamp
             );

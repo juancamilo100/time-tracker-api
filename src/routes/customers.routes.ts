@@ -10,7 +10,7 @@ router.get("/",
     authorizeAdminEmployee,
     controller.getCustomers
 );
-router.get("/:id",
+router.get("/:customerId",
     authorizeEmployeeByCustomerId,
     controller.getCustomerById
 );
@@ -18,12 +18,12 @@ router.post("/",
     [transformBodyPropsValuesToLowerCase, authorizeAdminEmployee],
     controller.createCustomer
 );
-router.patch("/:id",
+router.patch("/:customerId",
     [transformBodyPropsValuesToLowerCase, authorizeAdminEmployee],
     controller.updateCustomerById
 );
-router.delete("/:id",
-    [transformBodyPropsValuesToLowerCase, authorizeAdminEmployee],
+router.delete("/:customerId",
+    authorizeAdminEmployee,
     controller.deleteCustomerById
 );
 
