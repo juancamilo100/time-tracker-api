@@ -10,7 +10,7 @@ router.get("/",
     authorizeAdminEmployee,
     controller.getReports
 );
-router.get("/:id",
+router.get("/:reportId",
     authorizeEmployeeByReportId,
     controller.getReportById
 );
@@ -18,11 +18,11 @@ router.post("/",
     [transformBodyPropsValuesToLowerCase, authorizeAdminEmployee],
     controller.createReport
 );
-router.patch("/:id",
+router.patch("/:reportId",
     [transformBodyPropsValuesToLowerCase, authorizeAdminEmployee],
     controller.updateReportById
 );
-router.delete("/:id",
+router.delete("/:reportId",
     authorizeAdminEmployee,
     controller.deleteReportById
 );
