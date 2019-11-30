@@ -9,12 +9,12 @@ info:
 host: 'localhost:3000'
 basePath: /api
 tags:
-  - name: Employees
-    description: API for employees in the system
-  - name: Portfolios
-    description: API for employees' portfolios
   - name: Auth
     description: API for employee access management
+  - name: Employees
+    description: API for employees in the system
+  - name: Customers
+    description: API for customers in the system
 schemes:
   - http
 securityDefinitions:
@@ -143,7 +143,7 @@ paths:
       - name: employeeId
         in: path
         required: true
-        description: ID of employee that we want to find
+        description: ID of employee that we want to find the reports for
         type: string
       - name: Authorization
         in: header
@@ -159,21 +159,141 @@ paths:
           schema:
             $ref: '#/definitions/ReportsResponse'
         '500':
-          description: Something went wrong    
+          description: Something went wrong
+  /employees/{employeeId}/password:
+    parameters:
+      - name: employeeId
+        in: path
+        required: true
+        description: ID of employee that we want to change the password for
+        type: string
+      - name: Authorization
+        in: header
+        type: string
+        required: true
+    patch:
+      tags:
+        - Employees
+      summary: Update employee password
+      responses:
+        '200':
+          description: Password was updated
+          schema:
+            $ref: '#/definitions/ReportsResponse'
+        '500':
+          description: Something went wrong
+  /customers:
+    parameters:
+      - name: Authorization
+        in: header
+        type: string
+        required: true
+    get:
+      tags:
+        - Customers
+      summary: Get all customers in system
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EmployeesWithNoPasswordResponse'
+        '500':
+          description: Something went wrong
+    post:
+      tags:
+        - Customers
+      summary: Create a customer in the system  
+      description: Create new customer in system
+      parameters:
+        - name: customer
+          in: body
+          description: Employee that we want to create
+          schema:
+            $ref: '#/definitions/CustomerCreate'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: New employee is created
+          schema:
+            $ref: '#/definitions/TokenResponse'
+        '400':
+          description: Incomplete request
+        '409':
+          description: Employee already exists
+        '500':
+          description: Something went wrong        
+  /customers/{customerId}:
+    parameters:
+      - name: employeeId
+        in: path
+        required: true
+        description: ID of employee that we want to find
+        type: string
+      - name: Authorization
+        in: header
+        type: string
+        required: true    
+    get:
+      tags:
+        - Customers
+      summary: Get employee with given ID
+      responses:
+        '200':
+          description: Employee is found
+          schema:
+            $ref: '#/definitions/EmployeeWithNoPasswordResponse'
+        '500':
+          description: Something went wrong
+    patch:
+      tags:
+        - Customers
+      summary: Update employee with given ID
+      parameters:
+        - name: employee
+          in: body
+          description: Employee fields that we want to update
+          schema:
+            $ref: '#/definitions/EmployeeUpdate'      
+      responses:
+        '200':
+          description: Employee has been updated
+        '500':
+          description: Something went wrong          
+    delete:
+      summary: Delete employee with given ID
+      tags:
+        - Customers
+      responses:
+        '200':
+          description: Employee has been deleted
+        '500':
+          description: Something went wrong               
 definitions:
   EmployeeCreate:
     required:
-      - employeename
+      - email
       - password
+      - firstName
+      - lastName
+      - customerId
+      - hourlyRate
+      - role
     properties:
-      email:
+      firstName: 
         type: string
-        uniqueItems: true
-      employeename:
+      lastName: 
         type: string
-        uniqueItems: true
+      email: 
+        type: string
       password:
         type: string
+      customerId: 
+        type: integer
+      hourlyRate: 
+        type: integer
+      role: 
+        type: string    
   EmployeeUpdate:
     properties:
       firstName: 
@@ -210,13 +330,22 @@ definitions:
       $ref: '#/definitions/EmployeeWithNoPasswordResponse'
   EmployeeLoginRequest:
     required:
-      - employeename
+      - email
       - password
     properties:
-      employeename:
+      email:
         type: string
         uniqueItems: true
       password:
+        type: string
+  EmployeePasswordChangeRequest:
+    required:
+      - email
+      - password
+    properties:
+      oldPassword: 
+        type: string
+      newPassword: 
         type: string
   TokenResponse:
     properties:
@@ -254,4 +383,19 @@ definitions:
     type: array
     items:
       $ref: '#/definitions/ReportResponse'  
+  CustomerCreate:
+    required:
+      - email
+      - name
+    properties:
+      name:
+        type: string
+      email:
+        type: string
+      address:
+        type: string
+      city:
+        type: string
+      state:
+        type: string
 
