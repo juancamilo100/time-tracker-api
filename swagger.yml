@@ -92,7 +92,7 @@ paths:
             $ref: '#/definitions/EmployeesWithNoPasswordResponse'
         '500':
           description: Something went wrong
-  '/employees/{employeeId}':
+  /employees/{employeeId}:
     parameters:
       - name: employeeId
         in: path
@@ -114,17 +114,52 @@ paths:
             $ref: '#/definitions/EmployeeWithNoPasswordResponse'
         '500':
           description: Something went wrong
+    patch:
+      tags:
+        - Employees
+      summary: Update employee with given ID
+      parameters:
+        - name: employee
+          in: body
+          description: Employee fields that we want to update
+          schema:
+            $ref: '#/definitions/EmployeeUpdate'      
+      responses:
+        '200':
+          description: Employee has been updated
+        '500':
+          description: Something went wrong          
     delete:
       summary: Delete employee with given ID
       tags:
         - Employees
       responses:
         '200':
-          description: Employee is deleted
-          schema:
-            $ref: '#/definitions/EmployeeWithNoPasswordResponse'
+          description: Employee has been deleted
         '500':
           description: Something went wrong
+  /employees/{employeeId}/reports:
+    parameters:
+      - name: employeeId
+        in: path
+        required: true
+        description: ID of employee that we want to find
+        type: string
+      - name: Authorization
+        in: header
+        type: string
+        required: true
+    get:
+      tags:
+        - Employees
+      summary: Get employee reports
+      responses:
+        '200':
+          description: Employee repoerts were found
+          schema:
+            $ref: '#/definitions/ReportsResponse'
+        '500':
+          description: Something went wrong    
 definitions:
   EmployeeCreate:
     required:
@@ -139,17 +174,36 @@ definitions:
         uniqueItems: true
       password:
         type: string
-  EmployeeWithNoPasswordResponse:
-    required:
-      - employeename
-      - password
+  EmployeeUpdate:
     properties:
-      email:
+      firstName: 
         type: string
-        uniqueItems: true
-      employeename:
+      lastName: 
         type: string
-        uniqueItems: true
+      email: 
+        type: string
+      customerId: 
+        type: integer
+      hourlyRate: 
+        type: integer
+      role: 
+        type: string      
+  EmployeeWithNoPasswordResponse:
+    properties:
+      id: 
+        type: integer
+      firstName: 
+        type: string
+      lastName: 
+        type: string
+      email: 
+        type: string
+      customerId: 
+        type: integer
+      hourlyRate: 
+        type: integer
+      role: 
+        type: string
   EmployeesWithNoPasswordResponse:
     type: array
     items:
@@ -170,3 +224,34 @@ definitions:
         type: boolean
       token:
         type: string
+  ReportResponse:
+    properties:
+        id:
+          type: integer
+        customerId:
+          type: integer
+        employeeId:
+          type: integer
+        totalHours:
+          type: integer
+        task:
+          type: array
+          items:
+            $ref: '#/definitions/Task'
+  Task: 
+    properties: 
+      id:
+        type: integer
+      reportId:
+        type: integer
+      hours:
+        type: integer
+      description:
+        type: string
+      datePerformed:
+        type: string
+  ReportsResponse:
+    type: array
+    items:
+      $ref: '#/definitions/ReportResponse'  
+
