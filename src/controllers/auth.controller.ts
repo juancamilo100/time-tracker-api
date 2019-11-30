@@ -36,7 +36,7 @@ class AuthController {
 
             res.send({ auth: true, token});
         } catch (error) {
-            return next(createError(500, "Something went wrong"));
+            return next(createError(500, error));
         }
     }
 
