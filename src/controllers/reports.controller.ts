@@ -117,8 +117,7 @@ class ReportsController {
                 report.customerId, 
                 report.employeeId
             );
-            await this.validateTasksIds(tasks, Number.parseInt(req.params.reportId));
-            this.validateTaskFields(tasks);
+            await this.validateTasksIdsAndDates(tasks, Number.parseInt(req.params.reportId));
         } catch (error) {
             return next(createError(500, error));
         }
@@ -158,7 +157,7 @@ class ReportsController {
                 report.customerId, 
                 report.employeeId
             );
-            this.validateTaskFields(tasks);
+            this.validateTasksFields(tasks);
         } catch (error) {
             return next(createError(500, error));
         }
@@ -195,7 +194,7 @@ class ReportsController {
         }
     }
 
-    private async validateTasksIds(tasks: any, reportId: number) {
+    private async validateTasksIdsAndDates(tasks: any, reportId: number) {
         for (const task of tasks) {
             const foundTask = await this.taskService.getByFields(
                 { 
@@ -206,18 +205,23 @@ class ReportsController {
             if (!foundTask) {
                 throw new Error(`Task with ID: ${task.id} not found or doesn't belong to report with ID: ${reportId}`);
             }
+            this.validateTaskDateFormat(task.datePerformed);
         }
     }
 
-    private validateTaskFields(tasks: any) {
+    private validateTasksFields(tasks: any) {
         for (const task of tasks) {
             if (!task.hours ||
                 !task.datePerformed) {
                 throw new Error("Fields missing from task or field value invalid");
             }
-            if(!moment(task.datePerformed).isValid()) {
-                throw new Error("Task performed date is invalid");
-            }
+            this.validateTaskDateFormat(task.datePerformed);
+        }
+    }
+    
+    private validateTaskDateFormat(date: string) {
+        if(!moment(date).isValid()) {
+            throw new Error("Task performed date is invalid");
         }
     }
 
