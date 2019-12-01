@@ -15,6 +15,8 @@ tags:
     description: API for employees in the system
   - name: Customers
     description: API for customers in the system
+  - name: Reports
+    description: API for reports in the system    
 schemes:
   - http
 securityDefinitions:
@@ -202,8 +204,7 @@ paths:
     post:
       tags:
         - Customers
-      summary: Create a customer in the system  
-      description: Create new customer in system
+      summary: Create a new customer in the system  
       parameters:
         - name: customer
           in: body
@@ -268,7 +269,95 @@ paths:
         '200':
           description: Customer has been deleted
         '500':
+          description: Something went wrong
+
+
+  /reports:
+    parameters:
+      - name: Authorization
+        in: header
+        type: string
+        required: true
+    get:
+      tags:
+        - Reports
+      summary: Get all reports in system
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/ReportsResponse'
+        '500':
+          description: Something went wrong
+    post:
+      tags:
+        - Reports
+      summary: Create a report in the system  
+      parameters:
+        - name: report
+          in: body
+          description: Report that we want to create
+          schema:
+            $ref: '#/definitions/ReportCreate'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: New report has been created
+          schema:
+            $ref: '#/definitions/ReportResponse'
+        '400':
+          description: Incomplete request
+        '500':
+          description: Something went wrong        
+  /reports/{reportId}:
+    parameters:
+      - name: reportId
+        in: path
+        required: true
+        description: ID of report that we want
+        type: string
+      - name: Authorization
+        in: header
+        type: string
+        required: true    
+    get:
+      tags:
+        - Reports
+      summary: Get report with given ID
+      responses:
+        '200':
+          description: Customer was found
+          schema:
+            $ref: '#/definitions/ReportResponse'
+        '500':
+          description: Something went wrong
+    patch:
+      tags:
+        - Reports
+      summary: Update report with given ID
+      parameters:
+        - name: report
+          in: body
+          description: Report fields that we want to update
+          schema:
+            $ref: '#/definitions/ReportUpdate'      
+      responses:
+        '200':
+          description: Report has been updated
+        '500':
+          description: Something went wrong          
+    delete:
+      summary: Delete report with given ID
+      tags:
+        - Reports
+      responses:
+        '200':
+          description: Report has been deleted
+        '500':
           description: Something went wrong               
+
+
 definitions:
   EmployeeCreate:
     required:
@@ -353,36 +442,68 @@ definitions:
         type: boolean
       token:
         type: string
+  ReportCreate:
+    required:
+      - customerId
+      - employeeId  
+      - tasks
+    properties:
+      customerId:
+        type: integer
+      employeeId:
+        type: integer
+      tasks:
+        type: array
+        items:
+          $ref: '#/definitions/TaskCreate'
+  ReportUpdate:
+    allOf:
+      - $ref: '#/definitions/ReportCreate'
+      - properties: 
+          tasks:
+            type: array
+            items:
+              $ref: '#/definitions/TaskUpdate'            
   ReportResponse:
+    allOf:
+      - $ref: '#/definitions/ReportCreate'   
+      - properties: 
+          tasks:
+            type: array
+            items:
+              $ref: '#/definitions/TaskResponse'
     properties:
         id:
           type: integer
-        customerId:
-          type: integer
-        employeeId:
-          type: integer
         totalHours:
           type: integer
-        task:
-          type: array
-          items:
-            $ref: '#/definitions/Task'
-  Task: 
-    properties: 
-      id:
-        type: integer
-      reportId:
-        type: integer
+  TaskCreate:
+    required:
+        - hours
+        - datePerformed
+    properties:
       hours:
         type: integer
       description:
         type: string
       datePerformed:
-        type: string
+        type: string     
+  TaskUpdate:
+    allOf:
+      - $ref: '#/definitions/TaskCreate'
+    properties: 
+      id:
+        type: integer        
+  TaskResponse: 
+    allOf:
+      - $ref: '#/definitions/TaskUpdate'   
+    properties: 
+      reportId:
+        type: integer
   ReportsResponse:
     type: array
     items:
-      $ref: '#/definitions/ReportResponse'  
+      $ref: '#/definitions/ReportResponse'
   CustomerCreate:
     required:
       - email
@@ -427,5 +548,5 @@ definitions:
       city:
         type: string
       state:
-        type: string       
+        type: string    
 
