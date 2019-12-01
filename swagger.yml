@@ -196,7 +196,7 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/EmployeesWithNoPasswordResponse'
+            $ref: '#/definitions/CustomersResponse'
         '500':
           description: Something went wrong
     post:
@@ -225,7 +225,7 @@ paths:
           description: Something went wrong        
   /customers/{customerId}:
     parameters:
-      - name: employeeId
+      - name: customerId
         in: path
         required: true
         description: ID of employee that we want to find
@@ -237,36 +237,36 @@ paths:
     get:
       tags:
         - Customers
-      summary: Get employee with given ID
+      summary: Get customer with given ID
       responses:
         '200':
-          description: Employee is found
+          description: Customer was found
           schema:
-            $ref: '#/definitions/EmployeeWithNoPasswordResponse'
+            $ref: '#/definitions/Customer'
         '500':
           description: Something went wrong
     patch:
       tags:
         - Customers
-      summary: Update employee with given ID
+      summary: Update customer with given ID
       parameters:
-        - name: employee
+        - name: customer
           in: body
-          description: Employee fields that we want to update
+          description: Customer fields that we want to update
           schema:
-            $ref: '#/definitions/EmployeeUpdate'      
+            $ref: '#/definitions/CustomerUpdate'      
       responses:
         '200':
-          description: Employee has been updated
+          description: Customer has been updated
         '500':
           description: Something went wrong          
     delete:
-      summary: Delete employee with given ID
+      summary: Delete customer with given ID
       tags:
         - Customers
       responses:
         '200':
-          description: Employee has been deleted
+          description: Customer has been deleted
         '500':
           description: Something went wrong               
 definitions:
@@ -398,4 +398,34 @@ definitions:
         type: string
       state:
         type: string
+  Customer:
+    properties: 
+      id: 
+        type: integer
+      name: 
+        type: string
+      address: 
+        type: string
+      city: 
+        type: string
+      state: 
+        type: string
+      email: 
+        type: string
+  CustomersResponse:
+    type: array
+    items:
+      $ref: '#/definitions/Customer'   
+  CustomerUpdate:
+    properties:
+      name:
+        type: string
+      email:
+        type: string
+      address:
+        type: string
+      city:
+        type: string
+      state:
+        type: string       
 
