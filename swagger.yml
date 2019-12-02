@@ -6,7 +6,7 @@ info:
   license:
     name: MIT
     url: 'https://opensource.org/licenses/MIT'
-host: 'localhost:9000'
+host: '73.7.109.63:9000'
 basePath: /api
 tags:
   - name: Auth
