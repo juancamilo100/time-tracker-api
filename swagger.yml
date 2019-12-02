@@ -9,12 +9,14 @@ info:
 host: 'localhost:3000'
 basePath: /api
 tags:
-  - name: Employees
-    description: API for employees in the system
-  - name: Portfolios
-    description: API for employees' portfolios
   - name: Auth
     description: API for employee access management
+  - name: Employees
+    description: API for employees in the system
+  - name: Customers
+    description: API for customers in the system
+  - name: Reports
+    description: API for reports in the system    
 schemes:
   - http
 securityDefinitions:
@@ -92,7 +94,7 @@ paths:
             $ref: '#/definitions/EmployeesWithNoPasswordResponse'
         '500':
           description: Something went wrong
-  '/employees/{employeeId}':
+  /employees/{employeeId}:
     parameters:
       - name: employeeId
         in: path
@@ -114,55 +116,325 @@ paths:
             $ref: '#/definitions/EmployeeWithNoPasswordResponse'
         '500':
           description: Something went wrong
+    patch:
+      tags:
+        - Employees
+      summary: Update employee with given ID
+      parameters:
+        - name: employee
+          in: body
+          description: Employee fields that we want to update
+          schema:
+            $ref: '#/definitions/EmployeeUpdate'      
+      responses:
+        '200':
+          description: Employee has been updated
+        '500':
+          description: Something went wrong          
     delete:
       summary: Delete employee with given ID
       tags:
         - Employees
       responses:
         '200':
-          description: Employee is deleted
-          schema:
-            $ref: '#/definitions/EmployeeWithNoPasswordResponse'
+          description: Employee has been deleted
         '500':
           description: Something went wrong
+  /employees/{employeeId}/reports:
+    parameters:
+      - name: employeeId
+        in: path
+        required: true
+        description: ID of employee that we want to find the reports for
+        type: string
+      - name: Authorization
+        in: header
+        type: string
+        required: true
+    get:
+      tags:
+        - Employees
+      summary: Get employee reports
+      responses:
+        '200':
+          description: Employee repoerts were found
+          schema:
+            $ref: '#/definitions/ReportsResponse'
+        '500':
+          description: Something went wrong
+  /employees/{employeeId}/password:
+    parameters:
+      - name: employeeId
+        in: path
+        required: true
+        description: ID of employee that we want to change the password for
+        type: string
+      - name: Authorization
+        in: header
+        type: string
+        required: true
+    patch:
+      tags:
+        - Employees
+      summary: Update employee password
+      responses:
+        '200':
+          description: Password was updated
+          schema:
+            $ref: '#/definitions/ReportsResponse'
+        '500':
+          description: Something went wrong
+  /customers:
+    parameters:
+      - name: Authorization
+        in: header
+        type: string
+        required: true
+    get:
+      tags:
+        - Customers
+      summary: Get all customers in system
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/CustomersResponse'
+        '500':
+          description: Something went wrong
+    post:
+      tags:
+        - Customers
+      summary: Create a new customer in the system  
+      parameters:
+        - name: customer
+          in: body
+          description: Employee that we want to create
+          schema:
+            $ref: '#/definitions/CustomerCreate'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: New employee is created
+          schema:
+            $ref: '#/definitions/TokenResponse'
+        '400':
+          description: Incomplete request
+        '409':
+          description: Employee already exists
+        '500':
+          description: Something went wrong        
+  /customers/{customerId}:
+    parameters:
+      - name: customerId
+        in: path
+        required: true
+        description: ID of employee that we want to find
+        type: string
+      - name: Authorization
+        in: header
+        type: string
+        required: true    
+    get:
+      tags:
+        - Customers
+      summary: Get customer with given ID
+      responses:
+        '200':
+          description: Customer was found
+          schema:
+            $ref: '#/definitions/Customer'
+        '500':
+          description: Something went wrong
+    patch:
+      tags:
+        - Customers
+      summary: Update customer with given ID
+      parameters:
+        - name: customer
+          in: body
+          description: Customer fields that we want to update
+          schema:
+            $ref: '#/definitions/CustomerUpdate'      
+      responses:
+        '200':
+          description: Customer has been updated
+        '500':
+          description: Something went wrong          
+    delete:
+      summary: Delete customer with given ID
+      tags:
+        - Customers
+      responses:
+        '200':
+          description: Customer has been deleted
+        '500':
+          description: Something went wrong
+
+
+  /reports:
+    parameters:
+      - name: Authorization
+        in: header
+        type: string
+        required: true
+    get:
+      tags:
+        - Reports
+      summary: Get all reports in system
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/ReportsResponse'
+        '500':
+          description: Something went wrong
+    post:
+      tags:
+        - Reports
+      summary: Create a report in the system  
+      parameters:
+        - name: report
+          in: body
+          description: Report that we want to create
+          schema:
+            $ref: '#/definitions/ReportCreate'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: New report has been created
+          schema:
+            $ref: '#/definitions/ReportResponse'
+        '400':
+          description: Incomplete request
+        '500':
+          description: Something went wrong        
+  /reports/{reportId}:
+    parameters:
+      - name: reportId
+        in: path
+        required: true
+        description: ID of report that we want
+        type: string
+      - name: Authorization
+        in: header
+        type: string
+        required: true    
+    get:
+      tags:
+        - Reports
+      summary: Get report with given ID
+      responses:
+        '200':
+          description: Customer was found
+          schema:
+            $ref: '#/definitions/ReportResponse'
+        '500':
+          description: Something went wrong
+    patch:
+      tags:
+        - Reports
+      summary: Update report with given ID
+      parameters:
+        - name: report
+          in: body
+          description: Report fields that we want to update
+          schema:
+            $ref: '#/definitions/ReportUpdate'      
+      responses:
+        '200':
+          description: Report has been updated
+        '500':
+          description: Something went wrong          
+    delete:
+      summary: Delete report with given ID
+      tags:
+        - Reports
+      responses:
+        '200':
+          description: Report has been deleted
+        '500':
+          description: Something went wrong               
+
+
 definitions:
   EmployeeCreate:
     required:
-      - employeename
+      - email
       - password
+      - firstName
+      - lastName
+      - customerId
+      - hourlyRate
+      - role
     properties:
-      email:
+      firstName: 
         type: string
-        uniqueItems: true
-      employeename:
+      lastName: 
         type: string
-        uniqueItems: true
+      email: 
+        type: string
       password:
         type: string
-  EmployeeWithNoPasswordResponse:
-    required:
-      - employeename
-      - password
+      customerId: 
+        type: integer
+      hourlyRate: 
+        type: integer
+      role: 
+        type: string    
+  EmployeeUpdate:
     properties:
-      email:
+      firstName: 
         type: string
-        uniqueItems: true
-      employeename:
+      lastName: 
         type: string
-        uniqueItems: true
+      email: 
+        type: string
+      customerId: 
+        type: integer
+      hourlyRate: 
+        type: integer
+      role: 
+        type: string      
+  EmployeeWithNoPasswordResponse:
+    properties:
+      id: 
+        type: integer
+      firstName: 
+        type: string
+      lastName: 
+        type: string
+      email: 
+        type: string
+      customerId: 
+        type: integer
+      hourlyRate: 
+        type: integer
+      role: 
+        type: string
   EmployeesWithNoPasswordResponse:
     type: array
     items:
       $ref: '#/definitions/EmployeeWithNoPasswordResponse'
   EmployeeLoginRequest:
     required:
-      - employeename
+      - email
       - password
     properties:
-      employeename:
+      email:
         type: string
         uniqueItems: true
       password:
+        type: string
+  EmployeePasswordChangeRequest:
+    required:
+      - email
+      - password
+    properties:
+      oldPassword: 
+        type: string
+      newPassword: 
         type: string
   TokenResponse:
     properties:
@@ -170,3 +442,111 @@ definitions:
         type: boolean
       token:
         type: string
+  ReportCreate:
+    required:
+      - customerId
+      - employeeId  
+      - tasks
+    properties:
+      customerId:
+        type: integer
+      employeeId:
+        type: integer
+      tasks:
+        type: array
+        items:
+          $ref: '#/definitions/TaskCreate'
+  ReportUpdate:
+    allOf:
+      - $ref: '#/definitions/ReportCreate'
+      - properties: 
+          tasks:
+            type: array
+            items:
+              $ref: '#/definitions/TaskUpdate'            
+  ReportResponse:
+    allOf:
+      - $ref: '#/definitions/ReportCreate'   
+      - properties: 
+          tasks:
+            type: array
+            items:
+              $ref: '#/definitions/TaskResponse'
+    properties:
+        id:
+          type: integer
+        totalHours:
+          type: integer
+  TaskCreate:
+    required:
+        - hours
+        - datePerformed
+    properties:
+      hours:
+        type: integer
+      description:
+        type: string
+      datePerformed:
+        type: string     
+  TaskUpdate:
+    allOf:
+      - $ref: '#/definitions/TaskCreate'
+    properties: 
+      id:
+        type: integer        
+  TaskResponse: 
+    allOf:
+      - $ref: '#/definitions/TaskUpdate'   
+    properties: 
+      reportId:
+        type: integer
+  ReportsResponse:
+    type: array
+    items:
+      $ref: '#/definitions/ReportResponse'
+  CustomerCreate:
+    required:
+      - email
+      - name
+    properties:
+      name:
+        type: string
+      email:
+        type: string
+      address:
+        type: string
+      city:
+        type: string
+      state:
+        type: string
+  Customer:
+    properties: 
+      id: 
+        type: integer
+      name: 
+        type: string
+      address: 
+        type: string
+      city: 
+        type: string
+      state: 
+        type: string
+      email: 
+        type: string
+  CustomersResponse:
+    type: array
+    items:
+      $ref: '#/definitions/Customer'   
+  CustomerUpdate:
+    properties:
+      name:
+        type: string
+      email:
+        type: string
+      address:
+        type: string
+      city:
+        type: string
+      state:
+        type: string    
+
