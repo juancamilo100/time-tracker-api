@@ -4,6 +4,7 @@ import { authorizeAdminEmployee } from "../middleware/admin.authorization.middle
 import { transformBodyPropsValuesToLowerCase } from "../middleware/body.transform.lowercase.middleware";
 import { authorizeEmployeeById } from "../middleware/employeeId.authorization.middleware";
 import { reportsController } from "../controllers";
+import { decodeBase64BodyFields } from "../middleware/body.transform.decodeBase64.middleware";
 
 const router = express.Router();
 
@@ -24,7 +25,11 @@ router.patch("/:employeeId",
     controller.updateEmployeeById
 );
 router.patch("/:employeeId/password",
-    [transformBodyPropsValuesToLowerCase, authorizeEmployeeById],
+    [
+        transformBodyPropsValuesToLowerCase, 
+        authorizeEmployeeById,
+        decodeBase64BodyFields
+    ],
     controller.updateEmployeePasswordById
 );
 router.delete("/:employeeId",
