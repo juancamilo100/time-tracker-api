@@ -59,14 +59,16 @@ class TasksController {
     }
 
     public deleteTaskById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+        let { taskId, reportId } = req.params;
         try {
-            await this.validate.taskId(req.params.taskId);
+            await this.validate.reportId(reportId);
+            await this.validate.taskId(taskId);
         } catch (error) {
             return next(createError(404, error));
         }
         
         try {
-            await this.taskService.delete(req.params.taskId);
+            await this.taskService.delete(taskId);
             res.send(200);
         } catch (error) {
             return next(createError(500, "Something went wrong"));
