@@ -3,8 +3,9 @@ import { reportsController as controller } from "../controllers";
 import { authorizeAdminEmployee } from "../middleware/admin.authorization.middleware";
 import { authorizeEmployeeByReportId } from "../middleware/reportId.authorization.middleware";
 import { authorizeBodyEmployeeById } from "../middleware/body.employeeId.authorization.middleware";
+import tasksRouter from "../routes/tasks.routes";
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 router.get("/",
     authorizeAdminEmployee,
@@ -26,5 +27,6 @@ router.delete("/:reportId",
     authorizeBodyEmployeeById,
     controller.deleteReportById
 );
+router.use("/:reportId/tasks", tasksRouter);
 
 export default router;

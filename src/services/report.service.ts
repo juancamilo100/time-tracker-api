@@ -2,7 +2,7 @@ import { EntitySchema } from "typeorm";
 import Report from "../database/entities/report.entity";
 import BaseDataService from "./base.service";
 
-class EmployeeService extends BaseDataService<Report> {
+class ReportService extends BaseDataService<Report> {
     constructor() {
         super({
             schema: Report as unknown as EntitySchema<Report>,
@@ -11,4 +11,4 @@ class EmployeeService extends BaseDataService<Report> {
     }
 }
 
-export default new EmployeeService();
+export default new ReportService();

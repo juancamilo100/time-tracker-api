@@ -6,7 +6,6 @@ info:
   license:
     name: MIT
     url: 'https://opensource.org/licenses/MIT'
-host: '73.7.109.63:9000'
 basePath: /api
 tags:
   - name: Auth
@@ -17,8 +16,6 @@ tags:
     description: API for customers in the system
   - name: Reports
     description: API for reports in the system    
-schemes:
-  - http
 securityDefinitions:
   basicAuth:
     type: basic
@@ -331,7 +328,7 @@ paths:
           schema:
             $ref: '#/definitions/ReportResponse'
         '500':
-          description: Something went wrong
+          description: Something went wrong        
     patch:
       tags:
         - Reports
@@ -355,9 +352,77 @@ paths:
         '200':
           description: Report has been deleted
         '500':
-          description: Something went wrong               
-
-
+          description: Something went wrong    
+  /reports/{reportId}/tasks:
+    parameters:
+      - name: reportId
+        in: path
+        required: true
+        description: ID of report that we want to add the task to
+        type: string
+      - name: Authorization
+        in: header
+        type: string
+        required: true    
+    post:
+      tags:
+        - Reports
+      summary: Create a task for the given report
+      parameters:
+        - name: report
+          in: body
+          description: Task that we want to create
+          schema:
+            $ref: '#/definitions/TaskCreate'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: New task has been created
+        '400':
+          description: Bad request
+        '500':
+          description: Something went wrong  
+  /reports/{reportId}/tasks/{taskId}:
+    parameters:
+      - name: reportId
+        in: path
+        required: true
+        description: ID of report that we want to operate on
+        type: string
+      - name: taskId
+        in: path
+        required: true
+        description: ID of task that we want to operate on
+        type: string        
+      - name: Authorization
+        in: header
+        type: string
+        required: true    
+    patch:
+      tags:
+        - Reports
+      summary: Update task with given ID inside report with given ID
+      parameters:
+        - name: task
+          in: body
+          description: Task fields that we want to update
+          schema:
+            $ref: '#/definitions/TaskUpdate'      
+      responses:
+        '200':
+          description: Task has been updated
+        '500':
+          description: Something went wrong          
+    delete:
+      summary: Delete task with given ID
+      tags:
+        - Reports
+      responses:
+        '200':
+          description: Task has been deleted
+        '500':
+          description: Something went wrong                           
 definitions:
   EmployeeCreate:
     required:
@@ -474,8 +539,6 @@ definitions:
               $ref: '#/definitions/TaskResponse'
     properties:
         id:
-          type: integer
-        totalHours:
           type: integer
   TaskCreate:
     required:

@@ -17,9 +17,6 @@ class Report {
     @Column()
     public employee_id: number;
 
-    @Column()
-    public total_hours: number;
-
     @CreateDateColumn()
     public created_at: string;
 
