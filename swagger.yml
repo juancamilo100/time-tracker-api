@@ -6,7 +6,6 @@ info:
   license:
     name: MIT
     url: 'https://opensource.org/licenses/MIT'
-host: '127.0.0.1:9000'
 basePath: /api
 tags:
   - name: Auth
@@ -17,8 +16,6 @@ tags:
     description: API for customers in the system
   - name: Reports
     description: API for reports in the system    
-schemes:
-  - http
 securityDefinitions:
   basicAuth:
     type: basic
