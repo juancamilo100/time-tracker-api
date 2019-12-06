@@ -122,10 +122,6 @@ class ReportsController {
                 await this.taskService.update(task.id, task);
             }
 
-            const reportToUpdate: Report = {
-                ...report,
-            };
-
             await this.reportService.update(req.params.reportId, report);
             res.send(200);
         } catch (error) {
@@ -178,7 +174,7 @@ class ReportsController {
 
             reports[index] = {
                 ...reports[index],
-                tasks,
+                tasks
             } as ReportWithTasks
         }
     }

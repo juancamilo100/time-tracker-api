@@ -13,7 +13,6 @@ import Report from '../database/entities/report.entity';
 
 class TasksController {
     constructor(
-        private reportService: IDataService<Report>,
         private taskService: IDataService<Task>,
         private validate: Validator) {}
 

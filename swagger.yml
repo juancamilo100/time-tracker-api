@@ -6,7 +6,7 @@ info:
   license:
     name: MIT
     url: 'https://opensource.org/licenses/MIT'
-host: 'localhost:9000'
+host: '127.0.0.1:9000'
 basePath: /api
 tags:
   - name: Auth
@@ -321,6 +321,17 @@ paths:
         in: header
         type: string
         required: true    
+    get:
+      tags:
+        - Reports
+      summary: Get report with given ID
+      responses:
+        '200':
+          description: Customer was found
+          schema:
+            $ref: '#/definitions/ReportResponse'
+        '500':
+          description: Something went wrong        
     patch:
       tags:
         - Reports

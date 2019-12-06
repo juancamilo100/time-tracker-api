@@ -20,8 +20,4 @@ export const reportsController = new ReportsController(
         taskService,
         validator
     );
-export const tasksController = new TasksController(
-    reportService, 
-    taskService,
-    validator
-);
+export const tasksController = new TasksController(taskService, validator);
