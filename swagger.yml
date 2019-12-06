@@ -475,8 +475,6 @@ definitions:
     properties:
         id:
           type: integer
-        totalHours:
-          type: integer
   TaskCreate:
     required:
         - hours

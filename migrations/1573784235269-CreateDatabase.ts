@@ -33,7 +33,6 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
                 "id" SERIAL UNIQUE PRIMARY KEY,
                 "customer_id" int,
                 "employee_id" int,
-                "total_hours" int,
                 "created_at" timestamp DEFAULT current_timestamp,
                 "updated_at" timestamp DEFAULT current_timestamp
             );
