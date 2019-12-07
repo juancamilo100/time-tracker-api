@@ -9,6 +9,12 @@ class ReportService extends BaseDataService<Report> {
             alias: "report"
         });
     }
+
+    public submitReport(reportId: string) {
+        this.update(reportId, {
+            submitted: true
+        } as any )
+    }
 }
 
 export default new ReportService();

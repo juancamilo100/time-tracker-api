@@ -77,7 +77,7 @@ export class Validator {
     }
     
     public taskDateFormat(date: Date) {
-        if(!moment(date).isValid()) {
+        if(!moment(date, ).isValid()) {
             throw new Error("Task performed date is invalid");
         }
     }

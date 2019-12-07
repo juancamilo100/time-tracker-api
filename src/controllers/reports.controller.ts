@@ -129,6 +129,23 @@ class ReportsController {
         }
     }
 
+    public submitReport: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            await this.validate.reportId(req.params.reportId);
+        } catch (error) {
+            return next(createError(500, error));
+        }
+
+        try {
+            await this.reportService.update(req.params.reportId, {
+                submitted: true
+            } as any);
+            res.send(200);
+        } catch (error) {
+            return next(createError(500, error));
+        }
+    }
+
     public createReport: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         if (!req.body.tasks ||
             !req.body.customerId || 

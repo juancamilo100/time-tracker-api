@@ -17,6 +17,9 @@ class Report {
     @Column()
     public employee_id: number;
 
+    @Column()
+    public submitted: boolean;
+
     @CreateDateColumn()
     public created_at: string;
 
