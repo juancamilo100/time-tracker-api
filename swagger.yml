@@ -352,7 +352,29 @@ paths:
         '200':
           description: Report has been deleted
         '500':
-          description: Something went wrong    
+          description: Something went wrong
+  /reports/{reportId}/submit:
+    parameters:
+      - name: reportId
+        in: path
+        required: true
+        description: ID of report that we want to submit
+        type: string
+      - name: Authorization
+        in: header
+        type: string
+        required: true    
+    post:
+      tags:
+        - Reports
+      summary: Submit the given report
+      responses:
+        '200':
+          description: Report was submitted
+        '400':
+          description: Bad request
+        '500':
+          description: Something went wrong                
   /reports/{reportId}/tasks:
     parameters:
       - name: reportId

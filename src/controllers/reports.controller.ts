@@ -79,10 +79,10 @@ class ReportsController {
             return next(createError(400, "Incomplete request"));
         }
 
-        const reportFound = await this.reportService.get(req.params.reportId);
-
-        if (!reportFound) {
-            return next(createError(404, "Report not found"));
+        try {
+            await this.validate.reportId(req.params.reportId);
+        } catch (error) {
+            return next(createError(500, error));
         }
 
         try {
@@ -123,6 +123,23 @@ class ReportsController {
             }
 
             await this.reportService.update(req.params.reportId, report);
+            res.send(200);
+        } catch (error) {
+            return next(createError(500, "Something went wrong"));
+        }
+    }
+
+    public submitReport: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            await this.validate.reportId(req.params.reportId);
+        } catch (error) {
+            return next(createError(500, error));
+        }
+
+        try {
+            await this.reportService.update(req.params.reportId, {
+                submitted: true
+            } as any);
             res.send(200);
         } catch (error) {
             return next(createError(500, "Something went wrong"));

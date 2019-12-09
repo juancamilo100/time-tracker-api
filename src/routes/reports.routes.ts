@@ -19,6 +19,10 @@ router.post("/",
     authorizeBodyEmployeeById,
     controller.createReport
 );
+router.post("/:reportId/submit",
+    authorizeEmployeeByReportId,
+    controller.submitReport
+);
 router.patch("/:reportId",
     authorizeBodyEmployeeById,
     controller.updateReportById

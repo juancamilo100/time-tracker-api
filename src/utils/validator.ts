@@ -13,10 +13,15 @@ export class Validator {
         private reportService: IDataService<Report>) {}
 
     public async reportId(reportId: string) {
-        const reportFound =  await this.reportService.get(reportId);
+        const reportFound =  await this.reportService.getByFields(
+            { 
+                submitted: false,
+                id: reportId
+            }
+        );
             
         if (!reportFound) {
-            throw new Error(`Report with ID: ${reportId} was not found`);
+            throw new Error(`Report with ID: ${reportId} was not found or has already been submitted`);
         }
 
         return reportFound;
@@ -81,5 +86,4 @@ export class Validator {
             throw new Error("Task performed date is invalid");
         }
     }
-
 }
