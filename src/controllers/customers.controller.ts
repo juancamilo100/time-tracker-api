@@ -36,7 +36,7 @@ class CustomersController {
 
             res.send(this.formatCustomerProps(customer));
         } catch (error) {
-            return next(createError(500, "Something went wrong"));
+            return next(createError(500, error));
         }
     }
 

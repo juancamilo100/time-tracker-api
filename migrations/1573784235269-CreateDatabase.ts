@@ -13,7 +13,8 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
                 "password" varchar NOT NULL,
                 "customer_id" int,
                 "role" varchar,
-                "hourly_rate" int,
+                "employee_rate" int,
+                "customer_rate" int,
                 "created_at" timestamp DEFAULT current_timestamp,
                 "updated_at" timestamp DEFAULT current_timestamp
             );

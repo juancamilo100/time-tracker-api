@@ -13,7 +13,7 @@ import TasksController from './tasks.controller';
 const validator = new Validator(employeeService, taskService, reportService);
 
 export const authController = new AuthController(employeeService);
-export const employeesController = new EmployeesController(employeeService);
+export const employeesController = new EmployeesController(employeeService, validator);
 export const customersController = new CustomersController(customerService);
 export const reportsController = new ReportsController(
         reportService, 

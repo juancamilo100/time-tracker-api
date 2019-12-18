@@ -26,7 +26,10 @@ class Employee {
     public customer_id: number;
 
     @Column()
-    public hourly_rate: number;
+    public employee_rate: number;
+    
+    @Column()
+    public customer_rate: number;
 
     @Column({
         default: EmployeeRole.DEV

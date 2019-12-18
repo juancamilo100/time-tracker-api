@@ -37,6 +37,16 @@ export class Validator {
         return taskFound;
     } 
 
+    public async employeeId(employeeId: string) {
+        const employeeFound =  await this.employeeService.get(employeeId);
+            
+        if (!employeeFound) {
+            throw new Error(`Employee with ID: ${employeeId} was not found`);
+        }
+
+        return employeeFound;
+    } 
+
     public async taskIdAndDate(task: Task, reportId: number) {
             const foundTask = await this.taskService.getByFields(
                 { 

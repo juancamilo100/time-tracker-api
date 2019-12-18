@@ -11,65 +11,106 @@ interface IGenericEntity {
 class BaseDataService<T> implements IDataService<T> {
     constructor(private entity: IGenericEntity) {}
 
-    public get(id: string, options: QueryOptions = {}) {
-        return this.getByFields({ id }, options);
+    public async get(id: string, options: QueryOptions = {}) {
+        try {
+            const resource = await this.getByFields({ id }, options);
+            return resource;
+        } catch (error) {
+            console.error(error);
+            throw new Error("Something went wrong while getting the resources");
+        }
     }
 
-    public getByFields(fields: object, options: QueryOptions = {}) {
-        return this.buildSelectOneQuery(fields, options, "AND");
+    public async getByFields(fields: object, options: QueryOptions = {}) {
+        try {
+            const resource = await this.executeSelectOneQuery(fields, options, "AND");;
+            return resource as any;
+        } catch (error) {
+            console.error(error);
+            throw new Error("Something went wrong while getting the resource");
+        }
     }
 
-    public getByEitherFields(fields: object, options: QueryOptions = {}) {
-        return this.buildSelectOneQuery(fields, options, "OR");
+    public async getByEitherFields(fields: object, options: QueryOptions = {}) {
+        try {
+            const resource = await this.executeSelectOneQuery(fields, options, "OR");
+            return resource as any;
+        } catch (error) {
+            console.error(error);
+            throw new Error("Something went wrong while getting the resource");
+        }
     }
 
-    public getAll(options: QueryOptions = {}) {
-        return getRepository(this.entity.schema).find();
+    public async getAll(options: QueryOptions = {}) {
+        try {
+            const resource = await getRepository(this.entity.schema).find();
+            return resource as any;
+        } catch (error) {
+            console.error(error);
+            throw new Error("Something went wrong while getting the resources");
+        }
     }
 
-    public getAllByFields(fields: object, options: QueryOptions = {}) {
-        return this.buildSelectManyQuery(fields, options, "AND");
+    public async getAllByFields(fields: object, options: QueryOptions = {}) {
+        try {
+            const resource = await this.executeSelectManyQuery(fields, options, "AND");
+            return resource as any;
+        } catch (error) {
+            console.error(error);
+            throw new Error("Something went wrong while getting the resources");
+        }
     }
 
-    public create(entity: T) {
-        const repo = getRepository(this.entity.schema);
-        const newEntity = repo.create(entity);
-        return repo.save(newEntity);
+    public async create(entity: T) {
+        try {
+            const repo = getRepository(this.entity.schema);
+            const newEntity = repo.create(entity);
+            const newResource = await repo.save(newEntity);
+            return newResource;
+        } catch (error) {
+            console.error(error);
+            throw new Error("Something went wrong while creating the resource");
+        }
     }
 
-    public update(id: string, entity: T) {
-        return (async () => {
+    public async update(id: string, entity: T) {
+        try {
             const fieldsToUpdate = toSnakeCaseAllPropsKeys(entity as ObjectLiteral);
-            const result = await getRepository(this.entity.schema)
+            const resource = await getRepository(this.entity.schema)
                 .createQueryBuilder()
                 .update(this.entity.schema)
                 .set(fieldsToUpdate)
                 .where("id = :id", { id })
                 .execute();
-
-            return Promise.resolve(result as any);
-        })();
+            return resource as any;
+        } catch (error) {
+            console.error(error);
+            throw new Error("Something went wrong while udpating the resource"); 
+        }
     }
 
-    public delete(id: string) {
-        return (async () => {
-            const result = await getRepository(this.entity.schema)
+    public async delete(id: string) {
+        try {
+            const resource = await getRepository(this.entity.schema)
                 .createQueryBuilder()
                 .delete()
                 .from(this.entity.schema)
                 .where("id = :id", { id })
                 .execute();
 
-            return Promise.resolve(result as any);
-        })();
+            return resource as any;
+        } catch (error) {
+            console.error(error);
+            throw new Error("Something went wrong while deleting the resource"); 
+        }
     }
 
-    private buildSelectOneQuery(fields: object, options: QueryOptions, operand: string) {
+    private executeSelectOneQuery(fields: object, options: QueryOptions, operand: string) {
         const query = this.buildSelectQuery(fields, operand, options);
         return query.getOne();
     }
 
-    private buildSelectManyQuery(fields: object, options: QueryOptions, operand: string) {
+    private executeSelectManyQuery(fields: object, options: QueryOptions, operand: string) {
         const query = this.buildSelectQuery(fields, operand, options);
         return query.getMany();
     }

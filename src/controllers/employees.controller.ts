@@ -9,9 +9,12 @@ import { ObjectLiteral } from "../../types/generics";
 import Employee from "../database/entities/employee.entity";
 import IDataService from "../interfaces/dataService.interface";
 import { toCamelCaseAllPropsKeys } from "../utils/formatter";
+import { Validator } from '../utils/validator';
 
 class EmployeesController {
-    constructor(private employeeService: IDataService<Employee>) {}
+    constructor(
+        private employeeService: IDataService<Employee>,
+        private validate: Validator) {}
 
     public getEmployees: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         const employees = await this.employeeService.getAll();
@@ -22,56 +25,35 @@ class EmployeesController {
     }
 
     public getEmployeeById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        if (!req.params.employeeId) {
-            return next(createError(400, "Incomplete request"));
-        }
-
         try {
-            const employee = await this.employeeService.get(req.params.employeeId);
-
-            if (!employee) {
-                return next(createError(404, "Employee not found"));
-            }
-
+            const employee = await this.validate.employeeId(req.params.employeeId);
             res.send(this.formatEmployeeProps(employee));
         } catch (error) {
-            return next(createError(500, "Something went wrong"));
+            return next(createError(500, error));
         }
     }
 
     public deleteEmployeeById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        if (!req.params.employeeId) {
-            return next(createError(400, "Incomplete request"));
-        }
-
         try {
+            await this.validate.employeeId(req.params.employeeId);
             await this.employeeService.delete(req.params.employeeId);
             res.send(200);
         } catch (error) {
-            return next(createError(500, "Something went wrong"));
+            return next(createError(500, error));
         }
     }
 
     public updateEmployeeById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        if (!req.params.employeeId) {
-            return next(createError(400, "Incomplete request"));
-        }
-
         if (Object.keys(req.body).includes("password")) {
             return next(createError(400, "Cannot change password"));
         }
 
         try {
-            const employee = await this.employeeService.get(req.params.employeeId);
-
-            if (!employee) {
-                return next(createError(404, "Employee not found"));
-            }
-
+            await this.validate.employeeId(req.params.employeeId);
             await this.employeeService.update(req.params.employeeId, req.body);
             res.send(200);
         } catch (error) {
-            return next(createError(500, "Something went wrong"));
+            return next(createError(500, error));
         }
     }
 

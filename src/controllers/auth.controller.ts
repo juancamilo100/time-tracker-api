@@ -46,7 +46,8 @@ class AuthController {
             !req.body.firstName ||
             !req.body.lastName ||
             !req.body.customerId ||
-            !req.body.hourlyRate
+            !req.body.employeeRate ||
+            !req.body.customerRate
         ) {
             return next(createError(400, "Incomplete request"));
         }
@@ -68,7 +69,8 @@ class AuthController {
                 first_name: req.body.firstName,
                 last_name: req.body.lastName,
                 customer_id: req.body.customerId,
-                hourly_rate: req.body.hourlyRate,
+                employee_rate: req.body.employeeRate,
+                customer_rate: req.body.customerRate,
                 role: req.body.role
             } as Employee;
 
