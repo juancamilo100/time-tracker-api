@@ -59,7 +59,7 @@ export class Validator {
 
     public async customerExists(name: string, email: string) {
         const customerFound = await this.customerService.getByEitherFields({ name, email });
-        if(!customerFound) {
+        if(!!customerFound) {
             throw new Error("Customer already exists");
         }
     }

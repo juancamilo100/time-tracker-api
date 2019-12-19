@@ -20,14 +20,14 @@ class EmployeesController {
         const employees = await this.employeeService.getAll();
 
         res.send(employees.map((employee) => {
-            return this.formatEmployeeProps(employee);
+            return this.formatEmployeeProps(employee, req.role === 'admin');
         }));
     }
 
     public getEmployeeById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const employee = await this.validate.employeeId(req.params.employeeId);
-            res.send(this.formatEmployeeProps(employee));
+            res.send(this.formatEmployeeProps(employee, req.role === 'admin'));
         } catch (error) {
             return next(createError(500, error));
         }
@@ -88,11 +88,15 @@ class EmployeesController {
         }
     }
 
-    private formatEmployeeProps(employee: Employee) {
+    private formatEmployeeProps(employee: Employee, isAdmin: boolean) {
         const formattedEmployee = toCamelCaseAllPropsKeys(employee as ObjectLiteral);
 
         delete formattedEmployee.createdAt;
         delete formattedEmployee.updatedAt;
+
+        if(!isAdmin) {
+            delete formattedEmployee.customerRate;
+        }
 
         return formattedEmployee;
     }
