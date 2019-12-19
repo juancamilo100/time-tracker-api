@@ -8,9 +8,12 @@ import { ObjectLiteral } from "../../types/generics";
 import Customer from "../database/entities/customer.entity";
 import { toCamelCaseAllPropsKeys } from "../utils/formatter";
 import IDataService from "../interfaces/dataService.interface";
+import { Validator } from '../utils/validator';
 
 class CustomersController {
-    constructor(private customerService: IDataService<Customer>) {}
+    constructor(
+        private customerService: IDataService<Customer>,
+        private validate: Validator) {}
 
     public getCustomers: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         const customers = await this.customerService.getAll();
@@ -21,19 +24,8 @@ class CustomersController {
     }
 
     public getCustomerById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        if (!req.params.customerId) {
-            return next(createError(400, "Incomplete request"));
-        }
-
         try {
-            const customer =  await this.customerService.getByFields(
-                { id: req.params.customerId }
-            );
-
-            if (!customer) {
-                return next(createError(404, "Customers not found"));
-            }
-
+            const customer = await this.validate.customerId(req.params.customerId);
             res.send(this.formatCustomerProps(customer));
         } catch (error) {
             return next(createError(500, error));
@@ -41,29 +33,22 @@ class CustomersController {
     }
 
     public deleteCustomerById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        if (!req.params.customerId) {
-            return next(createError(400, "Incomplete request"));
-        }
-
         try {
+            await this.validate.customerId(req.params.customerId);
             await this.customerService.delete(req.params.customerId);
             res.send(200);
         } catch (error) {
-            console.log(error);
-            return next(createError(500, "Something went wrong"));
+            return next(createError(500, error));
         }
     }
 
     public updateCustomerById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        if (!req.params.customerId) {
-            return next(createError(400, "Incomplete request"));
-        }
-
         try {
+            await this.validate.customerId(req.params.customerId);
             await this.customerService.update(req.params.customerId, req.body);
             res.send(200);
         } catch (error) {
-            return next(createError(500, "Something went wrong"));
+            return next(createError(500, error));
         }
     }
 
@@ -73,11 +58,9 @@ class CustomersController {
         }
 
         try {
-            if (await this.customerExists(req.body.name, req.body.email)) {
-                return next(createError(409, "Customer already exists"));
-            }
+            await this.validate.customerExists(req.body.name, req.body.email);
         } catch (error) {
-            return next(createError(500, "Something went wrong"));
+            return next(createError(400, error));
         }
 
         try {
@@ -86,10 +69,6 @@ class CustomersController {
         } catch (error) {
             return next(createError(500, error));
         }
-    }
-
-    private customerExists = (name: string, email: string) => {
-        return this.customerService.getByEitherFields({ name, email });
     }
 
     private formatCustomerProps(customer: Customer) {

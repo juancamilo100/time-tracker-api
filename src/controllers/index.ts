@@ -10,11 +10,16 @@ import taskService from "../services/task.service";
 import { Validator } from '../utils/validator';
 import TasksController from './tasks.controller';
 
-const validator = new Validator(employeeService, taskService, reportService);
+const validator = new Validator(
+    employeeService, 
+    taskService,
+    reportService, 
+    customerService
+);
 
 export const authController = new AuthController(employeeService);
 export const employeesController = new EmployeesController(employeeService, validator);
-export const customersController = new CustomersController(customerService);
+export const customersController = new CustomersController(customerService, validator);
 export const reportsController = new ReportsController(
         reportService, 
         taskService,
