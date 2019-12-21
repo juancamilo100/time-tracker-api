@@ -1,6 +1,6 @@
 import { NextFunction, Request, RequestHandler, Response } from "express";
 import createError from "http-errors";
-import { EmployeeRole } from "../database/entities/employee.entity";
+import { EmployeeRoles } from "../database/entities/employee.entity";
 import reportService from "../services/report.service";
 
 const authorizeEmployeeByReportId: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
@@ -10,7 +10,7 @@ const authorizeEmployeeByReportId: RequestHandler = async (req: Request, res: Re
             id: req.params.reportId
         });
 
-    if (!report && req.role !== EmployeeRole.ADMIN) { 
+    if (!report && req.role !== EmployeeRoles.ADMIN) { 
         return next(createError(401, "Unauthorized")); 
     }
 

@@ -1,16 +1,16 @@
-import { Request } from "express";
 import moment from 'moment';
 import Task from '../database/entities/task.entity';
 import IDataService from '../interfaces/dataService.interface';
 import Report from '../database/entities/report.entity';
 import Employee from '../database/entities/employee.entity';
-import { ObjectLiteral } from '../../types/generics';
+import Customer from '../database/entities/customer.entity';
 
 export class Validator {
     constructor(
         private employeeService: IDataService<Employee>,
         private taskService: IDataService<Task>,
-        private reportService: IDataService<Report>) {}
+        private reportService: IDataService<Report>,
+        private customerService: IDataService<Customer>) {}
 
     public async reportId(reportId: string) {
         const reportFound =  await this.reportService.getByFields(
@@ -36,6 +36,33 @@ export class Validator {
 
         return taskFound;
     } 
+
+    public async employeeId(employeeId: string) {
+        const employeeFound =  await this.employeeService.get(employeeId);
+            
+        if (!employeeFound) {
+            throw new Error(`Employee with ID: ${employeeId} was not found`);
+        }
+
+        return employeeFound;
+    }
+
+    public async customerId(customerId: string) {
+        const customerFound =  await this.customerService.get(customerId);
+            
+        if (!customerFound) {
+            throw new Error(`Customer with ID: ${customerId} was not found`);
+        }
+
+        return customerFound;
+    }
+
+    public async customerExists(name: string, email: string) {
+        const customerFound = await this.customerService.getByEitherFields({ name, email });
+        if(!!customerFound) {
+            throw new Error("Customer already exists");
+        }
+    }
 
     public async taskIdAndDate(task: Task, reportId: number) {
             const foundTask = await this.taskService.getByFields(

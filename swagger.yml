@@ -453,7 +453,8 @@ definitions:
       - firstName
       - lastName
       - customerId
-      - hourlyRate
+      - employeeRate
+      - customerRate
       - role
     properties:
       firstName: 
@@ -466,8 +467,10 @@ definitions:
         type: string
       customerId: 
         type: integer
-      hourlyRate: 
+      employeeRate: 
         type: integer
+      customerRate: 
+        type: integer        
       role: 
         type: string    
   EmployeeUpdate:
@@ -480,8 +483,10 @@ definitions:
         type: string
       customerId: 
         type: integer
-      hourlyRate: 
+      employeeRate: 
         type: integer
+      customerRate: 
+        type: integer  
       role: 
         type: string      
   EmployeeWithNoPasswordResponse:
@@ -496,8 +501,10 @@ definitions:
         type: string
       customerId: 
         type: integer
-      hourlyRate: 
+      employeeRate: 
         type: integer
+      customerRate: 
+        type: integer  
       role: 
         type: string
   EmployeesWithNoPasswordResponse:

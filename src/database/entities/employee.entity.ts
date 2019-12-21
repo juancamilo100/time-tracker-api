@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
-export enum EmployeeRole {
+export enum EmployeeRoles {
     ADMIN = "admin",
     DEV = "dev"
 }
@@ -26,12 +26,15 @@ class Employee {
     public customer_id: number;
 
     @Column()
-    public hourly_rate: number;
+    public employee_rate: number;
+    
+    @Column()
+    public customer_rate: number;
 
     @Column({
-        default: EmployeeRole.DEV
+        default: EmployeeRoles.DEV
     })
-    public role: EmployeeRole;
+    public role: EmployeeRoles;
 
     @CreateDateColumn()
     public created_at: string;
