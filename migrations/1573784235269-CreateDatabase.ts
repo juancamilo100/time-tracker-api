@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import { MigrationInterface, QueryRunner } from "typeorm";
+import { EmployeeRoles } from "../src/database/entities/employee.entity";
 
 export class CreateDatabase1573784235269 implements MigrationInterface {
 
@@ -64,7 +65,7 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
                 '${process.env.DEFAULT_ADMIN_EMPLOYEE_EMAIL}',
                 '${bcrypt.hashSync(process.env.DEFAULT_ADMIN_EMPLOYEE_PASSWORD!)}',
                 0,
-                'admin'
+                '${EmployeeRoles.ADMIN}'
             );
         `);
     }

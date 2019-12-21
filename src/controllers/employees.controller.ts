@@ -6,7 +6,7 @@ import {
     Response } from "express";
 import createError from "http-errors";
 import { ObjectLiteral } from "../../types/generics";
-import Employee from "../database/entities/employee.entity";
+import Employee, { EmployeeRoles } from "../database/entities/employee.entity";
 import IDataService from "../interfaces/dataService.interface";
 import { toCamelCaseAllPropsKeys } from "../utils/formatter";
 import { Validator } from '../utils/validator';
@@ -20,14 +20,14 @@ class EmployeesController {
         const employees = await this.employeeService.getAll();
 
         res.send(employees.map((employee) => {
-            return this.formatEmployeeProps(employee, req.role === 'admin');
+            return this.formatEmployeeProps(employee, req.role === EmployeeRoles.ADMIN);
         }));
     }
 
     public getEmployeeById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const employee = await this.validate.employeeId(req.params.employeeId);
-            res.send(this.formatEmployeeProps(employee, req.role === 'admin'));
+            res.send(this.formatEmployeeProps(employee, req.role === EmployeeRoles.ADMIN));
         } catch (error) {
             return next(createError(500, error));
         }
