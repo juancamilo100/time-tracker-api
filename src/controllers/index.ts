@@ -17,7 +17,7 @@ const validator = new Validator(
     customerService
 );
 
-export const authController = new AuthController(employeeService);
+export const authController = new AuthController(employeeService, validator);
 export const employeesController = new EmployeesController(employeeService, validator);
 export const customersController = new CustomersController(customerService, validator);
 export const reportsController = new ReportsController(
