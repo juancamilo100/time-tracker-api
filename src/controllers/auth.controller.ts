@@ -5,9 +5,12 @@ import jwt from "jsonwebtoken";
 import { ENCRYPTION_KEY } from "../../config";
 import Employee from "../database/entities/employee.entity";
 import IDataService from "../interfaces/dataService.interface";
+import { Validator } from '../utils/validator';
 
 class AuthController {
-    constructor(private employeeService: IDataService<Employee>) {}
+    constructor(
+        private employeeService: IDataService<Employee>,
+        private validate: Validator) {}
 
     public loginEmployee: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         if (!req.body.email || !req.body.password) {
@@ -15,6 +18,7 @@ class AuthController {
         }
 
         try {
+            this.validate.isEmail(req.body.email);
             const employee =  await this.employeeService.getByFields(
                 { email: req.body.email },
                 { hiddenFieldsToShow: ["password"] }
@@ -53,11 +57,10 @@ class AuthController {
         }
 
         try {
-            if (await this.employeeExists(req.body.email)) {
-                return next(createError(409, "Employee already exists"));
-            }
+            this.validate.isEmail(req.body.email);
+            await this.validate.employeeExists(req.body.email);
         } catch (error) {
-            return next(createError(500, "Something went wrong"));
+            return next(createError(400, error));
         }
 
         const hashedPassword = bcrypt.hashSync(req.body.password);
@@ -87,10 +90,6 @@ class AuthController {
         } catch (error) {
             return next(createError(500, error));
         }
-    }
-
-    private employeeExists = (email: string) => {
-        return this.employeeService.getByFields({ email });
     }
 }
 

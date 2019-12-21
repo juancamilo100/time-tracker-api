@@ -1,12 +1,24 @@
 import AuthController from '../../src/controllers/auth.controller'
 import employeeService from '../../src/services/employee.service'
 import bcrypt from "bcryptjs";
+import reportService from "../../src/services/report.service";
+import taskService from "../../src/services/task.service";
+import customerService from "../../src/services/customer.service";
+import { Validator } from '../../src/utils/validator';
+
 
 describe("Auth Controller", () => {  
     let authController: AuthController;
     
     beforeAll(() => {
-        authController = new AuthController(employeeService);
+        const validator = new Validator(
+            employeeService, 
+            taskService,
+            reportService, 
+            customerService
+        );
+        
+        authController = new AuthController(employeeService, validator);
     })
 
     beforeEach(() => {
@@ -82,6 +94,30 @@ describe("Auth Controller", () => {
             expect(nextFunction).toHaveBeenCalled();
             expect(res.send).toHaveBeenCalledTimes(0);
         });
+
+        it("Throws error when email is invalid", async () => { 
+            const nextFunction = jest.fn();
+            employeeService.getByFields = jest.fn().mockImplementation((id: string) => {
+                return {
+                    password: bcrypt.hashSync("somepassword")
+                };
+            });
+
+            const req: any = {
+                body: {
+                    email: "someemail",
+                    password: "somepassword"
+                }
+            };
+    
+            let res: any = {
+                send: jest.fn()
+            };
+            
+            await authController.loginEmployee(req, res, nextFunction);
+            expect(nextFunction).toHaveBeenCalled();
+            expect(res.send).toHaveBeenCalledTimes(0);
+        });
     });
 
     describe("Registration", () => { 
@@ -97,7 +133,7 @@ describe("Auth Controller", () => {
                     lastName: "someLastName",
                     companyId: "companyId",
                     password: "somepassword",
-                    email: "someemail",
+                    email: "someemail@email.com",
                     employeeRate: 12,
                     customerRate: 19,
                     customerId: 1234
@@ -119,7 +155,7 @@ describe("Auth Controller", () => {
 
             let req: any = {
                 body: {
-                    email: "someemail"
+                    email: "someemail@email.com"
                 }
             };
 
@@ -141,6 +177,33 @@ describe("Auth Controller", () => {
             expect(employeeService.create).toHaveBeenCalledTimes(0);
         });
 
+        it("throws error when email is invalid", async () => { 
+            employeeService.getByEitherFields = jest.fn().mockImplementation((id: string) => null);
+            employeeService.create = jest.fn();
+            const nextFunction = jest.fn();
+
+            const req: any = {
+                body: {
+                    firstName: "someName",
+                    lastName: "someLastName",
+                    companyId: "companyId",
+                    password: "somepassword",
+                    email: "invalidemail",
+                    employeeRate: 12,
+                    customerRate: 19,
+                    customerId: 1234
+                }
+            };
+
+            let res: any = {
+                send: jest.fn()
+            };
+
+            await authController.registerEmployee(req, res, nextFunction);
+            expect(nextFunction).toHaveBeenCalled();
+            expect(employeeService.create).toHaveBeenCalledTimes(0);
+        });
+
         it("throws error if employee already exists", async () => { 
             employeeService.getByEitherFields = jest.fn().mockImplementation((id: string) => {
                 return { 
@@ -148,7 +211,7 @@ describe("Auth Controller", () => {
                     lastName: "exisitingLastName",
                     companyId: "companyId",
                     password: "somepassword",
-                    email: "someemail"
+                    email: "someemail@email.com"
                 }
             });
             employeeService.create = jest.fn();
@@ -158,7 +221,7 @@ describe("Auth Controller", () => {
             let req: any = {
                 body: {
                     password: "somepassword",
-                    email: "someemail"
+                    email: "someemail@email.com"
                 }
             };
 

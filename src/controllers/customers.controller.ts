@@ -44,6 +44,9 @@ class CustomersController {
 
     public updateCustomerById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         try {
+            if(req.body.email) {
+                this.validate.isEmail(req.body.email);
+            }
             await this.validate.customerId(req.params.customerId);
             await this.customerService.update(req.params.customerId, req.body);
             res.send(200);
@@ -58,6 +61,7 @@ class CustomersController {
         }
 
         try {
+            this.validate.isEmail(req.body.email);
             await this.validate.customerExists(req.body.name, req.body.email);
         } catch (error) {
             return next(createError(400, error));

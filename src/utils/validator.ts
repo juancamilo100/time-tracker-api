@@ -64,6 +64,20 @@ export class Validator {
         }
     }
 
+    public async employeeExists(email: string) {
+        const employeeFound = await this.employeeService.getByFields({ email });
+        if(!!employeeFound) {
+            throw new Error("Employee already exists");
+        }
+    }
+
+    public isEmail(email: string) {
+        const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        if(!emailRegex.test(email)) {
+            throw new Error("Email is not valid");
+        }
+    }
+
     public async taskIdAndDate(task: Task, reportId: number) {
             const foundTask = await this.taskService.getByFields(
                 { 
