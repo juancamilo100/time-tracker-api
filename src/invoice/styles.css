@@ -22,6 +22,7 @@
 .address {
     color: #a2a2a2;
     display: flex;
+    font-family: 'Kulim Park', sans-serif;
     flex-direction: column;
     justify-content: center;
     margin-top: 20px;
@@ -31,7 +32,7 @@
 }
 
 .title {
-    color: #f96524;
+    color: #ec7f1f;
     font-size: 60px;
     font-family: 'Heebo', sans-serif;
     margin: 0;
@@ -44,12 +45,11 @@
 
 .company-info-block {
     background-color: #f4f4f4;
-    padding: 15px;
 }
 
 .company-info-block-content {
     display: flex;
-    padding-left: 30px;
+    padding: 30px 100px 30px 60px;
 }
 
 .flex-left {
@@ -94,7 +94,13 @@
 .column {
     display: flex;
     flex-direction: column;
+    flex-wrap: nowrap;
     width: 100%;
+}
+
+.spaced-row {
+    padding-top: 3px;
+    padding-bottom: 3px;
 }
 
 .expand-width {
@@ -107,20 +113,59 @@
 }
 
 .items-table-header {
-    background-color: #f96524;
+    background-color: #ec7f1f;
     color: #f4f4f4;
     font-family: 'Kulim Park', sans-serif;
     font-size: 15px;
     padding: 3px;
+    padding-left: 30px;
+    padding-right: 30px;
 }
 
 .items-table-item {
     padding-top: 5px;
     font-family: 'Kulim Park', sans-serif;
     font-size: 15px;
+    padding-left: 30px;
 }
 
 .divider {
     padding: 7px;
     border-bottom: 1px solid #f4f4f4;
+}
+
+.balance-section {
+    display: flex;
+    padding: 60px 100px 30px 30px;
+    font-family: 'Kulim Park', sans-serif;
+}
+
+.balance-due {
+    color: #ec7f1f  ;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.narrow {
+    width: 55%;
+}
+
+.payment-info {
+    background-color: #f4f4f4;
+    margin-top: 20px;
+}
+
+.payment-info-content {
+    padding: 20px;
+}
+
+.payment-options {
+    display: inline-flex;
+}
+
+.small-print {
+    font-family: 'Kulim Park', sans-serif;
+    font-size: 13px;
 }

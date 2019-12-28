@@ -59,3 +59,4 @@ typings/
 
 build/
 .vscode/
+.DS_Store
