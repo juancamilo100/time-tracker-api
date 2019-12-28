@@ -1,0 +1,126 @@
+.container {
+    margin: 50px;
+}
+
+.title-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 30px;
+}
+
+.logo-title {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.logo {
+    width: 30%;
+    height: 30%;
+}
+
+.address {
+    color: #a2a2a2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: 20px;
+    text-align: right;
+    margin: 0px;
+    padding: 0px;
+}
+
+.title {
+    color: #f96524;
+    font-size: 60px;
+    font-family: 'Heebo', sans-serif;
+    margin: 0;
+}
+
+.lulosoft-name {
+    font-family: 'Kulim Park', sans-serif;
+    font-size: 30px;
+}
+
+.company-info-block {
+    background-color: #f4f4f4;
+    padding: 15px;
+}
+
+.company-info-block-content {
+    display: flex;
+    padding-left: 30px;
+}
+
+.flex-left {
+    justify-content: flex-start;
+}
+
+.flex-right {
+    margin-left: auto;
+    order: 2;
+}
+
+.title-text {
+    font-family: 'Kulim Park', sans-serif;
+    font-weight: 300;
+    font-size: 17px;
+}
+
+.info-text {
+    color: #a2a2a2;
+    font-family: 'Kulim Park', sans-serif;
+    font-size: 15px;
+}
+
+.general-text {
+    font-family: 'Kulim Park', sans-serif;
+    font-size: 15px;
+}
+
+.inline {
+    display: inline-flex;
+}
+
+.inline-center {
+    display: inline-flex;
+    align-items: center;
+}
+
+.padding-right {
+    padding-right: 20px;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.expand-width {
+    width: 100%;
+}
+
+.items-table {
+    display: flex;
+    justify-content: space-between;
+}
+
+.items-table-header {
+    background-color: #f96524;
+    color: #f4f4f4;
+    font-family: 'Kulim Park', sans-serif;
+    font-size: 15px;
+    padding: 3px;
+}
+
+.items-table-item {
+    padding-top: 5px;
+    font-family: 'Kulim Park', sans-serif;
+    font-size: 15px;
+}
+
+.divider {
+    padding: 7px;
+    border-bottom: 1px solid #f4f4f4;
+}

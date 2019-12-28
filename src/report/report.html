@@ -1,0 +1,95 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Lulosoft Report</title>
+  <meta name="description" content="The HTML5 Herald">
+  <meta name="author" content="SitePoint">
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css?family=Heebo:700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Kulim+Park&display=swap" rel="stylesheet">
+  <script src="config.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="title-header">
+            <div class="logo-title">
+                <img class="logo" src="./Logo.jpg" alt="">
+                <div class="title">INVOICE</div>
+                <div class="lulosoft-name">Lulosoft</div>
+            </div>
+            <div class="address">
+                <div>2240 Taylorsville Road</div>
+                <div>#5532</div>
+                <div>Louisville, KY 40255</div>
+                <br>
+                <div>954-254-1148</div>
+                <div>www.lulosoft.com</div>
+                <div>juan.espinosa@lulosoft.com</div>
+            </div>
+        </div>
+        <div class="company-info-block">   
+            <div class="company-info-block-content flex-left">
+                <div class="flex-left inline">
+                    <div class="title-text padding-right">Bill To</div>
+                    <div id="company-address" class="info-text">
+                        <div id="customer-name">Customer Name</div>
+                        <div id="customer-address-line-1">123 Some street</div>
+                        <div id="customer-address-line-2">#404</div>
+                        <div id="customer-address-line-3">City, FL 333326</div>
+                    </div>
+                </div>
+                <div class="flex-right">
+                    <div class="column">
+                        <div class="inline-center">
+                            <div class="title-text padding-right">Invoice Num</div>
+                            <div class="info-text flex-right">asdf</div class="info-text flex-right">
+                        </div>
+                        <div class="inline-center">
+                            <div class="title-text padding-right">Date</div>
+                            <div class="info-text flex-right">asdf</div>
+                        </div>
+                        <div class="inline-center">
+                            <div class="title-text padding-right">Due Date</div>
+                            <div class="info-text flex-right">asdf</div>
+                        </div>
+                        <div class="inline-center">
+                            <div class="title-text padding-right">Terms</div>
+                            <div class="info-text flex-right">asdasdfasdfadsf</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> 
+        <br>
+        <div class="items-table">
+            <div class="inline expand-width">
+                <div class="column">
+                    <div class="items-table-header">Description</div class="items-table-header">
+                    <div class="items-table-item padding-right">asdfadsfaasdfadsfasdfaasdfadsfadfadfadsfasdfasdfasdfdsfsdf</div>
+                </div>
+                <div class="column">
+                    <div class="items-table-header">Quantity</div>
+                    <div class="items-table-item padding-right">asdfadsfasdfasdfasdfad</div class="padding-right">
+                </div>
+                <div class="column">
+                    <div class="items-table-header">Rate</div>
+                    <div class="items-table-item padding-right">asdfadsfasdf</div>
+                </div>
+                <div class="column">
+                    <div class="items-table-header">Amount</div>
+                    <div class="items-table-item padding-right">asdfadsfasdf</div>
+                </div>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div class="general-text">* Indicates non-taxable item</div>
+    </div>
+    
+    <script>
+        let nameElement = document.getElementById("name");
+        nameElement.innerHTML = window.env.NAME; //getUrlParam('name', 'sd');
+    </script>
+</body>
+</html>
