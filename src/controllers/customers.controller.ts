@@ -9,6 +9,8 @@ import Customer from "../database/entities/customer.entity";
 import { toCamelCaseAllPropsKeys } from "../utils/formatter";
 import IDataService from "../interfaces/dataService.interface";
 import { Validator } from '../utils/validator';
+import { setEnvironment } from '../invoice/setEnvironment';
+import { invoiceEnvVarNames } from '../invoice/invoiceEnvVarNames';
 
 class CustomersController {
     constructor(
@@ -74,6 +76,16 @@ class CustomersController {
             return next(createError(500, error));
         }
     }
+
+    public generateAndSendInvoice: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+        process.env[invoiceEnvVarNames.invoiceCustomerName] = "Spectrio";
+        process.env[invoiceEnvVarNames.invoiceCustomerAddressLine1] = "1201 Story avenue";
+        process.env[invoiceEnvVarNames.invoiceCustomerAddressLine2] = "#400";
+        process.env[invoiceEnvVarNames.invoiceCustomerAddressLine3] = "Louisville, KY 40206";
+
+        await setEnvironment(path.join(__dirname, '/../invoice/temp_config.js'), path.join(__dirname, '/../invoice'));
+    }
+
 
     private formatCustomerProps(customer: Customer) {
         const formattedCustomer = toCamelCaseAllPropsKeys(customer as ObjectLiteral);

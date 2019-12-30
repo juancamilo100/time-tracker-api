@@ -18,6 +18,10 @@ router.post("/",
     [transformBodyPropsValuesToLowerCase, authorizeAdminEmployee],
     controller.createCustomer
 );
+router.post("/:customerId/invoice",
+    authorizeAdminEmployee,
+    controller.generateAndSendInvoice
+);
 router.patch("/:customerId",
     [transformBodyPropsValuesToLowerCase, authorizeAdminEmployee],
     controller.updateCustomerById

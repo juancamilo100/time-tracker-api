@@ -1,61 +1,59 @@
-const envVars = require('./invoiceEnvVarNames');
-
 const variableMapping = [
     {
-        elementId = 'customer-name',
-        envVarName = envVars.invoiceCustomerName
+        elementId: "customer-name",
+        envVarName: envVarNames.invoiceCustomerName
     },
     {
-        elementId = 'customer-addres-1',
-        envVarName = envVars.invoiceCustomerAddressLine1
+        elementId: "customer-address-line-1",
+        envVarName: envVarNames.invoiceCustomerAddressLine1
     },
     {
-        elementId = 'customer-addres-2',
-        envVarName = envVars.invoiceCustomerAddressLine2
+        elementId: "customer-address-line-2",
+        envVarName: envVarNames.invoiceCustomerAddressLine2
     },
     {
-        elementId = 'customer-addres-3',
-        envVarName = envVars.invoiceCustomerAddressLine3
+        elementId: "customer-address-line-3",
+        envVarName: envVarNames.invoiceCustomerAddressLine3
     },
     {
-        elementId = 'invoice-number',
-        envVarName = envVars.invoiceNumber
+        elementId: "invoice-number",
+        envVarName: envVarNames.invoiceNumber
     },
     {
-        elementId = 'date',
-        envVarName = envVars.invoiceDate
+        elementId: "date",
+        envVarName: envVarNames.invoiceDate
     },
     {
-        elementId = 'due-date',
-        envVarName = envVars.invoiceDueDate
+        elementId: "due-date",
+        envVarName: envVarNames.invoiceDueDate
     },
     {
-        elementId = 'terms',
-        envVarName = envVars.invoiceTerms
+        elementId: "terms",
+        envVarName: envVarNames.invoiceTerms
     },
     {
-        elementId = 'description-list',
-        envVarName = envVars.invoiceDescriptionList
+        elementId: "description-list",
+        envVarName: envVarNames.invoiceDescriptionList
     },
     {
-        elementId = 'quantity-list',
-        envVarName = envVars.invoiceQuantityList
+        elementId: "quantity-list",
+        envVarName: envVarNames.invoiceQuantityList
     },
     {
-        elementId = 'rate-list',
-        envVarName = envVars.invoiceRateList
+        elementId: "rate-list",
+        envVarName: envVarNames.invoiceRateList
     },
     {
-        elementId = 'amount-list',
-        envVarName = envVars.invoiceAmountList
+        elementId: "amount-list",
+        envVarName: envVarNames.invoiceAmountList
     },
     {
-        elementId = 'invoice-total',
-        envVarName = envVars.invoiceTotal
+        elementId: "invoice-total",
+        envVarName: envVarNames.invoiceTotal
     },
 ]
 
 for (let i = 0; i < variableMapping.length; i++) {
     let element = document.getElementById(variableMapping[i].elementId);
-    element.innerHTML = window.env[variableMapping[i].envVarName]; //getUrlParam('name', 'sd');
+    element.innerHTML = window.env[variableMapping[i].envVarName];
 }

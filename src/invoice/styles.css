@@ -1,5 +1,6 @@
 .container {
     margin: 50px;
+    -webkit-print-color-adjust: exact;
 }
 
 .title-header {
