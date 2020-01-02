@@ -9,12 +9,19 @@ import Customer from "../database/entities/customer.entity";
 import { toCamelCaseAllPropsKeys } from "../utils/formatter";
 import IDataService from "../interfaces/dataService.interface";
 import { Validator } from '../utils/validator';
-import { setEnvironment } from '../invoice/setEnvironment';
-import { invoiceEnvVarNames } from '../invoice/invoiceEnvVarNames';
+import { InvoiceService } from '../services/invoice.service';
+import Report from '../database/entities/report.entity';
+import Employee from "../database/entities/employee.entity";
+import Task from '../database/entities/task.entity';
+import moment from 'moment';
 
 class CustomersController {
     constructor(
         private customerService: IDataService<Customer>,
+        private reportService: IDataService<Report>,
+        private employeeService: IDataService<Employee>,
+        private taskService: IDataService<Task>,
+        private invoiceService: InvoiceService,
         private validate: Validator) {}
 
     public getCustomers: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
@@ -78,14 +85,28 @@ class CustomersController {
     }
 
     public generateAndSendInvoice: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        process.env[invoiceEnvVarNames.invoiceCustomerName] = "Spectrio";
-        process.env[invoiceEnvVarNames.invoiceCustomerAddressLine1] = "1201 Story avenue";
-        process.env[invoiceEnvVarNames.invoiceCustomerAddressLine2] = "#400";
-        process.env[invoiceEnvVarNames.invoiceCustomerAddressLine3] = "Louisville, KY 40206";
 
-        await setEnvironment(path.join(__dirname, '/../invoice/temp_config.js'), path.join(__dirname, '/../invoice'));
+
+        // let invoiceParams: InvoiceParameters = {
+        //     invoiceCustomerName: 
+        //     invoiceCustomerAddressLine1: 
+        //     invoiceCustomerAddressLine2: 
+        //     invoiceCustomerAddressLine3: 
+        //     invoiceNumber: 
+        //     invoiceDate: 
+        //     invoiceDueDate: 
+        //     invoiceTerms: 
+        //     invoiceDescriptionList: 
+        //     invoiceQuantityList: 
+        //     invoiceRateList: 
+        //     invoiceAmountList: 
+        //     invoiceTotal: 
+        // }
     }
 
+    // private getReportPeriod(reportId: string) {
+    //     this.taskService
+    // }
 
     private formatCustomerProps(customer: Customer) {
         const formattedCustomer = toCamelCaseAllPropsKeys(customer as ObjectLiteral);

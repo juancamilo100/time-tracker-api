@@ -9,7 +9,7 @@ const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
 const deleteFile = util.promisify(fs.unlink);
 
-interface InvoiceParameters extends ObjectLiteral {
+export interface InvoiceParameters extends ObjectLiteral {
     invoiceCustomerName: string;
     invoiceCustomerAddressLine1: string;
     invoiceCustomerAddressLine2: string;
@@ -42,8 +42,6 @@ const invoiceEnvVarNames: InvoiceParameters = {
 }
 
 export class InvoiceService {
-    constructor() {}
-
     public async generateInvoicePdf(invoiceParams: InvoiceParameters) {
         try {
             const hash = await this.setInvoiceParameters(invoiceParams);
@@ -59,12 +57,12 @@ export class InvoiceService {
                 format: 'letter'
             } as unknown as PDFOptions);
             await browser.close();
-            
+
             await this.deleteConfigFile(configFileName);
 
             return pdfFilePath;
         } catch (error) {
-            const message = 'Something went wrong while setting invoice parameters';
+            const message = 'Something went wrong while generating invoice PDF';
             console.error(`${message}: ${error}`);
             throw new Error(message);
         }
@@ -111,6 +109,12 @@ export class InvoiceService {
     }
 
     private async deleteConfigFile(configFileName: string) {
-        await deleteFile(path.join(__dirname, `/../invoice/${configFileName}`);
+        try {
+            await deleteFile(path.join(__dirname, `/../invoice/${configFileName}`));
+        } catch (error) {
+            console.error(error);
+        }
     }
 }
+
+export default new InvoiceService();

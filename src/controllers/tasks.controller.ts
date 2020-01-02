@@ -9,7 +9,6 @@ import { toCamelCaseAllPropsKeys, toSnakeCaseAllPropsKeys } from "../utils/forma
 import IDataService from "../interfaces/dataService.interface";
 import Task from '../database/entities/task.entity';
 import { Validator } from '../utils/validator';
-import Report from '../database/entities/report.entity';
 
 class TasksController {
     constructor(
@@ -21,9 +20,18 @@ class TasksController {
 
         try {
             this.validate.taskFields(task);
-            await this.validate.reportId(req.params.reportId!);
+            const report = await this.validate.reportId(req.params.reportId!);
+            this.validate.dateFormat(task.date_performed);
+            this.validate.taskDateAgainstReportPeriod(
+                { 
+                    start: report.start_date as unknown as Date, 
+                    end: report.end_date as unknown as Date 
+                }, 
+                task
+            );
+
         } catch (error) {
-            return next(createError(404, error));
+            return next(createError(500, error));
         }
 
         task.report_id = Number.parseInt(req.params.reportId!);
@@ -36,16 +44,27 @@ class TasksController {
         let task = toSnakeCaseAllPropsKeys(req.body) as Task;
         let { taskId, reportId } = req.params;
 
+        if(!taskId || !reportId) {
+            return next(createError(400, "Incomplete request"));
+        }
+
         if(task.report_id && task.report_id !== Number.parseInt(reportId)) {
-            return next(createError(400, "Cannot update report number"));
+            return next(createError(400, "Cannot update report ID"));
         }
         
         try {
+            const report = await this.validate.reportId(reportId);
             if(task.date_performed) {
-                this.validate.taskDateFormat(task.date_performed);
+                this.validate.dateFormat(task.date_performed);
+                this.validate.taskDateAgainstReportPeriod(
+                    { 
+                        start: report.start_date as unknown as Date, 
+                        end: report.end_date as unknown as Date 
+                    }, 
+                    task
+                );
             }
-            await this.validate.reportId(reportId);
-            await this.validate.taskId(taskId);
+            await this.validate.taskAndReportIdRelation(task.id, Number.parseInt(reportId));
         } catch (error) {
             return next(createError(500, error));
         }
@@ -61,8 +80,7 @@ class TasksController {
     public deleteTaskById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         let { taskId, reportId } = req.params;
         try {
-            await this.validate.reportId(reportId);
-            await this.validate.taskId(taskId);
+            await this.validate.taskAndReportIdRelation(Number.parseInt(taskId), Number.parseInt(reportId));
         } catch (error) {
             return next(createError(404, error));
         }
