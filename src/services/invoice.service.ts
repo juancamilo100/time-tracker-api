@@ -4,6 +4,9 @@ import crypto from 'crypto';
 import util from 'util';
 import puppeteer, { PDFOptions } from 'puppeteer'
 import { ObjectLiteral } from '../../types/generics';
+import Invoice from '../database/entities/invoice.entity';
+import { EntitySchema } from 'typeorm';
+import BaseDataService from './base.service';
 
 const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
@@ -41,7 +44,14 @@ const invoiceEnvVarNames: InvoiceParameters = {
     invoiceTotal: 'INOVICE_TOTAL'
 }
 
-export class InvoiceService {
+export class InvoiceService extends BaseDataService<Invoice> {
+    constructor() {
+        super({
+            schema: Invoice as unknown as EntitySchema<Invoice>,
+            alias: "invoice"
+        });
+    }
+
     public async generateInvoicePdf(invoiceParams: InvoiceParameters) {
         try {
             const hash = await this.setInvoiceParameters(invoiceParams);

@@ -10,6 +10,7 @@ import taskService from "../services/task.service";
 import invoiceService from "../services/invoice.service";
 import { Validator } from '../utils/validator';
 import TasksController from './tasks.controller';
+import InvoiceController from './invoice.controller';
 
 const validator = new Validator(
     employeeService, 
@@ -20,8 +21,9 @@ const validator = new Validator(
 
 export const authController = new AuthController(employeeService, validator);
 export const employeesController = new EmployeesController(employeeService, validator);
-export const customersController = new CustomersController(
-        customerService, 
+export const customersController = new CustomersController(customerService, validator);
+export const tasksController = new TasksController(taskService, validator);
+export const invoiceController = new InvoiceController(
         reportService,
         employeeService, 
         taskService,
@@ -33,4 +35,3 @@ export const reportsController = new ReportsController(
         taskService,
         validator
     );
-export const tasksController = new TasksController(taskService, validator);
