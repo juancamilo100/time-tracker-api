@@ -4,11 +4,7 @@ import IDataService from '../interfaces/dataService.interface';
 import Report from '../database/entities/report.entity';
 import Employee from '../database/entities/employee.entity';
 import Customer from '../database/entities/customer.entity';
-
-export interface ReportPeriod {
-    start: Date,
-    end: Date
-}
+import { ReportPeriod } from '../../types/types';
 
 export class Validator {
     constructor(

@@ -1,13 +1,37 @@
-import { EntitySchema } from "typeorm";
+import { EntitySchema, getRepository, FindConditions } from "typeorm";
 import BaseDataService from "./base.service";
 import Task from '../database/entities/task.entity';
 
-class TaskService extends BaseDataService<Task> {
+export class TaskService extends BaseDataService<Task> {
     constructor() {
         super({
             schema: Task as unknown as EntitySchema<Task>,
             alias: "task"
         });
+    }
+
+    public async getAllTasksForGroupOfReports(reportIds: number[]) {
+        try {
+            const tasks = await getRepository(this.entity.schema)
+                .find({
+                    where: this.getTasksForReportsQuery(reportIds)
+                });
+    
+            return tasks
+        } catch (error) {
+            console.error(error);
+            throw new Error("Something went wrong while getting tasks for reports");
+        }
+    }
+
+    private getTasksForReportsQuery(reportIds: number[]) {
+        let query: FindConditions<object>[] = [];
+        reportIds.forEach((id) => {
+            query.push({
+                report_id: id
+            });
+        });
+        return query;
     }
 }
 

@@ -20,7 +20,7 @@ router.post("/",
 );
 router.post("/:customerId/invoice",
     authorizeAdminEmployee,
-    controller.generateAndSendInvoice
+    controller.generateInvoice
 );
 router.patch("/:customerId",
     [transformBodyPropsValuesToLowerCase, authorizeAdminEmployee],

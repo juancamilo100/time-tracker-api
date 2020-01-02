@@ -23,9 +23,11 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
             CREATE TABLE customer (
                 "id" SERIAL UNIQUE PRIMARY KEY,
                 "name" varchar NOT NULL,
-                "address" varchar,
+                "address_line_1" varchar,
+                "address_line_2" varchar,
                 "city" varchar,
                 "state" varchar,
+                "zip_code" varchar,
                 "email" varchar NOT NULL,
                 "created_at" timestamp DEFAULT current_timestamp,
                 "updated_at" timestamp DEFAULT current_timestamp

@@ -15,13 +15,19 @@ class Customer {
     public name: string;
 
     @Column()
-    public address: string;
+    public address_line_1: string;
+
+    @Column()
+    public address_line_2: string;
 
     @Column()
     public city: string;
 
     @Column()
     public state: string;
+
+    @Column()
+    public zip_code: string;
 
     @Column()
     public email: number;

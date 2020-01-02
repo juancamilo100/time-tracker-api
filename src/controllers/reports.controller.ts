@@ -194,15 +194,15 @@ class ReportsController {
             await this.validate.reportId(req.params.reportId);
         }
         this.validate.reportPeriodDates({
-            start: report.start_date as unknown as Date,
-            end: report.end_date as unknown as Date
+            start: report.start_date,
+            end: report.end_date
         });
         await this.validate.employeeCustomerRelation(report.customer_id, report.employee_id);
     }
 
     private validateTaskDates(task: Task, report: Report) {
-        const reportStartDate = report.start_date as unknown as Date;
-        const reportEndDate = report.end_date as unknown as Date;
+        const reportStartDate = report.start_date;
+        const reportEndDate = report.end_date;
 
         this.validate.dateFormat(task.date_performed);
         this.validate.taskDateAgainstReportPeriod(

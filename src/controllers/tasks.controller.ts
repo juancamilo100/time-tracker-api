@@ -24,8 +24,8 @@ class TasksController {
             this.validate.dateFormat(task.date_performed);
             this.validate.taskDateAgainstReportPeriod(
                 { 
-                    start: report.start_date as unknown as Date, 
-                    end: report.end_date as unknown as Date 
+                    start: report.start_date, 
+                    end: report.end_date 
                 }, 
                 task
             );
@@ -58,8 +58,8 @@ class TasksController {
                 this.validate.dateFormat(task.date_performed);
                 this.validate.taskDateAgainstReportPeriod(
                     { 
-                        start: report.start_date as unknown as Date, 
-                        end: report.end_date as unknown as Date 
+                        start: report.start_date, 
+                        end: report.end_date 
                     }, 
                     task
                 );

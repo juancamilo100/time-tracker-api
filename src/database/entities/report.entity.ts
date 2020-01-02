@@ -18,10 +18,10 @@ class Report {
     public employee_id: number;
     
     @Column()
-    public start_date: string;
+    public start_date: Date;
     
     @Column()
-    public end_date: string;
+    public end_date: Date;
 
     @Column()
     public submitted: boolean;

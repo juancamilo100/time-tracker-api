@@ -9,7 +9,7 @@ interface IGenericEntity {
 }
 
 class BaseDataService<T> implements IDataService<T> {
-    constructor(private entity: IGenericEntity) {}
+    constructor(protected entity: IGenericEntity) {}
 
     public async get(id: string, options: QueryOptions = {}) {
         try {
