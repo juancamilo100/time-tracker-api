@@ -63,8 +63,9 @@ class BaseDataService<T> implements IDataService<T> {
 
     public async create(entity: T) {
         try {
+            const entityToCreate = toSnakeCaseAllPropsKeys(entity as ObjectLiteral);
             const repo = getRepository(this.entity.schema);
-            const newEntity = repo.create(entity);
+            const newEntity = repo.create(entityToCreate);
             const newResource = await repo.save(newEntity);
             return newResource;
         } catch (error) {

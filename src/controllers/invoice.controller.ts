@@ -3,8 +3,8 @@ import {
     Request,
     RequestHandler,
     Response } from "express";
+import moment from 'moment';
 import IDataService from "../interfaces/dataService.interface";
-import Customer from '../database/entities/customer.entity';
 import Report from '../database/entities/report.entity';
 import Employee from "../database/entities/employee.entity";
 import Task from '../database/entities/task.entity';
@@ -14,6 +14,8 @@ import createError from "http-errors";
 import { ReportService } from '../services/report.service';
 import { TaskService } from '../services/task.service';
 import { ObjectLiteral } from '../../types/generics';
+import Invoice from '../database/entities/invoice.entity';
+import { InvoiceParameters } from "../../types/types";
 
 export default class InvoiceController {
     constructor(
@@ -22,6 +24,7 @@ export default class InvoiceController {
         private taskService: IDataService<Task>,
         private invoiceService: InvoiceService,
         private validate: Validator) {}
+        private invoiceTermNumberOfDays = 14;
 
         public generateInvoice: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
             const { invoiceStartDate, invoiceEndDate } = req.body;
@@ -45,49 +48,60 @@ export default class InvoiceController {
                 
                 const tasks = await (this.taskService as TaskService).getAllTasksForGroupOfReports(reportIds);
                 const employees = this.getEmployeesWorkedHours(reports, tasks);
-                const tableElements = await  this.getTableElements(employees);
-    
-                res.send(tableElements);
-    
-                // let invoiceParams: InvoiceParameters = {
-                //     invoiceCustomerName: customer.name,
-                //     invoiceCustomerAddressLine1: customer.address_line_1
-                //     invoiceCustomerAddressLine2: customer.address_line_2
-                //     invoiceCustomerAddressLine3: `${customer.city}, ${customer.state} ${customer.zip_code}`,
-                //     invoiceNumber: 
-                //     invoiceDate: new Date().now();
-                //     invoiceDueDate: 
-                //     invoiceTerms: 
-                //     invoiceDescriptionList: 
-                //     invoiceQuantityList: 
-                //     invoiceRateList: 
-                //     invoiceAmountList: 
-                //     invoiceTotal: 
-                // }
+                const tableElements = await this.getTableElements(employees);
+
+                const invoice = await this.invoiceService.create({
+                    customer_id: customer.id,
+                    dollar_amount: tableElements.invoiceTotal,
+                    submitted_date: moment().format('L')
+                } as unknown as Invoice);
+                
+                let invoiceParams: InvoiceParameters = {
+                    invoiceCustomerName: customer.name,
+                    invoiceCustomerAddressLine1: customer.address_line_1,
+                    invoiceCustomerAddressLine2: customer.address_line_2,
+                    invoiceCustomerAddressLine3: `${customer.city}, ${customer.state} ${customer.zip_code}`,
+                    invoiceNumber: invoice.id,
+                    invoiceDate: invoice.submitted_date,
+                    invoiceDueDate: moment().add(this.invoiceTermNumberOfDays, 'days').format('L'),
+                    invoiceTerms: `${this.invoiceTermNumberOfDays} days`,
+                    invoiceDescriptionList: tableElements.elements.descriptionList,
+                    invoiceQuantityList: tableElements.elements.quantityList,
+                    invoiceRateList: tableElements.elements.rateList,
+                    invoiceAmountList: tableElements.elements.amountList,
+                    invoiceTotal: `${tableElements.invoiceTotal}`
+                }
+
+                await this.invoiceService.generateInvoicePdf(invoiceParams);
+
+                res.send(invoiceParams);
             } catch (error) {
                 return next(createError(500, error));
             }
         }
     
         private async getTableElements(employees: ObjectLiteral) {
-            let tableElements = {
+            let elements = {
                 descriptionList: "",
                 quantityList: "",
                 rateList: "",
                 amountList: ""
             } as ObjectLiteral;
+
+            let invoiceTotal = 0;
     
             for (const key of Object.keys(employees)) {
                 const employee = await this.employeeService.get(key);
                 const amount = employees[key].totalHours * employee!.customer_rate;
+                invoiceTotal += amount;
     
-                tableElements.descriptionList += `<div>* Software Developer Nearshore</div>`;
-                tableElements.quantityList += `<div>${employees[key].totalHours}</div>`;
-                tableElements.rateList += `<div>${employee!.customer_rate}</div>`;
-                tableElements.amountList += `<div>${amount}</div>`;
+                elements.descriptionList += `<div>* Software Developer Nearshore</div>`;
+                elements.quantityList += `<div>${employees[key].totalHours}</div>`;
+                elements.rateList += `<div>${employee!.customer_rate}</div>`;
+                elements.amountList += `<div>${amount}</div>`;
             }
     
-            return tableElements;
+            return {elements, invoiceTotal};
         }
     
         private getEmployeesWorkedHours(reports: any[], tasks: any[]) {

@@ -6,6 +6,7 @@ import { ENCRYPTION_KEY } from "../../config";
 import Employee from "../database/entities/employee.entity";
 import IDataService from "../interfaces/dataService.interface";
 import { Validator } from '../utils/validator';
+import { toSnakeCaseAllPropsKeys } from "../utils/formatter";
 
 class AuthController {
     constructor(
@@ -55,29 +56,22 @@ class AuthController {
         ) {
             return next(createError(400, "Incomplete request"));
         }
-
+        
+        const employeeToRegister = req.body;
+        
         try {
-            this.validate.isEmail(req.body.email);
-            await this.validate.employeeExists(req.body.email);
+            this.validate.isEmail(employeeToRegister.email);
+            await this.validate.employeeExists(employeeToRegister.email);
         } catch (error) {
             return next(createError(400, error));
         }
-
-        const hashedPassword = bcrypt.hashSync(req.body.password);
-
+        
+        const hashedPassword = bcrypt.hashSync(employeeToRegister.password);
+        
         try {
-            const newEmployee = {
-                password: hashedPassword,
-                email: req.body.email,
-                first_name: req.body.firstName,
-                last_name: req.body.lastName,
-                customer_id: req.body.customerId,
-                employee_rate: req.body.employeeRate,
-                customer_rate: req.body.customerRate,
-                role: req.body.role
-            } as Employee;
+            employeeToRegister.password = hashedPassword;
 
-            const createdEmployee = await this.employeeService.create(newEmployee);
+            const createdEmployee = await this.employeeService.create(employeeToRegister);
             const token = jwt.sign(
                 {
                     employeeId: createdEmployee.id,

@@ -30,7 +30,7 @@ class Customer {
     public zip_code: string;
 
     @Column()
-    public email: number;
+    public email: string;
 
     @CreateDateColumn()
     public created_at: string;

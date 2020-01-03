@@ -5,7 +5,11 @@
     "author": "JuanEspinosa <juancamilo100@hotmail.com>",
     "license": "MIT",
     "scripts": {
-        "build": "rm -rf ./build && tsc",
+        "build": "rm -rf ./build && tsc && yarn copy:files",
+        "copy:invoice:html": "cp ./src/invoice/invoice.html ./build/src/invoice/",
+        "copy:invoice:css": "cp ./src/invoice/styles.css ./build/src/invoice/",
+        "copy:invoice:logo": "cp ./src/invoice/logo.jpg ./build/src/invoice/",
+        "copy:files": "yarn copy:invoice:html && yarn copy:invoice:css && yarn copy:invoice:logo",
         "lint": "tslint -c tslint.json -p tsconfig.json",
         "serve": "NODE_ENV=development && nodemon ./bin/www",
         "start": "ts-node ./bin/www",

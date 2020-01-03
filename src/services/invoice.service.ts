@@ -3,45 +3,29 @@ import path from 'path';
 import crypto from 'crypto';
 import util from 'util';
 import puppeteer, { PDFOptions } from 'puppeteer'
-import { ObjectLiteral } from '../../types/generics';
 import Invoice from '../database/entities/invoice.entity';
 import { EntitySchema } from 'typeorm';
 import BaseDataService from './base.service';
+import { InvoiceParameters } from '../../types/types';
 
 const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
 const deleteFile = util.promisify(fs.unlink);
 
-export interface InvoiceParameters extends ObjectLiteral {
-    invoiceCustomerName: string;
-    invoiceCustomerAddressLine1: string;
-    invoiceCustomerAddressLine2: string;
-    invoiceCustomerAddressLine3: string;
-    invoiceNumber: string;
-    invoiceDate: string;
-    invoiceDueDate: string;
-    invoiceTerms: string;
-    invoiceDescriptionList: string;
-    invoiceQuantityList: string;
-    invoiceRateList: string;
-    invoiceAmountList: string;
-    invoiceTotal: string;
-}
-
-const invoiceEnvVarNames: InvoiceParameters = {
+export const invoiceEnvVarNames: InvoiceParameters = {
     invoiceCustomerName: 'INVOICE_CUSTOMER_NAME',
     invoiceCustomerAddressLine1: 'INVOICE_CUSTOMER_ADDRESS_LINE_1',
     invoiceCustomerAddressLine2: 'INVOICE_CUSTOMER_ADDRESS_LINE_2',
     invoiceCustomerAddressLine3: 'INVOICE_CUSTOMER_ADDRESS_LINE_3',
     invoiceNumber: 'INVOICE_NUMBER',
-    invoiceDate: 'INOVICE_DATE',
-    invoiceDueDate: 'INOVICE_DUE_DATE',
-    invoiceTerms: 'INOVICE_TERMS',
-    invoiceDescriptionList: 'INOVICE_DESCRIPTION_LIST',
-    invoiceQuantityList: 'INOVICE_QUANTITY_LIST',
-    invoiceRateList: 'INOVICE_RATE_LIST',
-    invoiceAmountList: 'INOVICE_AMOUNT_LIST',
-    invoiceTotal: 'INOVICE_TOTAL'
+    invoiceDate: 'INVOICE_DATE',
+    invoiceDueDate: 'INVOICE_DUE_DATE',
+    invoiceTerms: 'INVOICE_TERMS',
+    invoiceDescriptionList: 'INVOICE_DESCRIPTION_LIST',
+    invoiceQuantityList: 'INVOICE_QUANTITY_LIST',
+    invoiceRateList: 'INVOICE_RATE_LIST',
+    invoiceAmountList: 'INVOICE_AMOUNT_LIST',
+    invoiceTotal: 'INVOICE_TOTAL'
 }
 
 export class InvoiceService extends BaseDataService<Invoice> {
@@ -55,20 +39,20 @@ export class InvoiceService extends BaseDataService<Invoice> {
     public async generateInvoicePdf(invoiceParams: InvoiceParameters) {
         try {
             const hash = await this.setInvoiceParameters(invoiceParams);
-            const configFileName = `config${hash}.js`;
+            // const configFileName = `config${hash}.js`;
             const pdfFilePath = path.join(__dirname, `/../invoice/invoice${hash}.pdf`)
             
             const browser = await puppeteer.launch();
             const page = await browser.newPage();
             
-            await page.goto("file:///" + path.join(__dirname, '/../invoice/invoice.html'), { waitUntil: 'networkidle2' });
+            await page.goto("file:///" + path.join(__dirname, '/../invoice/invoice.html'), { waitUntil: 'load', timeout: 10000 });
             await page.pdf({
                 path: pdfFilePath,
                 format: 'letter'
             } as unknown as PDFOptions);
             await browser.close();
 
-            await this.deleteConfigFile(configFileName);
+            // await this.deleteConfigFile(configFileName);
 
             return pdfFilePath;
         } catch (error) {
@@ -91,20 +75,22 @@ export class InvoiceService extends BaseDataService<Invoice> {
         
         const hash = crypto.randomBytes(16).toString('hex');
 
-        let data = await readFile(path.join(__dirname, '/../invoice/configPlaceholder.js'), 'utf8');
-        data = this.extractAndReplacePlaceholders(data);
+        let config = await readFile(path.join(__dirname, '/../invoice/configPlaceholder.js'), 'utf8');
+        config = this.extractAndReplacePlaceholders(config);
 
-        const configFileName = `config${hash}.js`;
+        const configFileName = `config.js`;
 
-        await writeFile(path.join(__dirname, `/../invoice/${configFileName}`), data, 'utf8');
-        await this.updateConfigFileName(configFileName);
+        await writeFile(path.join(__dirname, `/../invoice/${configFileName}`), config, 'utf8');
+        // await this.updateConfigFileName(configFileName);
         return hash;
     }
 
     private setEnvironmentVariables(invoiceParams: InvoiceParameters) {
         for (const key in invoiceEnvVarNames) {
-            process.env[invoiceEnvVarNames[key]] = invoiceParams[invoiceEnvVarNames[key]];
+            process.env[invoiceEnvVarNames[key]] = invoiceParams[key];
         }
+        console.log(process.env);
+        
     }
 
     private extractAndReplacePlaceholders(data: string) {
