@@ -6,7 +6,3 @@ declare namespace Express {
         role: string | undefined
     }
 }
-
-interface Window {
-    env: ObjectLiteral
-}
