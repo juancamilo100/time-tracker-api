@@ -74,7 +74,7 @@ export default class InvoiceController {
                 
                 await this.invoiceService.generateInvoicePdf(invoiceParams);
 
-                res.send(invoiceParams);
+                res.send(200);
             } catch (error) {
                 return next(createError(500, error));
             }
