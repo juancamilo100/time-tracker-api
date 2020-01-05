@@ -1,4 +1,20 @@
-import { invoiceEnvVarNames } from '../services/invoice.service';
+// import { invoiceEnvVarNames } from '../../services/invoice.service.js';
+
+const invoiceEnvVarNames = {
+    invoiceCustomerName: 'INVOICE_CUSTOMER_NAME',
+    invoiceCustomerAddressLine1: 'INVOICE_CUSTOMER_ADDRESS_LINE_1',
+    invoiceCustomerAddressLine2: 'INVOICE_CUSTOMER_ADDRESS_LINE_2',
+    invoiceCustomerAddressLine3: 'INVOICE_CUSTOMER_ADDRESS_LINE_3',
+    invoiceNumber: 'INVOICE_NUMBER',
+    invoiceDate: 'INVOICE_DATE',
+    invoiceDueDate: 'INVOICE_DUE_DATE',
+    invoiceTerms: 'INVOICE_TERMS',
+    invoiceDescriptionList: 'INVOICE_DESCRIPTION_LIST',
+    invoiceQuantityList: 'INVOICE_QUANTITY_LIST',
+    invoiceRateList: 'INVOICE_RATE_LIST',
+    invoiceAmountList: 'INVOICE_AMOUNT_LIST',
+    invoiceTotal: 'INVOICE_TOTAL'
+}
 
 const variableMapping = [
     {
@@ -54,8 +70,17 @@ const variableMapping = [
         envVarName: invoiceEnvVarNames.invoiceTotal
     },
 ]
+console.log("Populating Elements.....");
 
-for (let i = 0; i < variableMapping.length; i++) {
-    let element = document.getElementById(variableMapping[i].elementId);
-    element!.innerHTML = window.env[variableMapping[i].envVarName];
-}
+window.onload = (event) => {
+    console.log('page is fully loaded');
+    for (let i = 0; i < variableMapping.length; i++) {
+        console.log(`${variableMapping[i].elementId}`);
+        
+        let element = document.getElementById(variableMapping[i].elementId);
+        element.innerHTML = window.env[variableMapping[i].envVarName];
+    }
+};
+
+
+console.log(window.env);

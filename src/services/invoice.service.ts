@@ -39,20 +39,28 @@ export class InvoiceService extends BaseDataService<Invoice> {
     public async generateInvoicePdf(invoiceParams: InvoiceParameters) {
         try {
             const hash = await this.setInvoiceParameters(invoiceParams);
-            // const configFileName = `config${hash}.js`;
-            const pdfFilePath = path.join(__dirname, `/../invoice/invoice${hash}.pdf`)
+            const configFileName = `config${hash}.js`;
+            const pdfFilePath = path.join(__dirname, `/../invoice/invoice-${invoiceParams.invoiceDate}-${invoiceParams.invoiceNumber}.pdf`)
             
-            const browser = await puppeteer.launch();
+            const browser = await puppeteer.launch({
+                headless: true,
+                args: [
+                    '--disable-web-security',
+                    '--allow-file-access-from-files'
+                ]
+            });
+
             const page = await browser.newPage();
-            
             await page.goto("file:///" + path.join(__dirname, '/../invoice/invoice.html'), { waitUntil: 'load', timeout: 10000 });
             await page.pdf({
                 path: pdfFilePath,
-                format: 'letter'
+                printBackground: true, 
+                width: '1200px', 
+                height: '1500px'
             } as unknown as PDFOptions);
             await browser.close();
 
-            // await this.deleteConfigFile(configFileName);
+            await this.deleteConfigFile(configFileName);
 
             return pdfFilePath;
         } catch (error) {
@@ -78,10 +86,10 @@ export class InvoiceService extends BaseDataService<Invoice> {
         let config = await readFile(path.join(__dirname, '/../invoice/configPlaceholder.js'), 'utf8');
         config = this.extractAndReplacePlaceholders(config);
 
-        const configFileName = `config.js`;
+        const configFileName = `config${hash}.js`;
 
         await writeFile(path.join(__dirname, `/../invoice/${configFileName}`), config, 'utf8');
-        // await this.updateConfigFileName(configFileName);
+        await this.updateConfigFileName(configFileName);
         return hash;
     }
 
@@ -89,8 +97,6 @@ export class InvoiceService extends BaseDataService<Invoice> {
         for (const key in invoiceEnvVarNames) {
             process.env[invoiceEnvVarNames[key]] = invoiceParams[key];
         }
-        console.log(process.env);
-        
     }
 
     private extractAndReplacePlaceholders(data: string) {

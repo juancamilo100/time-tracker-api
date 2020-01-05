@@ -3,12 +3,11 @@
   <meta charset="utf-8">
 
   <title>Lulosoft Report</title>
-  <meta name="description" content="The HTML5 Herald">
-  <meta name="author" content="SitePoint">
   <link rel="stylesheet" href="styles.css">
   <link href="https://fonts.googleapis.com/css?family=Heebo:700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Kulim+Park&display=swap" rel="stylesheet">
-  <script src="config5f309cde501970b1f37f2ffc6f726fd5.js"></script>
+  <script src="config.js"></script>
+  <script src="http://localhost:9000/static/populateElements.js"></script>
 </head>
 
 <body>
@@ -64,22 +63,28 @@
         </div> 
         <br>
         <div class="items-table">
-            <div class="inline expand-width">
-                <div class="column">
-                    <div class="items-table-header">Description</div class="items-table-header">
-                    <div id="description-list" class="items-table-item padding-right"></div>
+            <div class="column wider">
+                <div class="items-table-header">Description</div class="items-table-header">
+                <div id="description-list" class="items-table-item padding-right">
+                    <div>* Software Developer Nearshore</div>
                 </div>
-                <div class="column">
-                    <div class="items-table-header">Quantity</div>
-                    <div id="quantity-list" class="items-table-item padding-right"></div class="padding-right">
+            </div>
+            <div class="column">
+                <div class="items-table-header">Quantity</div>
+                <div id="quantity-list" class="items-table-item padding-right">
+                    <div>aasdfasdfasdfadfasdfasdfads</div>
                 </div>
-                <div class="column">
-                    <div class="items-table-header">Rate</div>
-                    <div id="rate-list" class="items-table-item padding-right"></div>
+            </div>
+            <div class="column">
+                <div class="items-table-header">Rate</div>
+                <div id="rate-list" class="items-table-item padding-right">
+                    <div>aasdfasdfasdfadfasdfasdfads</div>
                 </div>
-                <div class="column">
-                    <div class="items-table-header">Amount</div>
-                    <div id="amount-list" class="items-table-item padding-right"></div>
+            </div>
+            <div class="column">
+                <div class="items-table-header">Amount</div>
+                <div id="amount-list" class="items-table-item padding-right">
+                    <div>aasdfasdfasdfadfasdfasdfads</div>
                 </div>
             </div>
         </div>
@@ -115,7 +120,7 @@
                 <div class="column">
                     <div class="inline-center spaced-row">
                         <div class="title-text padding-right">Subtotal</div>
-                        <div id="invoice-total" class="info-text flex-right">$1,950.00</div>
+                        <div id="invoice-total" class="info-text flex-right"></div>
                     </div>
                     <div class="inline-center spaced-row">
                         <div class="title-text padding-right">Tax (8%)</div>
@@ -123,7 +128,7 @@
                     </div>
                     <div class="inline-center spaced-row">
                         <div class="title-text padding-right">Total</div>
-                        <div id="invoice-total" class="info-text flex-right">$1,950.00</div>
+                        <div id="invoice-total" class="info-text flex-right"></div>
                     </div>
                     <div class="inline-center spaced-row">
                         <div class="title-text padding-right">Paid</div>
@@ -132,15 +137,11 @@
                     <div class="divider"></div>
                     <div class="inline-center spaced-row balance-due">
                         <div class="title-text bold padding-right">Balance Due</div>
-                        <div id="invoice-total" class="info-text bold flex-right">$1,950.00</div>
+                        <div id="invoice-total" class="info-text bold flex-right"></div>
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
-    
-    <script src="./invoiceEnvVarNames.js"></script>
-    <script src="./populateElements.js"></script>
 </body>
 </html>
