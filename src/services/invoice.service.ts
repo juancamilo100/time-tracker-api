@@ -43,25 +43,7 @@ export class InvoiceService extends BaseDataService<Invoice> {
             const paramsFileName = `invoiceParams${hash}.js`;
             const pdfFilePath = path.join(__dirname, `/../invoice/invoice-${moment(invoiceParams.invoiceDate).format("DD.MM.YYYY")}-${invoiceParams.invoiceNumber}.pdf`)
             
-            const browser = await puppeteer.launch({
-                headless: true,
-                args: [
-                    '--disable-web-security',
-                    '--allow-file-access-from-files'
-                ]
-            });
-
-            const page = await browser.newPage();
-            await page.goto("file:///" + path.join(__dirname, '/../invoice/invoice.html'), { waitUntil: 'load', timeout: 10000 });
-            await page.pdf({
-                path: pdfFilePath,
-                printBackground: true, 
-                width: '1200px', 
-                height: '1500px'
-            } as unknown as PDFOptions);
-
-            await browser.close();
-
+            await this.createPdfFromHeadlessBrowser(pdfFilePath);
             await this.deleteConfigFile(paramsFileName);
 
             return pdfFilePath;
@@ -70,6 +52,25 @@ export class InvoiceService extends BaseDataService<Invoice> {
             console.error(`${message}: ${error}`);
             throw new Error(message);
         }
+    }
+
+    private async createPdfFromHeadlessBrowser(pdfFilePath: string) {
+        const browser = await puppeteer.launch({
+            headless: true,
+            args: [
+                '--disable-web-security',
+                '--allow-file-access-from-files'
+            ]
+        });
+        const page = await browser.newPage();
+        await page.goto("file:///" + path.join(__dirname, '/../invoice/invoice.html'), { waitUntil: 'load', timeout: 10000 });
+        await page.pdf({
+            path: pdfFilePath,
+            printBackground: true,
+            width: '1200px',
+            height: '1500px'
+        } as unknown as PDFOptions);
+        await browser.close();
     }
 
     private async updateParamsFileName(newFileName: string) {
