@@ -40,7 +40,7 @@ export class InvoiceService extends BaseDataService<Invoice> {
     public async generateInvoicePdf(invoiceParams: InvoiceParameters) {
         try {
             const hash = await this.setInvoiceParameters(invoiceParams);
-            const configFileName = `config${hash}.js`;
+            const paramsFileName = `invoiceParams${hash}.js`;
             const pdfFilePath = path.join(__dirname, `/../invoice/invoice-${moment(invoiceParams.invoiceDate).format("DD.MM.YYYY")}-${invoiceParams.invoiceNumber}.pdf`)
             
             const browser = await puppeteer.launch({
@@ -50,6 +50,7 @@ export class InvoiceService extends BaseDataService<Invoice> {
                     '--allow-file-access-from-files'
                 ]
             });
+
             const page = await browser.newPage();
             await page.goto("file:///" + path.join(__dirname, '/../invoice/invoice.html'), { waitUntil: 'load', timeout: 10000 });
             await page.pdf({
@@ -58,9 +59,10 @@ export class InvoiceService extends BaseDataService<Invoice> {
                 width: '1200px', 
                 height: '1500px'
             } as unknown as PDFOptions);
+
             await browser.close();
 
-            await this.deleteConfigFile(configFileName);
+            await this.deleteConfigFile(paramsFileName);
 
             return pdfFilePath;
         } catch (error) {
@@ -70,10 +72,10 @@ export class InvoiceService extends BaseDataService<Invoice> {
         }
     }
 
-    private async updateConfigFileName(newFileName: string) {
+    private async updateParamsFileName(newFileName: string) {
         let content = await readFile(path.join(__dirname, '/../invoice/invoice.html'), 'utf8');
-        const config = content.match(/config([\w]{0,}).js"><\/script>/);
-        content = content.replace(config![0], `${newFileName}"></script>`);
+        const params = content.match(/invoiceParams([\w]{0,}).js"><\/script>/);
+        content = content.replace(params![0], `${newFileName}"></script>`);
 
         await writeFile(path.join(__dirname, '/../invoice/invoice.html'), content, 'utf8');
     }
@@ -83,13 +85,13 @@ export class InvoiceService extends BaseDataService<Invoice> {
         
         const hash = crypto.randomBytes(16).toString('hex');
 
-        let config = await readFile(path.join(__dirname, '/../invoice/configPlaceholder.js'), 'utf8');
-        config = this.extractAndReplacePlaceholders(config);
+        let params = await readFile(path.join(__dirname, '/../invoice/invoiceParamsPlaceholder.js'), 'utf8');
+        params = this.extractAndReplacePlaceholders(params);
 
-        const configFileName = `config${hash}.js`;
+        const paramsFileName = `invoiceParams${hash}.js`;
 
-        await writeFile(path.join(__dirname, `/../invoice/${configFileName}`), config, 'utf8');
-        await this.updateConfigFileName(configFileName);
+        await writeFile(path.join(__dirname, `/../invoice/${paramsFileName}`), params, 'utf8');
+        await this.updateParamsFileName(paramsFileName);
         return hash;
     }
 
@@ -110,9 +112,9 @@ export class InvoiceService extends BaseDataService<Invoice> {
         return data;
     }
 
-    private async deleteConfigFile(configFileName: string) {
+    private async deleteConfigFile(paramsFileName: string) {
         try {
-            await deleteFile(path.join(__dirname, `/../invoice/${configFileName}`));
+            await deleteFile(path.join(__dirname, `/../invoice/${paramsFileName}`));
         } catch (error) {
             console.error(error);
         }
