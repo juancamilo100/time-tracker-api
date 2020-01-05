@@ -69,9 +69,9 @@ export default class InvoiceController {
                     invoiceQuantityList: tableElements.elements.quantityList,
                     invoiceRateList: tableElements.elements.rateList,
                     invoiceAmountList: tableElements.elements.amountList,
-                    invoiceTotal: `${tableElements.invoiceTotal}`
+                    invoiceTotal: `$${tableElements.invoiceTotal}`
                 }
-
+                
                 await this.invoiceService.generateInvoicePdf(invoiceParams);
 
                 res.send(invoiceParams);
@@ -97,8 +97,8 @@ export default class InvoiceController {
     
                 elements.descriptionList += `<div>* Software Developer Nearshore</div>`;
                 elements.quantityList += `<div>${employees[key].totalHours}</div>`;
-                elements.rateList += `<div>${employee!.customer_rate}</div>`;
-                elements.amountList += `<div>${amount}</div>`;
+                elements.rateList += `<div>$${employee!.customer_rate}</div>`;
+                elements.amountList += `<div>$${amount}</div>`;
             }
     
             return {elements, invoiceTotal};

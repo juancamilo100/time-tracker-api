@@ -7,6 +7,7 @@ import Invoice from '../database/entities/invoice.entity';
 import { EntitySchema } from 'typeorm';
 import BaseDataService from './base.service';
 import { InvoiceParameters } from '../../types/types';
+import moment from 'moment';
 
 const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
@@ -40,7 +41,7 @@ export class InvoiceService extends BaseDataService<Invoice> {
         try {
             const hash = await this.setInvoiceParameters(invoiceParams);
             const configFileName = `config${hash}.js`;
-            const pdfFilePath = path.join(__dirname, `/../invoice/invoice-${invoiceParams.invoiceDate}-${invoiceParams.invoiceNumber}.pdf`)
+            const pdfFilePath = path.join(__dirname, `/../invoice/invoice-${moment(invoiceParams.invoiceDate).format("DD.MM.YYYY")}-${invoiceParams.invoiceNumber}.pdf`)
             
             const browser = await puppeteer.launch({
                 headless: true,
@@ -49,7 +50,6 @@ export class InvoiceService extends BaseDataService<Invoice> {
                     '--allow-file-access-from-files'
                 ]
             });
-
             const page = await browser.newPage();
             await page.goto("file:///" + path.join(__dirname, '/../invoice/invoice.html'), { waitUntil: 'load', timeout: 10000 });
             await page.pdf({

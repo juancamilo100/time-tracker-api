@@ -1,5 +1,3 @@
-// import { invoiceEnvVarNames } from '../../services/invoice.service.js';
-
 const invoiceEnvVarNames = {
     invoiceCustomerName: 'INVOICE_CUSTOMER_NAME',
     invoiceCustomerAddressLine1: 'INVOICE_CUSTOMER_ADDRESS_LINE_1',
@@ -66,21 +64,22 @@ const variableMapping = [
         envVarName: invoiceEnvVarNames.invoiceAmountList
     },
     {
+        elementId: "invoice-subtotal",
+        envVarName: invoiceEnvVarNames.invoiceTotal
+    },
+    {
         elementId: "invoice-total",
         envVarName: invoiceEnvVarNames.invoiceTotal
     },
+    {
+        elementId: "balance",
+        envVarName: invoiceEnvVarNames.invoiceTotal
+    }
 ]
-console.log("Populating Elements.....");
 
 window.onload = (event) => {
-    console.log('page is fully loaded');
     for (let i = 0; i < variableMapping.length; i++) {
-        console.log(`${variableMapping[i].elementId}`);
-        
         let element = document.getElementById(variableMapping[i].elementId);
         element.innerHTML = window.env[variableMapping[i].envVarName];
     }
 };
-
-
-console.log(window.env);
