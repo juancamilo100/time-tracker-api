@@ -28,7 +28,6 @@ export default class InvoiceController {
         private emailService: IEmailService,
         private validate: Validator) {}
         private invoiceTermNumberOfDays = 14;
-        private emailBody = "Hello,\n Please find attached the Invoice and hourly report for this cycle.\nRegards,\n"
 
         public generateInvoice: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
             const { invoiceStartDate, invoiceEndDate } = req.body;
@@ -83,9 +82,9 @@ export default class InvoiceController {
                 const invoicePdfPath = await this.invoiceService.generateInvoicePdf(invoiceParams);
                 await this.emailService.sendMail({
                     from: INVOICE_EMAIL_SENDER_ADDRESS!,
-                    to: 'juan.espinosa@lulosoft.com',
+                    to: customer.email,
                     subject: `Invoice #${invoiceParams.invoiceNumber} Lulosoft`,
-                    body: this.emailBody,
+                    body: "Hello,\n\nPlease find attached the invoice and hourly report for this cycle.\n\nRegards,\n\n",
                     attachments: [{
                         filename: `Lulosoft Invoice #${invoiceParams.invoiceNumber}`,
                         path: invoicePdfPath
