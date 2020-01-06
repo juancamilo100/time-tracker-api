@@ -1,6 +1,6 @@
 import moment from 'moment';
 import Task from '../database/entities/task.entity';
-import IDataService from '../interfaces/dataService.interface';
+import IDataService from '../interfaces/data.service.interface';
 import Report from '../database/entities/report.entity';
 import Employee from '../database/entities/employee.entity';
 import Customer from '../database/entities/customer.entity';

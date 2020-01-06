@@ -1,6 +1,6 @@
 import { EntitySchema, getRepository } from "typeorm";
 import { ObjectLiteral } from "../../types/generics";
-import IDataService, { QueryOptions } from "../interfaces/dataService.interface";
+import IDataService, { QueryOptions } from "../interfaces/data.service.interface";
 import { camelToSnake, toSnakeCaseAllPropsKeys } from "../utils/formatter";
 
 interface IGenericEntity {

@@ -4,7 +4,7 @@ import createError from "http-errors";
 import jwt from "jsonwebtoken";
 import { ENCRYPTION_KEY } from "../../config";
 import Employee from "../database/entities/employee.entity";
-import IDataService from "../interfaces/dataService.interface";
+import IDataService from "../interfaces/data.service.interface";
 import { Validator } from '../utils/validator';
 import { toSnakeCaseAllPropsKeys } from "../utils/formatter";
 

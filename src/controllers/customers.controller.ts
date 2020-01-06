@@ -7,7 +7,7 @@ import createError from "http-errors";
 import { ObjectLiteral } from "../../types/generics";
 import Customer from "../database/entities/customer.entity";
 import { toCamelCaseAllPropsKeys, toSnakeCaseAllPropsKeys } from "../utils/formatter";
-import IDataService from "../interfaces/dataService.interface";
+import IDataService from "../interfaces/data.service.interface";
 import { Validator } from '../utils/validator';
 
 class CustomersController {

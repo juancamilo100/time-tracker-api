@@ -6,7 +6,7 @@ import {
 import createError from "http-errors";
 import { ObjectLiteral } from "../../types/generics";
 import { toCamelCaseAllPropsKeys, toSnakeCaseAllPropsKeys } from "../utils/formatter";
-import IDataService from "../interfaces/dataService.interface";
+import IDataService from "../interfaces/data.service.interface";
 import Task from '../database/entities/task.entity';
 import { Validator } from '../utils/validator';
 

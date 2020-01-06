@@ -1,5 +1,5 @@
 import { EntitySchema, getRepository, FindConditions } from "typeorm";
-import BaseDataService from "./base.service";
+import BaseDataService from "./base.data.service";
 import Task from '../database/entities/task.entity';
 
 export class TaskService extends BaseDataService<Task> {

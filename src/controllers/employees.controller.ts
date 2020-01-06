@@ -7,7 +7,7 @@ import {
 import createError from "http-errors";
 import { ObjectLiteral } from "../../types/generics";
 import Employee, { EmployeeRoles } from "../database/entities/employee.entity";
-import IDataService from "../interfaces/dataService.interface";
+import IDataService from "../interfaces/data.service.interface";
 import { toCamelCaseAllPropsKeys, toSnakeCaseAllPropsKeys } from "../utils/formatter";
 import { Validator } from '../utils/validator';
 

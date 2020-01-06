@@ -4,7 +4,7 @@ import {
     RequestHandler,
     Response } from "express";
 import moment from 'moment';
-import IDataService from "../interfaces/dataService.interface";
+import IDataService from "../interfaces/data.service.interface";
 import Report from '../database/entities/report.entity';
 import Employee from "../database/entities/employee.entity";
 import Task from '../database/entities/task.entity';
@@ -16,6 +16,8 @@ import { TaskService } from '../services/task.service';
 import { ObjectLiteral } from '../../types/generics';
 import Invoice from '../database/entities/invoice.entity';
 import { InvoiceParameters } from "../../types/types";
+import IEmailService from '../interfaces/email.service.interface';
+import { INVOICE_EMAIL_SENDER_ADDRESS } from '../../config';
 
 export default class InvoiceController {
     constructor(
@@ -23,8 +25,10 @@ export default class InvoiceController {
         private employeeService: IDataService<Employee>,
         private taskService: IDataService<Task>,
         private invoiceService: InvoiceService,
+        private emailService: IEmailService,
         private validate: Validator) {}
         private invoiceTermNumberOfDays = 14;
+        private emailBody = "Hello,\n Please find attached the Invoice and hourly report for this cycle.\nRegards,\n"
 
         public generateInvoice: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
             const { invoiceStartDate, invoiceEndDate } = req.body;
@@ -41,6 +45,10 @@ export default class InvoiceController {
                         invoiceStartDate, 
                         invoiceEndDate
                     );
+
+                if(!reports.length) {
+                    return next(createError(404, `No reports have been submitted for Customer ID: ${customer.id} for this time period`));
+                }
     
                 const reportIds = reports.map((report) => {
                     return report.id;
@@ -72,7 +80,17 @@ export default class InvoiceController {
                     invoiceTotal: `$${tableElements.invoiceTotal}`
                 }
                 
-                await this.invoiceService.generateInvoicePdf(invoiceParams);
+                const invoicePdfPath = await this.invoiceService.generateInvoicePdf(invoiceParams);
+                await this.emailService.sendMail({
+                    from: INVOICE_EMAIL_SENDER_ADDRESS!,
+                    to: 'juan.espinosa@lulosoft.com',
+                    subject: `Invoice #${invoiceParams.invoiceNumber} Lulosoft`,
+                    body: this.emailBody,
+                    attachments: [{
+                        filename: `Lulosoft Invoice #${invoiceParams.invoiceNumber}`,
+                        path: invoicePdfPath
+                    }]
+                });
 
                 res.send(200);
             } catch (error) {

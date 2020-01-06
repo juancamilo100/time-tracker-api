@@ -5,7 +5,7 @@ import util from 'util';
 import puppeteer, { PDFOptions } from 'puppeteer'
 import Invoice from '../database/entities/invoice.entity';
 import { EntitySchema } from 'typeorm';
-import BaseDataService from './base.service';
+import BaseDataService from './base.data.service';
 import { InvoiceParameters } from '../../types/types';
 import moment from 'moment';
 

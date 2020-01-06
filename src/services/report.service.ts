@@ -1,6 +1,6 @@
 import { EntitySchema, getRepository, MoreThanOrEqual, LessThanOrEqual } from "typeorm";
 import Report from "../database/entities/report.entity";
-import BaseDataService from "./base.service";
+import BaseDataService from "./base.data.service";
 
 export class ReportService extends BaseDataService<Report> {
     constructor() {
