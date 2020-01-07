@@ -8,7 +8,6 @@ import apiRoutes from "./src/api";
 import errorHandler from "./src/middleware/errorHandler.middleware";
 import notFoundHandler from "./src/middleware/notFoundHandler.middleware";
 import path from 'path';
-import serveStatic from 'serve-static'
 import { setJavascriptContentType } from './src/middleware/response.contentType.javascript.middleware';
 
 const swaggerDocument = yaml.load("./swagger.yml");
@@ -19,13 +18,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(compression());
-
-// app.use(serveStatic('public/ftp', {
-//     'index': false,
-//     'setHeaders': (res, path) => {
-//         res.setHeader('Content-Type', )
-//       }
-// }));
 
 app.use("/static", [
     express.static(path.join(__dirname, 'src/invoice/static')), 
