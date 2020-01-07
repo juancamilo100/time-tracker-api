@@ -18,6 +18,7 @@ import Invoice from '../database/entities/invoice.entity';
 import { InvoiceParameters } from "../../types/types";
 import IEmailService from '../interfaces/email.service.interface';
 import { INVOICE_EMAIL_SENDER_ADDRESS } from '../../config';
+import { toTitleCase } from '../utils/formatter';
 
 export default class InvoiceController {
     constructor(
@@ -64,10 +65,10 @@ export default class InvoiceController {
                 } as unknown as Invoice);
                 
                 let invoiceParams: InvoiceParameters = {
-                    invoiceCustomerName: customer.name,
-                    invoiceCustomerAddressLine1: customer.address_line_1,
-                    invoiceCustomerAddressLine2: customer.address_line_2,
-                    invoiceCustomerAddressLine3: `${customer.city}, ${customer.state} ${customer.zip_code}`,
+                    invoiceCustomerName: toTitleCase(customer.name),
+                    invoiceCustomerAddressLine1: toTitleCase(customer.address_line_1),
+                    invoiceCustomerAddressLine2: toTitleCase(customer.address_line_2),
+                    invoiceCustomerAddressLine3: `${toTitleCase(customer.city)}, ${customer.state.toUpperCase()} ${customer.zip_code}`,
                     invoiceNumber: invoice.id,
                     invoiceDate: invoice.submitted_date,
                     invoiceDueDate: moment().add(this.invoiceTermNumberOfDays, 'days').format('L'),
@@ -80,13 +81,13 @@ export default class InvoiceController {
                 }
                 
                 const invoicePdfPath = await this.invoiceService.generateInvoicePdf(invoiceParams);
-                await this.emailService.sendMail({
+                await this.emailService.sendMail({  
                     from: INVOICE_EMAIL_SENDER_ADDRESS!,
                     to: customer.email,
                     subject: `Invoice #${invoiceParams.invoiceNumber} Lulosoft`,
                     body: "Hello,\n\nPlease find attached the invoice and hourly report for this cycle.\n\nRegards,\n\n",
                     attachments: [{
-                        filename: `Lulosoft Invoice #${invoiceParams.invoiceNumber}`,
+                        filename: `Lulosoft Invoice #${invoiceParams.invoiceNumber}.pdf`,
                         path: invoicePdfPath
                     }]
                 });
