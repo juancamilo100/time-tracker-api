@@ -104,10 +104,6 @@
     padding-bottom: 3px;
 }
 
-.expand-width {
-    width: 100%;
-}
-
 .items-table {
     display: flex;
     justify-content: space-between;
@@ -129,14 +125,6 @@
     font-family: 'Kulim Park', sans-serif;
     font-size: 15px;
     padding-left: 30px;
-}
-
-.wider {
-    flex-grow: 2;
-}
-
-.narrower {
-    flex-grow: 1;
 }
 
 .divider {

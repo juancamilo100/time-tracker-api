@@ -44,7 +44,7 @@ export class InvoiceService extends BaseDataService<Invoice> {
             const pdfFilePath = path.join(__dirname, `/../invoice/invoice-${moment(invoiceParams.invoiceDate).format("DD.MM.YYYY")}-${invoiceParams.invoiceNumber}.pdf`)
             
             await this.createPdfFromHeadlessBrowser(pdfFilePath);
-            await this.deleteConfigFile(paramsFileName);
+            await this.deleteParamsFile(paramsFileName);
 
             return pdfFilePath;
         } catch (error) {
@@ -113,7 +113,7 @@ export class InvoiceService extends BaseDataService<Invoice> {
         return data;
     }
 
-    private async deleteConfigFile(paramsFileName: string) {
+    private async deleteParamsFile(paramsFileName: string) {
         try {
             await deleteFile(path.join(__dirname, `/../invoice/${paramsFileName}`));
         } catch (error) {
