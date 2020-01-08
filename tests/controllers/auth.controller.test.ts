@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import reportService from "../../src/services/report.service";
 import taskService from "../../src/services/task.service";
 import customerService from "../../src/services/customer.service";
-import { Validator } from '../../src/utils/validator';
+import Validator from '../../src/utils/validator';
 
 
 describe("Auth Controller", () => {  

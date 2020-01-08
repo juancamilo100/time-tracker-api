@@ -268,6 +268,45 @@ paths:
         '500':
           description: Something went wrong
 
+  /customers/{customerId}/invoice:
+    parameters:
+      - name: customerId
+        in: path
+        required: true
+        description: ID of employee that we want to find
+        type: string
+      - name: Authorization
+        in: header
+        type: string
+        required: true
+    post:
+      tags:
+        - Customers
+      summary: Generate customer invoice PDF and email it to customer's contact
+      parameters:
+        - name: Invoice Period
+          in: body
+          description: Invoice date range
+          schema: 
+            required:
+                - invoiceStartDate
+                - invoiceEndDate
+            properties:
+              invoiceStartDate:
+                type: string
+              invoiceEndDate:
+                type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: New report has been created
+          schema:
+            $ref: '#/definitions/ReportResponse'
+        '400':
+          description: Incomplete request
+        '500':
+          description: Something went wrong        
 
   /reports:
     parameters:
@@ -598,18 +637,26 @@ definitions:
       $ref: '#/definitions/ReportResponse'
   CustomerCreate:
     required:
-      - email
       - name
+      - email
+      - addressLine1
+      - city
+      - state
+      - zipCode
     properties:
       name:
         type: string
       email:
         type: string
-      address:
+      addressLine1:
+        type: string
+      addressLine2:
         type: string
       city:
         type: string
       state:
+        type: string
+      zipCode:
         type: string
   Customer:
     properties: 

@@ -1,11 +1,12 @@
 import moment from 'moment';
 import Task from '../database/entities/task.entity';
-import IDataService from '../interfaces/dataService.interface';
+import IDataService from '../interfaces/data.service.interface';
 import Report from '../database/entities/report.entity';
 import Employee from '../database/entities/employee.entity';
 import Customer from '../database/entities/customer.entity';
+import { ReportPeriod } from '../../types/types';
 
-export class Validator {
+export default class Validator {
     constructor(
         private employeeService: IDataService<Employee>,
         private taskService: IDataService<Task>,
@@ -13,19 +14,20 @@ export class Validator {
         private customerService: IDataService<Customer>) {}
 
     public async reportId(reportId: string) {
-        const reportFound =  await this.reportService.getByFields(
-            { 
-                submitted: false,
-                id: reportId
-            }
-        );
+        const reportFound =  await this.reportService.get(reportId);
             
         if (!reportFound) {
-            throw new Error(`Report with ID: ${reportId} was not found or has already been submitted`);
+            throw new Error(`Report with ID: ${reportId} was not found`);
         }
 
         return reportFound;
     } 
+
+    public async reportSubmission(report: Report) {
+        if(report.submitted) {
+            throw new Error(`Report with ID: ${report.id} has already been submitted`)
+        }
+    }
 
     public async taskId(taskId: string) {
         const taskFound =  await this.taskService.get(taskId);
@@ -78,37 +80,48 @@ export class Validator {
         }
     }
 
-    public async taskIdAndDate(task: Task, reportId: number) {
+    public async taskAndReportIdRelation(taskId: number, reportId: number) {
             const foundTask = await this.taskService.getByFields(
                 { 
-                    id: task.id,
+                    id: taskId,
                     report_id: reportId
                 }
             );
             if (!foundTask) {
-                throw new Error(`Task with ID: ${task.id} was not found or doesn't belong to report with ID: ${reportId}`);
+                throw new Error(`Task with ID: ${taskId} was not found or doesn't belong to report with ID: ${reportId}`);
             }
-            this.taskDateFormat(task.date_performed);
-            return foundTask;
-    }
 
-    public async tasksIdsAndDates(tasks: Task[], reportId: number) {
-        for (const task of tasks) {
-            await this.taskIdAndDate(task, reportId);
-        }
+            return foundTask;
     }
 
     public taskFields(task: Task) {
         if (!task.hours ||
             !task.date_performed) {
-            throw new Error("Fields missing from task or field value invalid");
+            throw new Error("Fields missing from task");
         }
-        this.taskDateFormat(task.date_performed);
     }
-    
-    public tasksFields(tasks: Task[]) {
-        for (const task of tasks) {
-            this.taskFields(task);
+
+    public reportPeriodDates(reportPeriod: ReportPeriod) {
+        this.dateFormat(reportPeriod.start);
+        this.dateFormat(reportPeriod.end);
+
+        this.dateRange(reportPeriod.start, reportPeriod.end);
+    }
+
+    public dateRange(startDate: Date, endDate: Date) {
+        const formattedStartDate = new Date(startDate);
+        const formattedEndDate = new Date(endDate);
+        const isValidRange = moment(formattedStartDate.toISOString()).isBefore(formattedEndDate.toISOString());
+        
+        if(!isValidRange) {
+            throw new Error("Date range is invalid");
+        }
+    }
+
+    public taskDateAgainstReportPeriod(reportPeriod: ReportPeriod, task: Task) {
+        const isBetween = moment(task.date_performed).isBetween(reportPeriod.start, reportPeriod.end, undefined, "[]");
+        if(!isBetween) {
+            throw new Error("Task's performed date is outside of the report period");
         }
     }
 
@@ -122,9 +135,9 @@ export class Validator {
         }
     }
     
-    public taskDateFormat(date: Date) {
+    public dateFormat(date: Date) {
         if(!moment(date).isValid()) {
-            throw new Error("Task performed date is invalid");
+            throw new Error("Date is invalid");
         }
     }
 }

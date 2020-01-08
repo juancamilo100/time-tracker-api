@@ -7,8 +7,8 @@ import createError from "http-errors";
 import { ObjectLiteral } from "../../types/generics";
 import Customer from "../database/entities/customer.entity";
 import { toCamelCaseAllPropsKeys } from "../utils/formatter";
-import IDataService from "../interfaces/dataService.interface";
-import { Validator } from '../utils/validator';
+import IDataService from "../interfaces/data.service.interface";
+import Validator from '../utils/validator';
 
 class CustomersController {
     constructor(
@@ -43,12 +43,14 @@ class CustomersController {
     }
 
     public updateCustomerById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+        const customerToUpdate = req.body;
+        
         try {
-            if(req.body.email) {
-                this.validate.isEmail(req.body.email);
+            if(customerToUpdate.email) {
+                this.validate.isEmail(customerToUpdate.email);
             }
             await this.validate.customerId(req.params.customerId);
-            await this.customerService.update(req.params.customerId, req.body);
+            await this.customerService.update(req.params.customerId, customerToUpdate);
             res.send(200);
         } catch (error) {
             return next(createError(500, error));
@@ -56,19 +58,27 @@ class CustomersController {
     }
 
     public createCustomer: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        if (!req.body.name || !req.body.email) {
+        if (
+            !req.body.name || 
+            !req.body.email ||
+            !req.body.addressLine1 || 
+            !req.body.city || 
+            !req.body.state || 
+            !req.body.zipCode) {
             return next(createError(400, "Incomplete request"));
         }
 
+        const customerToCreate = req.body;
+
         try {
-            this.validate.isEmail(req.body.email);
-            await this.validate.customerExists(req.body.name, req.body.email);
+            this.validate.isEmail(customerToCreate.email);
+            await this.validate.customerExists(customerToCreate.name, customerToCreate.email);
         } catch (error) {
             return next(createError(400, error));
         }
 
         try {
-            const createdCustomer = await this.customerService.create(req.body);
+            const createdCustomer = await this.customerService.create(customerToCreate);
             res.send(this.formatCustomerProps(createdCustomer));
         } catch (error) {
             return next(createError(500, error));

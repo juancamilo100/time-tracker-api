@@ -23,9 +23,11 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
             CREATE TABLE customer (
                 "id" SERIAL UNIQUE PRIMARY KEY,
                 "name" varchar NOT NULL,
-                "address" varchar,
+                "address_line_1" varchar,
+                "address_line_2" varchar,
                 "city" varchar,
                 "state" varchar,
+                "zip_code" varchar,
                 "email" varchar NOT NULL,
                 "created_at" timestamp DEFAULT current_timestamp,
                 "updated_at" timestamp DEFAULT current_timestamp
@@ -35,7 +37,21 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
                 "id" SERIAL UNIQUE PRIMARY KEY,
                 "customer_id" int,
                 "employee_id" int,
+                "start_date" date,
+                "end_date" date,
                 "submitted" boolean DEFAULT false,
+                "created_at" timestamp DEFAULT current_timestamp,
+                "updated_at" timestamp DEFAULT current_timestamp
+            );
+
+            CREATE TABLE invoice (
+                "id" SERIAL UNIQUE PRIMARY KEY,
+                "customer_id" int,
+                "dollar_amount" int,
+                "start_date" date,
+                "end_date" date,
+                "submitted_date" date,
+                "paid" boolean DEFAULT false,
                 "created_at" timestamp DEFAULT current_timestamp,
                 "updated_at" timestamp DEFAULT current_timestamp
             );
@@ -53,6 +69,7 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
             ALTER TABLE employee ADD FOREIGN KEY ("customer_id") REFERENCES customer ("id") ON DELETE CASCADE;
             ALTER TABLE report ADD FOREIGN KEY ("customer_id") REFERENCES customer ("id") ON DELETE CASCADE;
             ALTER TABLE report ADD FOREIGN KEY ("employee_id") REFERENCES employee ("id") ON DELETE CASCADE;
+            ALTER TABLE invoice ADD FOREIGN KEY ("customer_id") REFERENCES customer ("id") ON DELETE CASCADE;
             ALTER TABLE task ADD FOREIGN KEY ("report_id") REFERENCES report ("id") ON DELETE CASCADE;
 
             INSERT INTO customer (id, name, city, state, email)

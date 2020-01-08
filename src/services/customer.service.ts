@@ -1,6 +1,6 @@
 import { EntitySchema } from "typeorm";
 import Customer from "../database/entities/customer.entity";
-import BaseDataService from "./base.service";
+import BaseDataService from "./base.data.service";
 
 export class CustomerService extends BaseDataService<Customer> {
     constructor() {

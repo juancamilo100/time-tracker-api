@@ -7,30 +7,27 @@ import {
 } from "typeorm";
 
 @Entity()
-class Customer {
+class Invoice {
     @PrimaryGeneratedColumn()
     public id: number;
 
     @Column()
-    public name: string;
+    public customer_id: number;
 
     @Column()
-    public address_line_1: string;
+    public dollar_amount: number;
 
     @Column()
-    public address_line_2: string;
+    public start_date: Date;
 
     @Column()
-    public city: string;
+    public end_date: Date;
 
     @Column()
-    public state: string;
-
+    public submitted_date: Date;
+    
     @Column()
-    public zip_code: string;
-
-    @Column()
-    public email: string;
+    public paid: boolean;
 
     @CreateDateColumn()
     public created_at: string;
@@ -39,4 +36,4 @@ class Customer {
     public updated_at: string;
 }
 
-export default Customer;
+export default Invoice;

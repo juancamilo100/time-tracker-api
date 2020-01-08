@@ -7,9 +7,9 @@ import createError from "http-errors";
 import { ObjectLiteral } from "../../types/generics";
 import Report from "../database/entities/report.entity";
 import { toCamelCaseAllPropsKeys, toSnakeCaseAllPropsKeys } from "../utils/formatter";
-import IDataService from "../interfaces/dataService.interface";
+import IDataService from "../interfaces/data.service.interface";
 import Task from '../database/entities/task.entity';
-import { Validator } from '../utils/validator';
+import Validator from '../utils/validator';
 
 interface ReportWithTasks extends Report {
     tasks: Task[]
@@ -37,12 +37,7 @@ class ReportsController {
         }
 
         try {
-            let report =  await this.reportService.get(req.params.reportId);
-            
-            if (!report) {
-                return next(createError(404, "Report not found"));
-            }
-
+            let report = await this.validate.reportId(req.params.reportId);
             let tasks = await this.getTasksByReportId(report.id);
 
             report = {
@@ -52,7 +47,7 @@ class ReportsController {
 
             res.send(this.formatPropsKeys(report));
         } catch (error) {
-            return next(createError(500, "Something went wrong"));
+            return next(createError(500, error));
         }
     }
 
@@ -82,7 +77,7 @@ class ReportsController {
         try {
             await this.validate.reportId(req.params.reportId);
         } catch (error) {
-            return next(createError(500, error));
+            return next(createError(404, error));
         }
 
         try {
@@ -93,45 +88,10 @@ class ReportsController {
         }
     }
 
-    public updateReportById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        if (!req.params.reportId ||
-            !req.body.tasks ||
-            !req.body.customerId || 
-            !req.body.employeeId) {
-            return next(createError(400, "Incomplete request"));
-        }
-            
-        let {tasks, ...report} = req.body;
-        tasks = tasks.map((task: Task) => {
-            return toSnakeCaseAllPropsKeys(task);
-        }) as Task[];
-            
-        try {
-            await this.validate.reportId(req.params.reportId);
-            await this.validate.employeeCustomerRelation(
-                report.customerId, 
-                report.employeeId
-            );
-            await this.validate.tasksIdsAndDates(tasks, Number.parseInt(req.params.reportId));
-        } catch (error) {
-            return next(createError(500, error));
-        }
-        
-        try {
-            for (let task of tasks) {
-                await this.taskService.update(task.id, task);
-            }
-
-            await this.reportService.update(req.params.reportId, report);
-            res.send(200);
-        } catch (error) {
-            return next(createError(500, "Something went wrong"));
-        }
-    }
-
     public submitReport: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            await this.validate.reportId(req.params.reportId);
+            const report = await this.validate.reportId(req.params.reportId);
+            this.validate.reportSubmission(report);
         } catch (error) {
             return next(createError(500, error));
         }
@@ -149,6 +109,8 @@ class ReportsController {
     public createReport: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         if (!req.body.tasks ||
             !req.body.customerId || 
+            !req.body.startDate || 
+            !req.body.endDate || 
             !req.body.employeeId) {
             return next(createError(400, "Incomplete request"));
         }
@@ -158,19 +120,17 @@ class ReportsController {
             return toSnakeCaseAllPropsKeys(task);
         }) as Task[];
 
+        const reportToCreate: Report = toSnakeCaseAllPropsKeys(report) as Report;
+
         try {
-            await this.validate.employeeCustomerRelation(
-                report.customerId, 
-                report.employeeId
-            );
-            this.validate.tasksFields(tasks);
+            await this.validateReport(req, reportToCreate);
+            await this.validateTasks(tasks, reportToCreate);
+
         } catch (error) {
             return next(createError(500, error));
         }
-
+        
         try {
-            let reportToCreate: Report = toSnakeCaseAllPropsKeys(report) as Report;
-
             let createdReport = await this.reportService.create(reportToCreate);
             const createdTasks: Task[] = await this.createReportTasks(tasks, createdReport.id);
 
@@ -182,6 +142,87 @@ class ReportsController {
             res.send(this.formatPropsKeys(createdReport));
         } catch (error) {
             return next(createError(500, error));
+        }
+    }
+
+    public updateReportById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+        if (!req.params.reportId ||
+            !req.body.tasks ||
+            !req.body.startDate ||
+            !req.body.endDate ||
+            !req.body.customerId || 
+            !req.body.employeeId) {
+            return next(createError(400, "Incomplete request"));
+        }
+
+        if(req.body.id) {
+            throw new Error("Cannot update report ID");
+        }
+            
+        let {tasks, ...report} = req.body;
+        tasks = tasks.map((task: Task) => {
+            return toSnakeCaseAllPropsKeys(task);
+        }) as Task[];
+
+        const reportToUpdate: Report = toSnakeCaseAllPropsKeys(report) as Report;
+            
+        try {
+            await this.validateReport(req, reportToUpdate);
+            await this.validateTasks(tasks, reportToUpdate);
+        } catch (error) {
+            return next(createError(500, error));
+        }
+        
+        try {
+            for (let task of tasks) {
+                if(task.id) {
+                    await this.taskService.update(task.id, task);
+                }
+                else {
+                    await this.createTask(task, reportToUpdate.id);
+                }
+            }
+            
+            await this.reportService.update(req.params.reportId, reportToUpdate);
+            res.send(200);
+        } catch (error) {
+            return next(createError(500, "Something went wrong"));
+        }
+    }
+
+    private async validateReport(req: Request, report: Report) {
+        if(req.params.reportId) {
+            const report = await this.validate.reportId(req.params.reportId);
+            this.validate.reportSubmission(report);
+        }
+
+        this.validate.reportPeriodDates({
+            start: report.start_date,
+            end: report.end_date
+        });
+        
+        await this.validate.employeeCustomerRelation(report.customer_id, report.employee_id);
+    }
+
+    private validateTaskDates(task: Task, report: Report) {
+        const reportStartDate = report.start_date;
+        const reportEndDate = report.end_date;
+
+        this.validate.dateFormat(task.date_performed);
+        this.validate.taskDateAgainstReportPeriod(
+            { start: reportStartDate, end: reportEndDate }, 
+            task
+        );
+    }
+
+    private async validateTasks(tasks: Task[], report: Report) {
+        for (const task of tasks) {
+            this.validate.taskFields(task);
+            this.validateTaskDates(task, report);
+
+            if(task.id) {
+                await this.validate.taskAndReportIdRelation(task.id, report.id);
+            }
         }
     }
 
@@ -205,12 +246,17 @@ class ReportsController {
         const createdTasks: Task[] = [];
 
         for (let task of tasks) {
-            task.report_id = reportId;
-            const createdTask: Task = await this.taskService.create(task);
+            const createdTask: Task = await this.createTask(task, reportId);
             createdTasks.push(this.formatPropsKeys(createdTask) as Task);
         }
 
         return this.formatObjectsInArrayPropsKeys(createdTasks) as Task[];
+    }
+
+    private async createTask(task: Task, reportId: number) {
+        task.report_id = reportId;
+        const createdTask: Task = await this.taskService.create(task);
+        return createdTask;
     }
 
     private formatPropsKeys(object: object) {

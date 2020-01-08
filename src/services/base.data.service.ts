@@ -1,6 +1,6 @@
 import { EntitySchema, getRepository } from "typeorm";
 import { ObjectLiteral } from "../../types/generics";
-import IDataService, { QueryOptions } from "../interfaces/dataService.interface";
+import IDataService, { QueryOptions } from "../interfaces/data.service.interface";
 import { camelToSnake, toSnakeCaseAllPropsKeys } from "../utils/formatter";
 
 interface IGenericEntity {
@@ -9,7 +9,7 @@ interface IGenericEntity {
 }
 
 class BaseDataService<T> implements IDataService<T> {
-    constructor(private entity: IGenericEntity) {}
+    constructor(protected entity: IGenericEntity) {}
 
     public async get(id: string, options: QueryOptions = {}) {
         try {
@@ -63,8 +63,9 @@ class BaseDataService<T> implements IDataService<T> {
 
     public async create(entity: T) {
         try {
+            const entityToCreate = toSnakeCaseAllPropsKeys(entity as ObjectLiteral);
             const repo = getRepository(this.entity.schema);
-            const newEntity = repo.create(entity);
+            const newEntity = repo.create(entityToCreate);
             const newResource = await repo.save(newEntity);
             return newResource;
         } catch (error) {

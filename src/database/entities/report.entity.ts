@@ -16,6 +16,12 @@ class Report {
 
     @Column()
     public employee_id: number;
+    
+    @Column()
+    public start_date: Date;
+    
+    @Column()
+    public end_date: Date;
 
     @Column()
     public submitted: boolean;

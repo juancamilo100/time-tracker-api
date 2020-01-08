@@ -7,6 +7,8 @@ import yaml from "yamljs";
 import apiRoutes from "./src/api";
 import errorHandler from "./src/middleware/errorHandler.middleware";
 import notFoundHandler from "./src/middleware/notFoundHandler.middleware";
+import path from 'path';
+import { setJavascriptContentType } from './src/middleware/response.contentType.javascript.middleware';
 
 const swaggerDocument = yaml.load("./swagger.yml");
 const app = express();
@@ -16,6 +18,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(compression());
+
+app.use("/static/javascript", [
+    express.static(path.join(__dirname, 'src/invoice/static/javascript')), 
+    setJavascriptContentType
+]);
 
 app.use("/api-docs", swagger.serve, swagger.setup(swaggerDocument));
 app.use("/api", apiRoutes);

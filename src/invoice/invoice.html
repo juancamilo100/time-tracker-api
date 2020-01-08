@@ -1,0 +1,147 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Lulosoft Report</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css?family=Heebo:700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Kulim+Park&display=swap" rel="stylesheet">
+  <script src="invoiceParams.js"></script>
+  <script src="http://localhost:9000/static/javascript/populateElements.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="title-header">
+            <div class="logo-title">
+                <img class="logo" src="./logo.jpg" alt="">
+                <div class="title">INVOICE</div>
+                <div class="lulosoft-name">Lulosoft</div>
+            </div>
+            <div class="address">
+                <div>2240 Taylorsville Road</div>
+                <div>#5532</div>
+                <div>Louisville, KY 40255</div>
+                <br>
+                <div>954-254-1148</div>
+                <div>www.lulosoft.com</div>
+                <div>juan.espinosa@lulosoft.com</div>
+            </div>
+        </div>
+        <div class="company-info-block">   
+            <div class="company-info-block-content flex-left">
+                <div class="flex-left inline">
+                    <div class="title-text padding-right">Bill To</div>
+                    <div id="company-address" class="info-text">
+                        <div id="customer-name"></div>
+                        <div id="customer-address-line-1"></div>
+                        <div id="customer-address-line-2"></div>
+                        <div id="customer-address-line-3"></div>
+                    </div>
+                </div>
+                <div class="flex-right">
+                    <div class="column">
+                        <div class="inline-center">
+                            <div class="title-text padding-right">Invoice #</div>
+                            <div id="invoice-number" class="info-text flex-right">asdf</div>
+                        </div>
+                        <div class="inline-center">
+                            <div class="title-text padding-right">Date</div>
+                            <div id="date" class="info-text flex-right">asdf</div>
+                        </div>
+                        <div class="inline-center">
+                            <div class="title-text padding-right">Due Date</div>
+                            <div id="due-date" class="info-text flex-right">asdf</div>
+                        </div>
+                        <div class="inline-center">
+                            <div class="title-text padding-right">Terms</div>
+                            <div id="terms" class="info-text flex-right">asdasdfasdfadsf</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> 
+        <br>
+        <div class="items-table">
+            <div class="column">
+                <div class="items-table-header">Description</div class="items-table-header">
+                <div id="description-list" class="items-table-item padding-right">
+                    <div>* Software Developer Nearshore</div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="items-table-header">Quantity</div>
+                <div id="quantity-list" class="items-table-item padding-right">
+                    <div></div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="items-table-header">Rate</div>
+                <div id="rate-list" class="items-table-item padding-right">
+                    <div></div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="items-table-header">Amount</div>
+                <div id="amount-list" class="items-table-item padding-right">
+                    <div></div>
+                </div>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div class="general-text" style="padding-left: 30px;">* Indicates non-taxable item</div>
+        <div class="balance-section">
+            <div class="column flex-left narrow">
+                <div class="narrow">
+                    <div>Thank you for your business</div>
+                    <br>
+                    <div>
+                        A 3% convenience fee will be charged if the invoce is paid via PayPal
+                    </div>
+                    <br>
+                    <div class="payment-info">
+                        <div class="payment-info-content">
+                            <div class="title-text bold">Payment Info</div>
+                            <div class="payment-options">
+                                <div class="column">
+                                    <div class="small-print spaced-row">By Check</div>
+                                    <div class="info-text small-print">
+                                        <div>Lulosoft, LLC</div> 
+                                        <div>29 Finch Trl NE</div> 
+                                        <div>Atlanta, GA 30308</div> 
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-right">
+                <div class="column">
+                    <div class="inline-center spaced-row">
+                        <div class="title-text padding-right">Subtotal</div>
+                        <div id="invoice-subtotal" class="info-text flex-right"></div>
+                    </div>
+                    <div class="inline-center spaced-row">
+                        <div class="title-text padding-right">Tax (8%)</div>
+                        <div class="info-text flex-right">$0.00</div>
+                    </div>
+                    <div class="inline-center spaced-row">
+                        <div class="title-text padding-right">Total</div>
+                        <div id="invoice-total" class="info-text flex-right"></div>
+                    </div>
+                    <div class="inline-center spaced-row">
+                        <div class="title-text padding-right">Paid</div>
+                        <div class="info-text flex-right">$0.00</div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="inline-center spaced-row balance-due">
+                        <div class="title-text bold padding-right">Balance Due</div>
+                        <div id="balance" class="info-text bold flex-right"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

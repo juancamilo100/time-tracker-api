@@ -7,9 +7,9 @@ import {
 import createError from "http-errors";
 import { ObjectLiteral } from "../../types/generics";
 import Employee, { EmployeeRoles } from "../database/entities/employee.entity";
-import IDataService from "../interfaces/dataService.interface";
+import IDataService from "../interfaces/data.service.interface";
 import { toCamelCaseAllPropsKeys } from "../utils/formatter";
-import { Validator } from '../utils/validator';
+import Validator from '../utils/validator';
 
 class EmployeesController {
     constructor(
@@ -48,9 +48,11 @@ class EmployeesController {
             return next(createError(400, "Cannot change password"));
         }
 
+        const employeeToUpdate = req.body;
+        
         try {
             await this.validate.employeeId(req.params.employeeId);
-            await this.employeeService.update(req.params.employeeId, req.body);
+            await this.employeeService.update(req.params.employeeId, employeeToUpdate);
             res.send(200);
         } catch (error) {
             return next(createError(500, error));

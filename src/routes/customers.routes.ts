@@ -1,5 +1,5 @@
 import express from "express";
-import { customersController as controller } from "../controllers";
+import { customersController, invoiceController } from "../controllers";
 import { authorizeAdminEmployee } from "../middleware/admin.authorization.middleware";
 import { transformBodyPropsValuesToLowerCase } from "../middleware/body.transform.lowercase.middleware";
 import { authorizeEmployeeByCustomerId } from "../middleware/customerId.authorization.middleware";
@@ -8,23 +8,27 @@ const router = express.Router();
 
 router.get("/",
     authorizeAdminEmployee,
-    controller.getCustomers
+    customersController.getCustomers
 );
 router.get("/:customerId",
     authorizeEmployeeByCustomerId,
-    controller.getCustomerById
+    customersController.getCustomerById
 );
 router.post("/",
     [transformBodyPropsValuesToLowerCase, authorizeAdminEmployee],
-    controller.createCustomer
+    customersController.createCustomer
+);
+router.post("/:customerId/invoice",
+    authorizeAdminEmployee,
+    invoiceController.generateInvoice
 );
 router.patch("/:customerId",
     [transformBodyPropsValuesToLowerCase, authorizeAdminEmployee],
-    controller.updateCustomerById
+    customersController.updateCustomerById
 );
 router.delete("/:customerId",
     authorizeAdminEmployee,
-    controller.deleteCustomerById
+    customersController.deleteCustomerById
 );
 
 export default router;
