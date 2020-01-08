@@ -9,7 +9,7 @@ import Report from '../database/entities/report.entity';
 import Employee from "../database/entities/employee.entity";
 import Task from '../database/entities/task.entity';
 import { InvoiceService } from "../services/invoice.service";
-import { Validator } from '../utils/validator';
+import Validator from '../utils/validator';
 import createError from "http-errors";
 import { ReportService } from '../services/report.service';
 import { TaskService } from '../services/task.service';
@@ -38,6 +38,10 @@ export default class InvoiceController {
             }
     
             try {
+                this.validate.dateFormat(invoiceStartDate);
+                this.validate.dateFormat(invoiceEndDate);
+                this.validate.dateRange(invoiceStartDate, invoiceEndDate);
+
                 const customer = await this.validate.customerId(req.params.customerId);
                 const reports = await (this.reportService as ReportService)
                     .getCustomerReportsForDates(
@@ -58,19 +62,28 @@ export default class InvoiceController {
                 const employees = this.getEmployeesWorkedHours(reports, tasks);
                 const tableElements = await this.getTableElements(employees);
 
-                const invoice = await this.invoiceService.create({
-                    customer_id: customer.id,
-                    dollar_amount: tableElements.invoiceTotal,
-                    submitted_date: moment().format('L')
-                } as unknown as Invoice);
+                let invoice = await this.invoiceService.getByFields({
+                    start_date: invoiceStartDate,
+                    end_date: invoiceEndDate
+                });
+
+                if(!invoice) {
+                    invoice = await this.invoiceService.create({
+                        customer_id: customer.id,
+                        start_date: invoiceStartDate,
+                        end_date: invoiceEndDate,
+                        dollar_amount: tableElements.invoiceTotal,
+                        submitted_date: moment().format('L')
+                    } as unknown as Invoice);
+                }
                 
                 let invoiceParams: InvoiceParameters = {
                     invoiceCustomerName: toTitleCase(customer.name),
                     invoiceCustomerAddressLine1: toTitleCase(customer.address_line_1),
-                    invoiceCustomerAddressLine2: toTitleCase(customer.address_line_2),
+                    invoiceCustomerAddressLine2: customer.address_line_2 ? toTitleCase(customer.address_line_2) : "",
                     invoiceCustomerAddressLine3: `${toTitleCase(customer.city)}, ${customer.state.toUpperCase()} ${customer.zip_code}`,
                     invoiceNumber: invoice.id,
-                    invoiceDate: invoice.submitted_date,
+                    invoiceDate: moment(invoice.submitted_date).format('L'),
                     invoiceDueDate: moment().add(this.invoiceTermNumberOfDays, 'days').format('L'),
                     invoiceTerms: `${this.invoiceTermNumberOfDays} days`,
                     invoiceDescriptionList: tableElements.elements.descriptionList,

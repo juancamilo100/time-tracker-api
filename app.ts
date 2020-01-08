@@ -19,8 +19,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(compression());
 
-app.use("/static", [
-    express.static(path.join(__dirname, 'src/invoice/static')), 
+app.use("/static/javascript", [
+    express.static(path.join(__dirname, 'src/invoice/static/javascript')), 
     setJavascriptContentType
 ]);
 

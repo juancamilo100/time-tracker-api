@@ -637,18 +637,26 @@ definitions:
       $ref: '#/definitions/ReportResponse'
   CustomerCreate:
     required:
-      - email
       - name
+      - email
+      - addressLine1
+      - city
+      - state
+      - zipCode
     properties:
       name:
         type: string
       email:
         type: string
-      address:
+      addressLine1:
+        type: string
+      addressLine2:
         type: string
       city:
         type: string
       state:
+        type: string
+      zipCode:
         type: string
   Customer:
     properties: 

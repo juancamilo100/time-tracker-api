@@ -18,6 +18,12 @@ class Invoice {
     public dollar_amount: number;
 
     @Column()
+    public start_date: Date;
+
+    @Column()
+    public end_date: Date;
+
+    @Column()
     public submitted_date: Date;
     
     @Column()

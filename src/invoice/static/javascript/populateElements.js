@@ -82,4 +82,9 @@ window.onload = (event) => {
         let element = document.getElementById(variableMapping[i].elementId);
         element.innerHTML = window.env[variableMapping[i].envVarName];
     }
+
+    if(!window.env["customer-address-line-2"]) {
+        const element = document.getElementById("customer-address-line-2");
+        element.parentNode.removeChild(element);
+    }
 };

@@ -9,7 +9,7 @@ import Report from "../database/entities/report.entity";
 import { toCamelCaseAllPropsKeys, toSnakeCaseAllPropsKeys } from "../utils/formatter";
 import IDataService from "../interfaces/data.service.interface";
 import Task from '../database/entities/task.entity';
-import { Validator } from '../utils/validator';
+import Validator from '../utils/validator';
 
 interface ReportWithTasks extends Report {
     tasks: Task[]
@@ -90,7 +90,8 @@ class ReportsController {
 
     public submitReport: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            await this.validate.reportId(req.params.reportId);
+            const report = await this.validate.reportId(req.params.reportId);
+            this.validate.reportSubmission(report);
         } catch (error) {
             return next(createError(500, error));
         }
@@ -191,12 +192,15 @@ class ReportsController {
 
     private async validateReport(req: Request, report: Report) {
         if(req.params.reportId) {
-            await this.validate.reportId(req.params.reportId);
+            const report = await this.validate.reportId(req.params.reportId);
+            this.validate.reportSubmission(report);
         }
+
         this.validate.reportPeriodDates({
             start: report.start_date,
             end: report.end_date
         });
+        
         await this.validate.employeeCustomerRelation(report.customer_id, report.employee_id);
     }
 

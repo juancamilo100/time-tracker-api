@@ -11,7 +11,7 @@ import reportService from "../services/report.service";
 import taskService from "../services/task.service";
 import gmailService from "../services/gmail.service";
 import invoiceService from "../services/invoice.service";
-import { Validator } from '../utils/validator';
+import Validator from '../utils/validator';
 
 const validator = new Validator(
     employeeService, 

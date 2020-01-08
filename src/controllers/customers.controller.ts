@@ -6,9 +6,9 @@ import {
 import createError from "http-errors";
 import { ObjectLiteral } from "../../types/generics";
 import Customer from "../database/entities/customer.entity";
-import { toCamelCaseAllPropsKeys, toSnakeCaseAllPropsKeys } from "../utils/formatter";
+import { toCamelCaseAllPropsKeys } from "../utils/formatter";
 import IDataService from "../interfaces/data.service.interface";
-import { Validator } from '../utils/validator';
+import Validator from '../utils/validator';
 
 class CustomersController {
     constructor(
@@ -62,7 +62,6 @@ class CustomersController {
             !req.body.name || 
             !req.body.email ||
             !req.body.addressLine1 || 
-            !req.body.addressLine2 || 
             !req.body.city || 
             !req.body.state || 
             !req.body.zipCode) {

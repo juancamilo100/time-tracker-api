@@ -6,7 +6,7 @@ import Employee from '../database/entities/employee.entity';
 import Customer from '../database/entities/customer.entity';
 import { ReportPeriod } from '../../types/types';
 
-export class Validator {
+export default class Validator {
     constructor(
         private employeeService: IDataService<Employee>,
         private taskService: IDataService<Task>,
@@ -14,19 +14,20 @@ export class Validator {
         private customerService: IDataService<Customer>) {}
 
     public async reportId(reportId: string) {
-        const reportFound =  await this.reportService.getByFields(
-            { 
-                submitted: false,
-                id: reportId
-            }
-        );
+        const reportFound =  await this.reportService.get(reportId);
             
         if (!reportFound) {
-            throw new Error(`Report with ID: ${reportId} was not found or has already been submitted`);
+            throw new Error(`Report with ID: ${reportId} was not found`);
         }
 
         return reportFound;
     } 
+
+    public async reportSubmission(report: Report) {
+        if(report.submitted) {
+            throw new Error(`Report with ID: ${report.id} has already been submitted`)
+        }
+    }
 
     public async taskId(taskId: string) {
         const taskFound =  await this.taskService.get(taskId);
@@ -103,6 +104,18 @@ export class Validator {
     public reportPeriodDates(reportPeriod: ReportPeriod) {
         this.dateFormat(reportPeriod.start);
         this.dateFormat(reportPeriod.end);
+
+        this.dateRange(reportPeriod.start, reportPeriod.end);
+    }
+
+    public dateRange(startDate: Date, endDate: Date) {
+        const formattedStartDate = new Date(startDate);
+        const formattedEndDate = new Date(endDate);
+        const isValidRange = moment(formattedStartDate.toISOString()).isBefore(formattedEndDate.toISOString());
+        
+        if(!isValidRange) {
+            throw new Error("Date range is invalid");
+        }
     }
 
     public taskDateAgainstReportPeriod(reportPeriod: ReportPeriod, task: Task) {
