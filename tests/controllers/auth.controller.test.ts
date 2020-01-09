@@ -131,6 +131,7 @@ describe("Auth Controller", () => {
                 body: {
                     firstName: "someName",
                     lastName: "someLastName",
+                    jobTitle: "someTitle",
                     companyId: "companyId",
                     password: "somepassword",
                     email: "someemail@email.com",
