@@ -11,6 +11,7 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
                 "first_name" varchar,
                 "last_name" varchar,
                 "email" varchar NOT NULL,
+                "job_title" varchar NOT NULL,
                 "password" varchar NOT NULL,
                 "customer_id" int,
                 "role" varchar,
@@ -75,10 +76,11 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
             INSERT INTO customer (id, name, city, state, email)
             VALUES (0, 'Lulosoft', 'Louisville', 'KY', 'contact@lulosoft.com');
 
-            INSERT INTO employee (first_name, last_name, email, password, customer_id, role)
+            INSERT INTO employee (first_name, last_name, job_title, email, password, customer_id, role)
             VALUES (
                 'Default',
                 'Admin',
+                'Founder',
                 '${process.env.DEFAULT_ADMIN_EMPLOYEE_EMAIL}',
                 '${bcrypt.hashSync(process.env.DEFAULT_ADMIN_EMPLOYEE_PASSWORD!)}',
                 0,

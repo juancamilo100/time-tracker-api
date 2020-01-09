@@ -19,6 +19,9 @@ class Employee {
     @Column()
     public email: string;
 
+    @Column()
+    public job_title: string;
+
     @Column({select: false})
     public password: string;
 

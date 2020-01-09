@@ -49,6 +49,7 @@ class AuthController {
             !req.body.password ||
             !req.body.firstName ||
             !req.body.lastName ||
+            !req.body.jobTitle ||
             !req.body.customerId ||
             !req.body.employeeRate ||
             !req.body.customerRate
@@ -59,6 +60,7 @@ class AuthController {
         const employeeToRegister = req.body;
         
         try {
+            this.validate.employeeJobTitle(req.body.jobTitle);
             this.validate.isEmail(employeeToRegister.email);
             await this.validate.employeeExists(employeeToRegister.email);
         } catch (error) {

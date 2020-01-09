@@ -59,7 +59,7 @@ export default class InvoiceController {
                 });
                 
                 const tasks = await (this.taskService as TaskService).getAllTasksForGroupOfReports(reportIds);
-                const employees = this.getEmployeesWorkedHours(reports, tasks);
+                const employees = this.getEmployeesInvoiceDetails(reports, tasks);
                 const tableElements = await this.getTableElements(employees);
 
                 let invoice = await this.invoiceService.getByFields({
@@ -121,13 +121,13 @@ export default class InvoiceController {
 
             let invoiceTotal = 0;
     
-            for (const key of Object.keys(employees)) {
-                const employee = await this.employeeService.get(key);
-                const amount = employees[key].totalHours * employee!.customer_rate;
+            for (const employeeId of Object.keys(employees)) {
+                const employee = await this.employeeService.get(employeeId);
+                const amount = employees[employeeId].totalHours * employee!.customer_rate;
                 invoiceTotal += amount;
     
-                elements.descriptionList += `<div>* Software Developer Nearshore</div>`;
-                elements.quantityList += `<div>${employees[key].totalHours}</div>`;
+                elements.descriptionList += `<div>* ${toTitleCase(employee!.job_title)} Software</div>`;
+                elements.quantityList += `<div>${employees[employeeId].totalHours}</div>`;
                 elements.rateList += `<div>$${employee!.customer_rate}</div>`;
                 elements.amountList += `<div>$${amount}</div>`;
             }
@@ -135,7 +135,7 @@ export default class InvoiceController {
             return {elements, invoiceTotal};
         }
     
-        private getEmployeesWorkedHours(reports: any[], tasks: any[]) {
+        private getEmployeesInvoiceDetails(reports: any[], tasks: any[]) {
             const employees = {} as ObjectLiteral;
             reports.forEach((report: Report) => {
                 let totalHours = 0;

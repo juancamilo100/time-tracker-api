@@ -491,6 +491,7 @@ definitions:
       - password
       - firstName
       - lastName
+      - jobTitle
       - customerId
       - employeeRate
       - customerRate
@@ -500,6 +501,8 @@ definitions:
         type: string
       lastName: 
         type: string
+      jobTitle: 
+        type: string
       email: 
         type: string
       password:
@@ -508,7 +511,7 @@ definitions:
         type: integer
       employeeRate: 
         type: integer
-      customerRate: 
+      customerRate:
         type: integer        
       role: 
         type: string    
@@ -518,6 +521,8 @@ definitions:
         type: string
       lastName: 
         type: string
+      jobTitle: 
+        type: string        
       email: 
         type: string
       customerId: 
@@ -536,6 +541,8 @@ definitions:
         type: string
       lastName: 
         type: string
+      jobTitle: 
+        type: string          
       email: 
         type: string
       customerId: 
