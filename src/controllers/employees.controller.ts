@@ -8,7 +8,7 @@ import createError from "http-errors";
 import { ObjectLiteral } from "../../types/generics";
 import Employee, { EmployeeRoles } from "../database/entities/employee.entity";
 import IDataService from "../interfaces/data.service.interface";
-import { toCamelCaseAllPropsKeys } from "../utils/formatter";
+import { toCamelCaseAllPropsKeys, toTitleCase } from "../utils/formatter";
 import Validator from '../utils/validator';
 
 class EmployeesController {
@@ -91,16 +91,19 @@ class EmployeesController {
     }
 
     private formatEmployeeProps(employee: Employee, isAdmin: boolean) {
-        const formattedEmployee = toCamelCaseAllPropsKeys(employee as ObjectLiteral);
-
-        delete formattedEmployee.createdAt;
-        delete formattedEmployee.updatedAt;
-
+        employee.first_name = toTitleCase(employee.first_name);
+        employee.last_name = toTitleCase(employee.last_name);
+        employee.job_title = toTitleCase(employee.job_title);
+        
         if(!isAdmin) {
-            delete formattedEmployee.customerRate;
+            delete employee.customer_rate;
+            delete employee.role;
         }
 
-        return formattedEmployee;
+        delete employee.created_at;
+        delete employee.updated_at;
+
+        return toCamelCaseAllPropsKeys(employee as ObjectLiteral);;
     }
 }
 
