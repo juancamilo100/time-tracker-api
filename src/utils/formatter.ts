@@ -39,7 +39,7 @@ export const toTitleCase = (string: string) => {
     for (let i = 0; i < split.length; i++) {
         split[i] = split[i].charAt(0).toUpperCase() + split[i].slice(1); ;
     }
-    return split.join(" ");;
+    return split.join(" ");
 }
 
 export const toLowerCaseAllPropsValues = (object: ObjectLiteral, propsToExclude?: string[]) => {

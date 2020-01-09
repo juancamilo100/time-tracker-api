@@ -541,6 +541,8 @@ definitions:
         type: string
       lastName: 
         type: string
+      jobTitle: 
+        type: string          
       email: 
         type: string
       customerId: 
