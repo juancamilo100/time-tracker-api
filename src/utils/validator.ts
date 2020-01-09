@@ -140,4 +140,11 @@ export default class Validator {
             throw new Error("Date is invalid");
         }
     }
+
+    public employeeJobTitle(title: string) {
+        const maxTitleLength = 30;
+        if(title.length > maxTitleLength) {
+            throw new Error(`Job title exceeds ${maxTitleLength} characters`);
+        }
+    }
 }

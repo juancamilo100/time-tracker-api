@@ -67,8 +67,8 @@ export class InvoiceService extends BaseDataService<Invoice> {
         await page.pdf({
             path: pdfFilePath,
             printBackground: true,
-            width: '1200px',
-            height: '1500px'
+            width: '1300px',
+            height: '1625px'
         } as unknown as PDFOptions);
         await browser.close();
     }
