@@ -31,95 +31,96 @@ export const invoiceEnvVarNames: InvoiceParameters = {
 
 export class InvoiceService extends BaseDataService<Invoice> {
     constructor() {
-        super({
+        super({ 
             schema: Invoice as unknown as EntitySchema<Invoice>,
             alias: "invoice"
         });
     }
 
-    public async generateInvoicePdf(invoiceParams: InvoiceParameters) {
-        try {
-            const hash = await this.setInvoiceParameters(invoiceParams);
-            const paramsFileName = `invoiceParams${hash}.js`;
-            const pdfFilePath = path.join(__dirname, `/../invoice/invoice-${moment(invoiceParams.invoiceDate).format("DD.MM.YYYY")}-${invoiceParams.invoiceNumber}.pdf`)
+//     public async generateInvoicePdf(invoiceParams: InvoiceParameters) {
+//         try {
+//             const hash = await this.setInvoiceParameters(invoiceParams);
+//             const paramsFileName = `invoiceParams${hash}.js`;
+//             const pdfFilePath = path.join(__dirname, `/../invoice/invoice-${moment(invoiceParams.invoiceDate).format("DD.MM.YYYY")}-${invoiceParams.invoiceNumber}.pdf`)
             
-            await this.createPdfFromHeadlessBrowser(pdfFilePath);
-            await this.deleteParamsFile(paramsFileName);
+//             await this.createPdfFromHeadlessBrowser(pdfFilePath);
+//             await this.deleteParamsFile(paramsFileName);
 
-            return pdfFilePath;
-        } catch (error) {
-            const message = 'Something went wrong while generating invoice PDF';
-            console.error(`${message}: ${error}`);
-            throw new Error(message);
-        }
-    }
+//             return pdfFilePath;
+//         } catch (error) {
+//             const message = 'Something went wrong while generating invoice PDF';
+//             console.error(`${message}: ${error}`);
+//             throw new Error(message);
+//         }
+//     }
 
-    private async createPdfFromHeadlessBrowser(pdfFilePath: string) {
-        const browser = await puppeteer.launch({
-            headless: true,
-            args: [
-                '--disable-web-security',
-                '--allow-file-access-from-files'
-            ]
-        });
-        const page = await browser.newPage();
-        await page.goto("file:///" + path.join(__dirname, '/../invoice/invoice.html'), { waitUntil: 'load', timeout: 10000 });
-        await page.pdf({
-            path: pdfFilePath,
-            printBackground: true,
-            width: '1300px',
-            height: '1625px'
-        } as unknown as PDFOptions);
-        await browser.close();
-    }
+//     private async createPdfFromHeadlessBrowser(pdfFilePath: string) {
+//         const browser = await puppeteer.launch({
+//             headless: true,
+//             args: [
+//                 '--disable-web-security',
+//                 '--allow-file-access-from-files'
+//             ]
+//         });
+//         const page = await browser.newPage();
+//         await page.goto("file:///" + path.join(__dirname, '/../invoice/invoice.html'), { waitUntil: 'load', timeout: 10000 });
+//         await page.pdf({
+//             path: pdfFilePath,
+//             printBackground: true,
+//             width: '1300px',
+//             height: '1625px'
+//         } as unknown as PDFOptions);
+//         await browser.close();
+//     }
 
-    private async updateParamsFileName(newFileName: string) {
-        let content = await readFile(path.join(__dirname, '/../invoice/invoice.html'), 'utf8');
-        const params = content.match(/invoiceParams([\w]{0,}).js"><\/script>/);
-        content = content.replace(params![0], `${newFileName}"></script>`);
+//     private async updateParamsFileName(newFileName: string) {
+//         let content = await readFile(path.join(__dirname, '/../invoice/invoice.html'), 'utf8');
+//         // const params = content.match(/invoiceParams([\w]{0,}).js"><\/script>/);
+//         const params = content.match(new RegExp('invoiceParams([\w]{0,}).js"><\/script>'));
+//         content = content.replace(params![0], `${newFileName}"></script>`);
 
-        await writeFile(path.join(__dirname, '/../invoice/invoice.html'), content, 'utf8');
-    }
+//         await writeFile(path.join(__dirname, '/../invoice/invoice.html'), content, 'utf8');
+//     }
 
-    private async setInvoiceParameters(invoiceParams: InvoiceParameters) {
-        this.setEnvironmentVariables(invoiceParams);
+//     private async setInvoiceParameters(invoiceParams: InvoiceParameters) {
+//         this.setEnvironmentVariables(invoiceParams);
         
-        const hash = crypto.randomBytes(16).toString('hex');
+//         const hash = crypto.randomBytes(16).toString('hex');
 
-        let params = await readFile(path.join(__dirname, '/../invoice/invoiceParamsPlaceholder.js'), 'utf8');
-        params = this.extractAndReplacePlaceholders(params);
+//         let params = await readFile(path.join(__dirname, '/../invoice/invoiceParamsPlaceholder.js'), 'utf8');
+//         params = this.extractAndReplacePlaceholders(params);
 
-        const paramsFileName = `invoiceParams${hash}.js`;
+//         const paramsFileName = `invoiceParams${hash}.js`;
 
-        await writeFile(path.join(__dirname, `/../invoice/${paramsFileName}`), params, 'utf8');
-        await this.updateParamsFileName(paramsFileName);
-        return hash;
-    }
+//         await writeFile(path.join(__dirname, `/../invoice/${paramsFileName}`), params, 'utf8');
+//         await this.updateParamsFileName(paramsFileName);
+//         return hash;
+//     }
 
-    private setEnvironmentVariables(invoiceParams: InvoiceParameters) {
-        for (const key in invoiceEnvVarNames) {
-            process.env[invoiceEnvVarNames[key]] = invoiceParams[key];
-        }
-    }
+//     private setEnvironmentVariables(invoiceParams: InvoiceParameters) {
+//         for (const key in invoiceEnvVarNames) {
+//             process.env[invoiceEnvVarNames[key]] = invoiceParams[key];
+//         }
+//     }
 
-    private extractAndReplacePlaceholders(data: string) {
-        const placeholders = data.match(/\$env([^,\n\r}{}]+)/g);
+//     private extractAndReplacePlaceholders(data: string) {
+//         const placeholders = data.match(/\$env([^,\n\r}{}]+)/g);
 
-        placeholders!.forEach((placeholder) => {
-            const envVar = placeholder.replace(/\$env\./g, '');
-            data = data.replace(placeholder, `"${process.env[envVar]}"`);
-        });
+//         placeholders!.forEach((placeholder) => {
+//             const envVar = placeholder.replace(/\$env\./g, '');
+//             data = data.replace(placeholder, `"${process.env[envVar]}"`);
+//         });
 
-        return data;
-    }
+//         return data;
+//     }
 
-    private async deleteParamsFile(paramsFileName: string) {
-        try {
-            await deleteFile(path.join(__dirname, `/../invoice/${paramsFileName}`));
-        } catch (error) {
-            console.error(error);
-        }
-    }
-}
+//     private async deleteParamsFile(paramsFileName: string) {
+//         try {
+//             await deleteFile(path.join(__dirname, `/../invoice/${paramsFileName}`));
+//         } catch (error) {
+//             console.error(error);
+//         }
+//     }
+// }
 
 export default new InvoiceService();

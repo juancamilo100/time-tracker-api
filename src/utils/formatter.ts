@@ -53,3 +53,19 @@ export const toLowerCaseAllPropsValues = (object: ObjectLiteral, propsToExclude?
 
     return objectLiteral;
 };
+
+export const addHashToFileName = (filePath: string, hash: string) => {
+    let newFileName = "";
+    const pathSections = filePath.split("/");
+
+    if(pathSections[pathSections.length - 1]) {
+        let fileNameAndExtension = pathSections[pathSections.length - 1].split(".");
+        fileNameAndExtension[0] = fileNameAndExtension[0] + hash;
+        newFileName = fileNameAndExtension.join(".");
+    }
+
+    pathSections[pathSections.length - 1] = newFileName;
+    const newPath = pathSections.join("/");
+    
+    return { newFileName, newPath };
+}   
