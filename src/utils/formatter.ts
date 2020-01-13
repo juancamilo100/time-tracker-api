@@ -69,3 +69,7 @@ export const addHashToFileName = (filePath: string, hash: string) => {
     
     return { newFileName, newPath };
 }   
+
+export const toMoney = (value: number) => {
+    return value.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+}

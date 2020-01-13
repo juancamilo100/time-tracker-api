@@ -27,12 +27,13 @@ export default class HtmlToPdfService<T> {
 
     public async generatePdf(pdfOutputFileName: string, pdfParams: T) {
         try {
-            const hash = await this.setPdfParameters(pdfParams);
-            const pdfOutputFilePath = `${this.pdfOutputBasePath}/${pdfOutputFileName}.pdf`;
-            await this.createPdfFromHeadlessBrowser(pdfOutputFilePath);
+            const hash = crypto.randomBytes(16).toString('hex');
+            const hashedParamsConfigFilePath = await this.setPdfParameters(pdfParams, hash);
             
-            const paramsFilePath = addHashToFileName(this.htmlParamsConfigFilePath, hash).newPath;
-            await this.deleteParamsFile(paramsFilePath);
+            const pdfOutputFilePath = `${this.pdfOutputBasePath}/${pdfOutputFileName}.pdf`;
+            const hashedHtmlFilePath = await this.createPdfFromHeadlessBrowser(pdfOutputFilePath, hash);
+            
+            await this.fileCleanup(hashedParamsConfigFilePath, hashedHtmlFilePath);
 
             return pdfOutputFilePath;
         } catch (error) {
@@ -42,7 +43,8 @@ export default class HtmlToPdfService<T> {
         }
     }
 
-    private async createPdfFromHeadlessBrowser(pdfOutputFilePath: string) {
+    private async createPdfFromHeadlessBrowser(pdfOutputFilePath: string, hash: string) {
+        const hashedHtmlFilePath = addHashToFileName(this.htmlFilePath, hash).newPath;
         const browser = await puppeteer.launch({
             headless: true,
             args: [
@@ -51,7 +53,7 @@ export default class HtmlToPdfService<T> {
             ]
         });
         const page = await browser.newPage();
-        await page.goto(`file:///${this.htmlFilePath}`, { waitUntil: 'load', timeout: 10000 });
+        await page.goto(`file:///${hashedHtmlFilePath}`, { waitUntil: 'load', timeout: 10000 });
         await page.pdf({
             path: pdfOutputFilePath,
             printBackground: true,
@@ -59,20 +61,22 @@ export default class HtmlToPdfService<T> {
             height: `${this.pdfDimensions.pixelHeight}px`
         } as unknown as PDFOptions);
         await browser.close();
+        return hashedHtmlFilePath;
     }
 
-    private async updateParamsFileName(newFileName: string) {
+    private async updateParamsFileName(newFileName: string, hash: string) {
         let content = await readFile(this.htmlFilePath, 'utf8');
+
         const paramsFileNameWithoutExtension = this.getFileNameWithoutExtension(this.htmlParamsConfigFilePath);
         const params = content.match(new RegExp(`${paramsFileNameWithoutExtension}([\\w]{0,}).js\"><\\/script>`));
         content = content.replace(params![0], `${newFileName}"></script>`);
-        await writeFile(this.htmlFilePath, content, 'utf8');
+
+        const hashedHtmlFilePath = addHashToFileName(this.htmlFilePath, hash).newPath;
+        await writeFile(hashedHtmlFilePath, content, 'utf8');
     }
 
-    private async setPdfParameters(pdfParams: T) {
+    private async setPdfParameters(pdfParams: T, hash: string) {
         this.setEnvironmentVariables(pdfParams);
-        
-        const hash = crypto.randomBytes(16).toString('hex');
 
         let params = await readFile(this.paramsPlaceholderFilePath, 'utf8');
         params = this.extractAndReplacePlaceholders(params);
@@ -80,8 +84,8 @@ export default class HtmlToPdfService<T> {
         const populatedParamsConfigFilePath = addHashToFileName(this.htmlParamsConfigFilePath, hash);
 
         await writeFile(populatedParamsConfigFilePath.newPath, params, 'utf8');
-        await this.updateParamsFileName(populatedParamsConfigFilePath.newFileName);
-        return hash;
+        await this.updateParamsFileName(populatedParamsConfigFilePath.newFileName, hash);
+        return populatedParamsConfigFilePath.newPath;
     }
 
     private setEnvironmentVariables(pdfParams: T & ObjectLiteral) {
@@ -101,9 +105,10 @@ export default class HtmlToPdfService<T> {
         return data;
     }
 
-    private async deleteParamsFile(paramsFilePath: string) {
+    private async fileCleanup(hashedParamsConfigFilePath: string, hashedHtmlFilePath: string) {
         try {
-            await deleteFile(paramsFilePath);
+            await deleteFile(hashedParamsConfigFilePath);
+            await deleteFile(hashedHtmlFilePath);
         } catch (error) {
             console.error(error);
         }

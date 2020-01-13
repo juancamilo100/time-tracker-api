@@ -18,7 +18,7 @@ import Invoice from '../database/entities/invoice.entity';
 import { InvoiceParameters } from "../../types/types";
 import IEmailService, { EmailAttachment } from '../interfaces/email.service.interface';
 import { INVOICE_EMAIL_SENDER_ADDRESS } from '../../config';
-import { toTitleCase } from '../utils/formatter';
+import { toTitleCase, toMoney } from '../utils/formatter';
 
 export default class InvoiceController {
     constructor(
@@ -90,7 +90,7 @@ export default class InvoiceController {
                     invoiceQuantityList: tableElements.elements.quantityList,
                     invoiceRateList: tableElements.elements.rateList,
                     invoiceAmountList: tableElements.elements.amountList,
-                    invoiceTotal: `$${tableElements.invoiceTotal}`
+                    invoiceTotal: `$${toMoney(tableElements.invoiceTotal)}`
                 }
                 
                 const invoicePdfPath = await this.invoiceService.generateInvoicePdf(invoiceParams);
@@ -126,10 +126,10 @@ export default class InvoiceController {
                 const amount = employees[employeeId].totalHours * employee!.customer_rate;
                 invoiceTotal += amount;
     
-                elements.descriptionList += `<div>* ${toTitleCase(employee!.job_title)} Software</div>`;
+                elements.descriptionList += `<div>* ${toTitleCase(employee!.job_title)}</div>`;
                 elements.quantityList += `<div>${employees[employeeId].totalHours}</div>`;
-                elements.rateList += `<div>$${employee!.customer_rate}</div>`;
-                elements.amountList += `<div>$${amount}</div>`;
+                elements.rateList += `<div>$${toMoney(employee!.customer_rate)}</div>`;
+                elements.amountList += `<div>$${toMoney(amount)}</div>`;
             }
     
             return {elements, invoiceTotal};
