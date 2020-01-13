@@ -20,7 +20,7 @@ app.use(cookieParser());
 app.use(compression());
 
 app.use("/static/javascript", [
-    express.static(path.join(__dirname, 'src/invoice/static/javascript')), 
+    express.static(path.join(__dirname, 'src/assets/javascript')), 
     setJavascriptContentType
 ]);
 

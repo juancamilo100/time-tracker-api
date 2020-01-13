@@ -9,6 +9,7 @@ import { toCamelCaseAllPropsKeys, toSnakeCaseAllPropsKeys } from "../utils/forma
 import IDataService from "../interfaces/data.service.interface";
 import Task from '../database/entities/task.entity';
 import Validator from '../utils/validator';
+import moment from "moment";
 
 class TasksController {
     constructor(
@@ -21,7 +22,7 @@ class TasksController {
         try {
             this.validate.taskFields(task);
             const report = await this.validate.reportId(req.params.reportId!);
-            this.validate.dateFormat(task.date_performed);
+            this.validate.dateFormat(task.date_performed, "L");
             this.validate.taskDateAgainstReportPeriod(
                 { 
                     start: report.start_date, 
@@ -55,7 +56,7 @@ class TasksController {
         try {
             const report = await this.validate.reportId(reportId);
             if(task.date_performed) {
-                this.validate.dateFormat(task.date_performed);
+                this.validate.dateFormat(task.date_performed, "L");
                 this.validate.taskDateAgainstReportPeriod(
                     { 
                         start: report.start_date, 
@@ -71,7 +72,7 @@ class TasksController {
         
         try {
             await this.taskService.update(taskId, task);
-            res.send(200);
+            res.sendStatus(200);
         } catch (error) {
             return next(createError(500, "Something went wrong"));
         }
@@ -87,7 +88,7 @@ class TasksController {
         
         try {
             await this.taskService.delete(taskId);
-            res.send(200);
+            res.sendStatus(200);
         } catch (error) {
             return next(createError(500, "Something went wrong"));
         }

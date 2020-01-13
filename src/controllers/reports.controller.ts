@@ -10,6 +10,7 @@ import { toCamelCaseAllPropsKeys, toSnakeCaseAllPropsKeys } from "../utils/forma
 import IDataService from "../interfaces/data.service.interface";
 import Task from '../database/entities/task.entity';
 import Validator from '../utils/validator';
+import moment from "moment";
 
 interface ReportWithTasks extends Report {
     tasks: Task[]
@@ -82,7 +83,7 @@ class ReportsController {
 
         try {
             await this.reportService.delete(req.params.reportId);
-            res.send(200);
+            res.sendStatus(200);
         } catch (error) {
             return next(createError(500, "Something went wrong"));
         }
@@ -100,7 +101,7 @@ class ReportsController {
             await this.reportService.update(req.params.reportId, {
                 submitted: true
             } as any);
-            res.send(200);
+            res.sendStatus(200);
         } catch (error) {
             return next(createError(500, "Something went wrong"));
         }
@@ -184,7 +185,7 @@ class ReportsController {
             }
             
             await this.reportService.update(req.params.reportId, reportToUpdate);
-            res.send(200);
+            res.sendStatus(200);
         } catch (error) {
             return next(createError(500, "Something went wrong"));
         }
@@ -208,7 +209,7 @@ class ReportsController {
         const reportStartDate = report.start_date;
         const reportEndDate = report.end_date;
 
-        this.validate.dateFormat(task.date_performed);
+        this.validate.dateFormat(task.date_performed, "L");
         this.validate.taskDateAgainstReportPeriod(
             { start: reportStartDate, end: reportEndDate }, 
             task

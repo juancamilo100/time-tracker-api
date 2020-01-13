@@ -37,7 +37,7 @@ class EmployeesController {
         try {
             await this.validate.employeeId(req.params.employeeId);
             await this.employeeService.delete(req.params.employeeId);
-            res.send(200);
+            res.sendStatus(200);
         } catch (error) {
             return next(createError(500, error));
         }
@@ -53,7 +53,7 @@ class EmployeesController {
         try {
             await this.validate.employeeId(req.params.employeeId);
             await this.employeeService.update(req.params.employeeId, employeeToUpdate);
-            res.send(200);
+            res.sendStatus(200);
         } catch (error) {
             return next(createError(500, error));
         }
@@ -84,7 +84,7 @@ class EmployeesController {
             };
 
             await this.employeeService.update(req.params.employeeId, fieldsToUpdate as any);
-            res.send(200);
+            res.sendStatus(200);
         } catch (error) {
             return next(createError(500, "Something went wrong"));
         }

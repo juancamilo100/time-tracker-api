@@ -38,8 +38,8 @@ export default class InvoiceController {
             }
     
             try {
-                this.validate.dateFormat(invoiceStartDate);
-                this.validate.dateFormat(invoiceEndDate);
+                this.validate.dateFormat(invoiceStartDate, "L");
+                this.validate.dateFormat(invoiceEndDate, "L");
                 this.validate.dateRange(invoiceStartDate, invoiceEndDate);
 
                 const customer = await this.validate.customerId(req.params.customerId);
@@ -105,7 +105,7 @@ export default class InvoiceController {
                     }]
                 });
 
-                res.send(200);
+                res.sendStatus(200);
             } catch (error) {
                 return next(createError(500, error));
             }

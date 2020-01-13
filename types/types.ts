@@ -20,3 +20,7 @@ export interface InvoiceParameters extends ObjectLiteral {
     invoiceAmountList: string;
     invoiceTotal: string;
 }
+
+export interface TaskReportParameters extends ObjectLiteral {
+    employeeName: string;
+}
