@@ -2,7 +2,6 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import util from 'util';
-import moment from 'moment';
 import { ObjectLiteral } from '../../types/generics';
 import puppeteer, { PDFOptions } from 'puppeteer'
 import { addHashToFileName } from '../utils/formatter';
@@ -16,8 +15,8 @@ interface PdfDimensions {
     pixelHeight: number
 }
 
-export class HtmlToPdfBaseService<T> {
-    private pdfOutputBasePath: string = path.join(__dirname, '/../pdf/output');
+export default class HtmlToPdfService<T> {
+    private pdfOutputBasePath: string = path.join(__dirname, '/../pdf');
 
     constructor(
         private envVarNames: T & ObjectLiteral,
@@ -52,7 +51,7 @@ export class HtmlToPdfBaseService<T> {
             ]
         });
         const page = await browser.newPage();
-        await page.goto(`file:///${this.htmlFileSourcePath}`, { waitUntil: 'load', timeout: 10000 });
+        await page.goto(`file:///${this.htmlFilePath}`, { waitUntil: 'load', timeout: 10000 });
         await page.pdf({
             path: pdfOutputFilePath,
             printBackground: true,
@@ -64,9 +63,9 @@ export class HtmlToPdfBaseService<T> {
 
     private async updateParamsFileName(newFileName: string) {
         let content = await readFile(this.htmlFilePath, 'utf8');
-        const params = content.match(new RegExp(`${this.htmlParamsConfigFilePath}([\w]{0,}).js"><\/script>`));
+        const paramsFileNameWithoutExtension = this.getFileNameWithoutExtension(this.htmlParamsConfigFilePath);
+        const params = content.match(new RegExp(`${paramsFileNameWithoutExtension}([\\w]{0,}).js\"><\\/script>`));
         content = content.replace(params![0], `${newFileName}"></script>`);
-
         await writeFile(this.htmlFilePath, content, 'utf8');
     }
 

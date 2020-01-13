@@ -68,6 +68,7 @@
     },
     "include": [                                                                                                                                                                                       
         "./src/**/*",
+        "./src/pdf/output",
         "./bin/*",
         "./migrations/*.ts"
     ],   

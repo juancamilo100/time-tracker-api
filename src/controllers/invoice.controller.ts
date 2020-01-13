@@ -16,7 +16,7 @@ import { TaskService } from '../services/task.service';
 import { ObjectLiteral } from '../../types/generics';
 import Invoice from '../database/entities/invoice.entity';
 import { InvoiceParameters } from "../../types/types";
-import IEmailService from '../interfaces/email.service.interface';
+import IEmailService, { EmailAttachment } from '../interfaces/email.service.interface';
 import { INVOICE_EMAIL_SENDER_ADDRESS } from '../../config';
 import { toTitleCase } from '../utils/formatter';
 
