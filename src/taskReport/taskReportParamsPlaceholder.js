@@ -1,0 +1,3 @@
+window.env = {
+    TASK_REPORT_EMPLOYEE_NAME: $env.TASK_REPORT_EMPLOYEE_NAME,
+}

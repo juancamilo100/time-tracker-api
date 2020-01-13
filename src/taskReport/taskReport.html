@@ -1,0 +1,69 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Lulosoft Report</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css?family=Heebo:700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Kulim+Park&display=swap" rel="stylesheet">
+  <script src="taskReportParams.js"></script>
+  <script src="http://localhost:9000/static/javascript/populateTaskReportElements.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <img class="logo" src="http://localhost:9000/static/images/lulosoftLogo.jpg" alt="">
+        <div class="big-title-text">Work Description Report</div>
+        <div class="report-info">
+            <div class="inline flex-left">
+                <div class="title-text padding-right">Employee: </div>
+                <div class="info-text">Juan</div>
+            </div>
+            <div class="inline flex-right">
+                <div class="title-text padding-right">Report period: </div>
+                <div class="info-text">07/11/1987 - 07/23/1987</div>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <table>
+            <thead>
+                <tr class="title-text">
+                    <th class="date-colum" scope="col">Date</th>
+                    <th class="task-colum" scope="col">Task Description</th>
+                    <th class="hours-colum" scope="col">Hours Spent</th>
+                </tr>
+            </thead>
+            <tbody>
+                <div>
+                    <tr class="general-text">
+                        <td>07/11/1987</td>
+                        <td >Some task description asdfasdfadsfa</td>
+                        <td class="align-right">8</td>
+                    </tr>
+                    <tr class="general-text">
+                        <td>07/11/1987</td>
+                        <td>Some task description asdfasdfadsfa</td>
+                        <td class="align-right">8</td>
+                    </tr>
+                    <tr class="general-text">
+                        <td>07/11/1987</td>
+                        <td>Some task description asdfasdfadsfa</td>
+                        <td class="align-right">8</td>
+                    </tr>
+                    <tr class="general-text">
+                        <td>07/11/1987</td>
+                        <td>Some task description asdfasdfadsfa</td>
+                        <td class="align-right">8</td>
+                    </tr>
+                </div>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="2">Total Hours</td>
+                    <td>24</td>
+                </tr>
+            </tfoot>
+          </table>
+    </div>
+</body>
+</html>
