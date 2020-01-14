@@ -10,7 +10,7 @@
         "copy:invoice": "cp -rf ./src/invoice ./build/src/",
         "copy:hourly:report": "cp -rf ./src/hourlyReport ./build/src/",
         "copy:pdf:output": "cp -rf ./src/pdf ./build/src/",
-        "copy:files": "yarn copy:assets && yarn copy:invoice && yarn copy:pdf:output",
+        "copy:files": "yarn copy:assets && yarn copy:invoice && yarn copy:hourly:report && yarn copy:pdf:output",
         "lint": "tslint -c tslint.json -p tsconfig.json",
         "serve": "NODE_ENV=development && nodemon ./bin/www",
         "start": "node ./build/bin/www.js",

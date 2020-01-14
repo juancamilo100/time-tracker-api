@@ -9,6 +9,7 @@ import Report from '../database/entities/report.entity';
 import Employee from "../database/entities/employee.entity";
 import Task from '../database/entities/task.entity';
 import { InvoiceService } from "../services/invoice.service";
+import { HourlyReportService } from "../services/hourly.report.service";
 import Validator from '../utils/validator';
 import createError from "http-errors";
 import { ReportService } from '../services/report.service';
@@ -20,12 +21,21 @@ import IEmailService, { EmailAttachment } from '../interfaces/email.service.inte
 import { INVOICE_EMAIL_SENDER_ADDRESS } from '../../config';
 import { toTitleCase, toMoney } from '../utils/formatter';
 
+interface PopulatedReport {
+    employee?: Employee
+    startDate: Date,
+    endDate: Date,
+    tasks: Task[],
+    totalHours: number
+}
+
 export default class InvoiceController {
     constructor(
         private reportService: IDataService<Report>,
         private employeeService: IDataService<Employee>,
         private taskService: IDataService<Task>,
         private invoiceService: InvoiceService,
+        private hourlyReportService: HourlyReportService,
         private emailService: IEmailService,
         private validate: Validator) {}
         private invoiceTermNumberOfDays = 14;
@@ -59,8 +69,9 @@ export default class InvoiceController {
                 });
                 
                 const tasks = await (this.taskService as TaskService).getAllTasksForGroupOfReports(reportIds);
-                const employees = this.getEmployeesInvoiceDetails(reports, tasks);
-                const invoiceTableElements = await this.getInvoiceTableElements(employees);
+                const populatedReports = await this.getPopulatedReports(reports, tasks);
+                const employeesDetails = this.getEmployeesInvoiceDetails(populatedReports);
+                const invoiceTableElements = await this.getInvoiceTableElements(employeesDetails);
 
                 let invoice = await this.invoiceService.getByFields({
                     start_date: invoiceStartDate,
@@ -93,23 +104,36 @@ export default class InvoiceController {
                     invoiceTotal: `$${toMoney(invoiceTableElements.invoiceTotal)}`
                 }
 
-                const hourlyReportParams = {
-                    employeeName: 'HOURLY_REPORT_EMPLOYEE_NAME',
-                    reportPeriod: 'HOURLY_REPORT_PERIOD',
-                    tableRows: 'HOURLY_REPORT_TABLE_ROWS',
-                    totalHours: 'HOURLY_REPORT_TOTAL_HOURS',
-                }
-                
                 const invoicePdfPath = await this.invoiceService.generateInvoicePdf(invoiceParams);
+                const invoicePdfAttachment = {
+                    filename: `Lulosoft Invoice #${invoiceParams.invoiceNumber}.pdf`,
+                    path: invoicePdfPath
+                }
+
+                let hourlyReportPdfAttachments = [];
+                for (const report of populatedReports) {
+                    const hourlyReportParams = {
+                        employeeName: toTitleCase(`${report.employee!.first_name} ${report.employee!.last_name}`),
+                        reportPeriod: `${moment(report.startDate).format("MM-DD-YYYY")} to ${moment(report.endDate).format("MM-DD-YYYY")}`,
+                        tableRows: await this.getHourlyReportTasksTableElements(report.tasks),
+                        totalHours: report.totalHours.toString(),
+                    }
+
+                    const hourlyReportPdfPath = await this.hourlyReportService.generateHourlyReportPdf(hourlyReportParams);
+                    hourlyReportPdfAttachments.push({
+                        filename: `Lulosoft Hourly Report - ${hourlyReportParams.employeeName} - ${hourlyReportParams.reportPeriod}.pdf`,
+                        path: hourlyReportPdfPath
+                    })
+                }
+
+                const attachments = [invoicePdfAttachment].concat(hourlyReportPdfAttachments);
+                
                 await this.emailService.sendMail({  
                     from: INVOICE_EMAIL_SENDER_ADDRESS!,
                     to: customer.email,
                     subject: `Invoice #${invoiceParams.invoiceNumber} Lulosoft`,
                     body: "Hello,\n\nPlease find attached the invoice and hourly report for this cycle.\n\nRegards,\n\n",
-                    attachments: [{
-                        filename: `Lulosoft Invoice #${invoiceParams.invoiceNumber}.pdf`,
-                        path: invoicePdfPath
-                    }]
+                    attachments
                 });
 
                 res.sendStatus(200);
@@ -118,8 +142,35 @@ export default class InvoiceController {
             }
         }
 
-        private async getHourlyReportTableElements(tasks: ObjectLiteral) {
-            
+        private async getPopulatedReports(reports: Report[], tasks: Task[]) {
+            let populatedReports: PopulatedReport[] = [];
+
+            for (const report of reports) {
+                let reportTasks = this.getTasksByReportId(tasks, report.id);
+                const reducer = (previousValue: number, currentValue: Task) => { 
+                    return previousValue + Number.parseInt(currentValue.hours) 
+                };
+                const totalHours = reportTasks.reduce(reducer, 0)
+
+                let populatedReport: PopulatedReport = {
+                    employee: await this.employeeService.get(report.employee_id.toString()),
+                    tasks: reportTasks,
+                    startDate: report.start_date,
+                    endDate: report.end_date,
+                    totalHours
+                };
+                populatedReports.push(populatedReport);
+            }
+
+            return populatedReports;
+        }
+
+        private async getHourlyReportTasksTableElements(tasks: Task[]) {
+            let tableElements = "";
+            for (let i = 0; i < tasks.length; i++) {
+                tableElements += `<tr><td>${moment(tasks[i].date_performed).format('L')}</td><td>${tasks[i].description}</td><td class='align-right'>${tasks[i].hours}</td></tr>`
+            }
+            return tableElements;
         }
     
         private async getInvoiceTableElements(employees: ObjectLiteral) {
@@ -133,29 +184,30 @@ export default class InvoiceController {
             let invoiceTotal = 0;
     
             for (const employeeId of Object.keys(employees)) {
-                const employee = await this.employeeService.get(employeeId);
-                const amount = employees[employeeId].totalHours * employee!.customer_rate;
+                const amount = employees[employeeId].totalHours * employees[employeeId].customerRate;
                 invoiceTotal += amount;
     
-                elements.descriptionList += `<div>* ${toTitleCase(employee!.job_title)}</div>`;
+                elements.descriptionList += `<div>* ${toTitleCase(employees[employeeId].jobTitle)}</div>`;
                 elements.quantityList += `<div>${employees[employeeId].totalHours}</div>`;
-                elements.rateList += `<div>$${toMoney(employee!.customer_rate)}</div>`;
+                elements.rateList += `<div>$${toMoney(employees[employeeId].customerRate)}</div>`;
                 elements.amountList += `<div>$${toMoney(amount)}</div>`;
             }
     
             return {elements, invoiceTotal};
         }
     
-        private getEmployeesInvoiceDetails(reports: any[], tasks: any[]) {
+        private getEmployeesInvoiceDetails(populatedReports: PopulatedReport[]) {
             const employees = {} as ObjectLiteral;
-            reports.forEach((report: Report) => {
-                let totalHours = 0;
-                employees[report.employee_id] = {};
-                this.getTasksByReportId(tasks, report.id).forEach((task) => {
-                    totalHours += Number.parseInt(task.hours);
-                });
-                employees[report.employee_id]['totalHours'] = totalHours;
+
+            populatedReports.forEach((report: PopulatedReport) => {
+                employees[report.employee!.id] = employees[report.employee!.id] || {};
+
+                const currentTotalHours = employees[report.employee!.id]['totalHours'];
+                employees[report.employee!.id]['totalHours'] =  currentTotalHours ? currentTotalHours + report.totalHours : report.totalHours;
+                employees[report.employee!.id]['jobTitle'] = report.employee!.job_title;
+                employees[report.employee!.id]['customerRate'] = report.employee!.customer_rate;
             });
+
             return employees;
         }
     

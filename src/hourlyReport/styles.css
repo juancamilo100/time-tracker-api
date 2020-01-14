@@ -10,64 +10,38 @@
 table {
     border-collapse: separate;
     border-spacing: 0;
-  }
-  th,
-  td {
+}
+
+th,
+td {
     padding: 15px 20px;
     vertical-align: middle;
-  }
-  thead {
+}
+
+.thead {
     background: linear-gradient(#ff7e27, #d2701b);
     color: #fff;
     text-align: left;
     font-size: 11px;
     text-transform: uppercase;
-  }
-  th:first-child {
-    border-top-left-radius: 5px;
-    text-align: left;
-  }
-  th:last-child {
-    border-top-right-radius: 5px;
-  }
-  tbody tr:nth-child(even) {
+}
+
+tbody tr:nth-child(even) {
     background: #f4f4f4;
-  }
-  td {
+}
+
+td {
     border-bottom: 1px solid #f4f4f4;
     border-right: 1px solid #f4f4f4;
-  }
-  td:first-child {
+}
+
+td:first-child {
     border-left: 1px solid #f4f4f4;
-  }
-  .book-title {
-    color: #395870;
-    display: block;
-  }
-  .item-stock,
-  .item-qty {
-    text-align: center;
-  }
-  .align-right {
+}
+
+.align-right {
     text-align: right;
-  }
-  .item-multiple {
-    display: block;
-  }
-  tfoot {
-    text-align: right;
-  }
-  tfoot tr:last-child {
-    background: rgb(228, 226, 226);
-    color: #d7731c;
-    font-weight: bold;
-  }
-  tfoot tr:last-child td:first-child {
-    border-bottom-left-radius: 5px;
-  }
-  tfoot tr:last-child td:last-child {
-    border-bottom-right-radius: 5px;
-  } 
+}
 
 .soften {
     color: #3c3c3c;
@@ -123,6 +97,10 @@ table {
     padding-right: 20px;
 }
 
+.padding-top {
+    padding-top: 3px;
+}
+
 .divider {
     padding: 7px;
     border-top: 1px solid #eeeded;
@@ -142,3 +120,19 @@ table {
     height: 20%;
     padding-bottom: 50px;
 }
+
+.total-row {
+    color: #ff7e27;
+    text-align: right;
+    background: #ff7d2735;
+    border-bottom-left-radius: 5px;
+}
+.total-row td:first-child {
+    border-bottom-left-radius: 5px;
+}
+
+.total-row td:last-child {
+    border-bottom-right-radius: 5px;
+}
+
+

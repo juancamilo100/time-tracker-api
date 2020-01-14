@@ -15,18 +15,27 @@ const variableMapping = [
         envVarName: hourlyReportEnvVarNames.reportPeriod
     },
     {
-        elementId: "table-rows",
+        elementId: "table",
         envVarName: hourlyReportEnvVarNames.tableRows
-    },
-    {
-        elementId: "total-hours",
-        envVarName: hourlyReportEnvVarNames.totalHours
-    },
+    }
 ]
+
+const getTableFooter = () =>     
+    `<div class="total-row title-text">
+        <tr class="total-row title-text">
+            <td colspan="2">Total Hours</td>
+            <td>${window.env[hourlyReportEnvVarNames.totalHours]}</td>
+        </tr>
+    </div>`
 
 window.onload = (event) => {
     for (let i = 0; i < variableMapping.length; i++) {
         let element = document.getElementById(variableMapping[i].elementId);
-        element.innerHTML = window.env[variableMapping[i].envVarName];
+        element.innerHTML += window.env[variableMapping[i].envVarName];
     }
+
+    let table = document.getElementById('table');
+    table.innerHTML += getTableFooter();
 };
+
+
