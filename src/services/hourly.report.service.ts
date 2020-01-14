@@ -1,6 +1,5 @@
 import path from 'path';
 import { HourlyReportParameters } from '../../types/types';
-import moment from 'moment';
 import HtmlToPdfService from './pdf.service';
 
 export const hourlyReportEnvVarNames: HourlyReportParameters = {
@@ -22,9 +21,9 @@ export class HourlyReportService {
         }
     )
 
-    public async generateInvoicePdf(invoiceParams: HourlyReportParameters): Promise<string> {
-        const invoicePdfFileName = `hourly-report-${moment(invoiceParams.invoiceDate).format("MM.DD.YYYY")}`;
-        return this.htmlToPdfService.generatePdf(invoicePdfFileName, invoiceParams);
+    public async generateHourlyReportPdf(hourlyReportParams: HourlyReportParameters): Promise<string> {
+        const hourlyReportPdfFileName = `hourly-report-${hourlyReportParams.employeeName}-${hourlyReportParams.reportPeriod}`;
+        return this.htmlToPdfService.generatePdf(hourlyReportPdfFileName, hourlyReportParams);
     }
 }
 

@@ -1,4 +1,4 @@
-const invoiceEnvVarNames = {
+const hourlyReportEnvVarNames = {
     employeeName: 'HOURLY_REPORT_EMPLOYEE_NAME',
     reportPeriod: 'HOURLY_REPORT_PERIOD',
     tableRows: 'HOURLY_REPORT_TABLE_ROWS',
@@ -8,7 +8,19 @@ const invoiceEnvVarNames = {
 const variableMapping = [
     {
         elementId: "employee-name",
-        envVarName: invoiceEnvVarNames.invoiceCustomerName
+        envVarName: hourlyReportEnvVarNames.employeeName
+    },
+    {
+        elementId: "report-period",
+        envVarName: hourlyReportEnvVarNames.reportPeriod
+    },
+    {
+        elementId: "table-rows",
+        envVarName: hourlyReportEnvVarNames.tableRows
+    },
+    {
+        elementId: "total-hours",
+        envVarName: hourlyReportEnvVarNames.totalHours
     },
 ]
 

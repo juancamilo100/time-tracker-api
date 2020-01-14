@@ -60,7 +60,7 @@ export default class InvoiceController {
                 
                 const tasks = await (this.taskService as TaskService).getAllTasksForGroupOfReports(reportIds);
                 const employees = this.getEmployeesInvoiceDetails(reports, tasks);
-                const tableElements = await this.getTableElements(employees);
+                const invoiceTableElements = await this.getInvoiceTableElements(employees);
 
                 let invoice = await this.invoiceService.getByFields({
                     start_date: invoiceStartDate,
@@ -72,7 +72,7 @@ export default class InvoiceController {
                         customer_id: customer.id,
                         start_date: invoiceStartDate,
                         end_date: invoiceEndDate,
-                        dollar_amount: tableElements.invoiceTotal,
+                        dollar_amount: invoiceTableElements.invoiceTotal,
                         submitted_date: moment().format('L')
                     } as unknown as Invoice);
                 }
@@ -86,11 +86,18 @@ export default class InvoiceController {
                     invoiceDate: moment(invoice.submitted_date).format('L'),
                     invoiceDueDate: moment().add(this.invoiceTermNumberOfDays, 'days').format('L'),
                     invoiceTerms: `${this.invoiceTermNumberOfDays} days`,
-                    invoiceDescriptionList: tableElements.elements.descriptionList,
-                    invoiceQuantityList: tableElements.elements.quantityList,
-                    invoiceRateList: tableElements.elements.rateList,
-                    invoiceAmountList: tableElements.elements.amountList,
-                    invoiceTotal: `$${toMoney(tableElements.invoiceTotal)}`
+                    invoiceDescriptionList: invoiceTableElements.elements.descriptionList,
+                    invoiceQuantityList: invoiceTableElements.elements.quantityList,
+                    invoiceRateList: invoiceTableElements.elements.rateList,
+                    invoiceAmountList: invoiceTableElements.elements.amountList,
+                    invoiceTotal: `$${toMoney(invoiceTableElements.invoiceTotal)}`
+                }
+
+                const hourlyReportParams = {
+                    employeeName: 'HOURLY_REPORT_EMPLOYEE_NAME',
+                    reportPeriod: 'HOURLY_REPORT_PERIOD',
+                    tableRows: 'HOURLY_REPORT_TABLE_ROWS',
+                    totalHours: 'HOURLY_REPORT_TOTAL_HOURS',
                 }
                 
                 const invoicePdfPath = await this.invoiceService.generateInvoicePdf(invoiceParams);
@@ -110,8 +117,12 @@ export default class InvoiceController {
                 return next(createError(500, error));
             }
         }
+
+        private async getHourlyReportTableElements(tasks: ObjectLiteral) {
+            
+        }
     
-        private async getTableElements(employees: ObjectLiteral) {
+        private async getInvoiceTableElements(employees: ObjectLiteral) {
             let elements = {
                 descriptionList: "",
                 quantityList: "",
