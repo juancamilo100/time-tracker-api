@@ -6,22 +6,22 @@
   <link rel="stylesheet" href="styles.css">
   <link href="https://fonts.googleapis.com/css?family=Heebo:700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Kulim+Park&display=swap" rel="stylesheet">
-  <script src="taskReportParams.js"></script>
-  <script src="http://localhost:9000/static/javascript/populateTaskReportElements.js"></script>
+  <script src="hourlyReportParams.js"></script>
+  <script src="http://localhost:9000/static/javascript/populateHourlyReportElements.js"></script>
 </head>
 
 <body>
     <div class="container">
         <img class="logo" src="http://localhost:9000/static/images/lulosoftLogo.jpg" alt="">
-        <div class="big-title-text">Work Description Report</div>
+        <div class="big-title-text">Hourly Report<span class="big-period">.</span></div>
         <div class="report-info">
             <div class="inline flex-left">
-                <div class="title-text padding-right">Employee: </div>
-                <div class="info-text">Juan</div>
+                <div class="title-text soften padding-right">Employee: </div>
+                <div id="employee-name" class="info-text"></div>
             </div>
             <div class="inline flex-right">
-                <div class="title-text padding-right">Report period: </div>
-                <div class="info-text">07/11/1987 - 07/23/1987</div>
+                <div class="title-text padding-right soften">Report period: </div>
+                <div id="report-period" class="info-text"></div>
             </div>
         </div>
         <div class="divider"></div>
@@ -29,38 +29,38 @@
             <thead>
                 <tr class="title-text">
                     <th class="date-colum" scope="col">Date</th>
-                    <th class="task-colum" scope="col">Task Description</th>
+                    <th class="task-colum" scope="col">Work Description</th>
                     <th class="hours-colum" scope="col">Hours Spent</th>
                 </tr>
             </thead>
             <tbody>
-                <div>
-                    <tr class="general-text">
-                        <td>07/11/1987</td>
-                        <td >Some task description asdfasdfadsfa</td>
-                        <td class="align-right">8</td>
-                    </tr>
-                    <tr class="general-text">
+                <div id="table-rows" class="general-text">
+                    <!-- <tr>
                         <td>07/11/1987</td>
                         <td>Some task description asdfasdfadsfa</td>
                         <td class="align-right">8</td>
                     </tr>
-                    <tr class="general-text">
+                    <tr>
                         <td>07/11/1987</td>
                         <td>Some task description asdfasdfadsfa</td>
                         <td class="align-right">8</td>
                     </tr>
-                    <tr class="general-text">
+                    <tr>
                         <td>07/11/1987</td>
                         <td>Some task description asdfasdfadsfa</td>
                         <td class="align-right">8</td>
                     </tr>
+                    <tr>
+                        <td>07/11/1987</td>
+                        <td>Some task description asdfasdfadsfa</td>
+                        <td class="align-right">8</td>
+                    </tr> -->
                 </div>
             </tbody>
             <tfoot>
                 <tr>
                     <td colspan="2">Total Hours</td>
-                    <td>24</td>
+                    <td id="total-hours"></td>
                 </tr>
             </tfoot>
           </table>

@@ -10,12 +10,10 @@
 table {
     border-collapse: separate;
     border-spacing: 0;
-    min-width: 70%;
-    position: relative;
   }
   th,
   td {
-    padding: 10px 15px;
+    padding: 15px 20px;
     vertical-align: middle;
   }
   thead {
@@ -71,16 +69,25 @@ table {
     border-bottom-right-radius: 5px;
   } 
 
-.title-text {
+.soften {
     color: #3c3c3c;
+}
+
+.title-text {
     font-weight: 600;
-    font-size: 17px;
+    font-size: 20px;
 }
 
 .big-title-text {
-    font-weight: 600;
+    font-weight: 900;
     font-size: 30px;
+    color: #3c3c3c;
+}
+
+.big-period {
+    font-size: 50px;
     color: #ff7e27;
+    padding-left: 2px;
 }
 
 .info-text {
@@ -118,7 +125,7 @@ table {
 
 .divider {
     padding: 7px;
-    border-top: 1px solid #f4f4f4;
+    border-top: 1px solid #eeeded;
 }
 
 .flex-left {

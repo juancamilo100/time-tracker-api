@@ -21,6 +21,9 @@ export interface InvoiceParameters extends ObjectLiteral {
     invoiceTotal: string;
 }
 
-export interface TaskReportParameters extends ObjectLiteral {
-    employeeName: string;
+export interface HourlyReportParameters extends ObjectLiteral {
+    employeeName: string,
+    reportPeriod: string,
+    tableRows: string,
+    totalHours: string
 }

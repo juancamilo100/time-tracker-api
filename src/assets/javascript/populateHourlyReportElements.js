@@ -1,5 +1,8 @@
 const invoiceEnvVarNames = {
-    employeeName: 'TASK_REPORT_EMPLOYEE_NAME',
+    employeeName: 'HOURLY_REPORT_EMPLOYEE_NAME',
+    reportPeriod: 'HOURLY_REPORT_PERIOD',
+    tableRows: 'HOURLY_REPORT_TABLE_ROWS',
+    totalHours: 'HOURLY_REPORT_TOTAL_HOURS',
 }
 
 const variableMapping = [
