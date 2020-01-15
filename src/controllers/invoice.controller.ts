@@ -59,7 +59,7 @@ export default class InvoiceController {
             const customer = await this.validate.customerId(req.params.customerId);
             let end = performance.now();
             let timeElapsed = end - start;
-            console.log(`******** Validation: ${timeElapsed}`);
+            console.log(`******** Validation: ${timeElapsed.toFixed(2)} ms`);
             
             const reports = await (this.reportService as ReportService)
                 .getCustomerReportsForDates(
@@ -83,7 +83,7 @@ export default class InvoiceController {
             const invoiceTableElements = await this.getInvoiceTableElements(employeesDetails);
             end = performance.now();
             timeElapsed = end - start;
-            console.log(`******** Data gathering: ${timeElapsed}`);
+            console.log(`******** Data gathering: ${timeElapsed.toFixed(2)} ms`);
 
             let invoice = await this.invoiceService.getByFields({
                 start_date: invoiceStartDate,
@@ -106,7 +106,7 @@ export default class InvoiceController {
             const invoicePdfPath = await this.invoiceService.generateInvoicePdf(invoiceParams);
             end = performance.now();
             timeElapsed = end - start;
-            console.log(`******** Generate invoice PDF: ${timeElapsed}`);
+            console.log(`******** Generate invoice PDF: ${timeElapsed.toFixed(2)} ms`);
 
             const invoicePdfAttachment: EmailAttachment = {
                 filename: `Lulosoft Invoice #${invoiceParams.invoiceNumber}.pdf`,
@@ -121,7 +121,7 @@ export default class InvoiceController {
             await this.sendInvoiceEmail(customer, invoiceParams, attachments);
             end = performance.now();
             timeElapsed = end - start;
-            console.log(`******** Send email: ${timeElapsed}`);
+            console.log(`******** Send email: ${timeElapsed.toFixed(2)} ms`);
 
             res.sendStatus(200);
         } catch (error) {
@@ -150,7 +150,7 @@ export default class InvoiceController {
             const hourlyReportPdfPath = await this.hourlyReportService.generateHourlyReportPdf(hourlyReportParams);
             let end = performance.now();
             let timeElapsed = end - start;
-            console.log(`******** Generate single hourly report PDF: ${timeElapsed}`);
+            console.log(`******** Generate single hourly report PDF: ${timeElapsed.toFixed(2)} ms`);
 
             hourlyReportPdfAttachments.push({
                 filename: `Lulosoft Hourly Report - ${hourlyReportParams.employeeName} - ${hourlyReportParams.reportPeriod}.pdf`,
@@ -159,7 +159,7 @@ export default class InvoiceController {
         }
         let end = performance.now();
         let timeElapsed = end - start;
-        console.log(`******** Generate all hourly report PDFs: ${timeElapsed}`);
+        console.log(`******** Generate all hourly report PDFs: ${timeElapsed.toFixed(2)} ms`);
 
         return hourlyReportPdfAttachments;
     }
