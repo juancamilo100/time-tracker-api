@@ -22,6 +22,8 @@ import { INVOICE_EMAIL_SENDER_ADDRESS } from '../../config';
 import { toTitleCase, toMoney } from '../utils/formatter';
 import Customer from "../database/entities/customer.entity";
 
+import { performance } from 'perf_hooks';
+
 interface PopulatedReport {
     employee?: Employee
     startDate: Date,
@@ -49,11 +51,16 @@ export default class InvoiceController {
         }
 
         try {
+            let start = performance.now();
             this.validate.dateFormat(invoiceStartDate, "L");
             this.validate.dateFormat(invoiceEndDate, "L");
             this.validate.dateRange(invoiceStartDate, invoiceEndDate);
 
             const customer = await this.validate.customerId(req.params.customerId);
+            let end = performance.now();
+            let timeElapsed = end - start;
+            console.log(`******** Validation: ${timeElapsed}`);
+            
             const reports = await (this.reportService as ReportService)
                 .getCustomerReportsForDates(
                     customer.id, 
@@ -69,10 +76,14 @@ export default class InvoiceController {
                 return report.id;
             });
             
+            start = performance.now();
             const tasks = await (this.taskService as TaskService).getAllTasksForGroupOfReports(reportIds);
             const populatedReports = await this.getPopulatedReports(reports, tasks);
             const employeesDetails = this.getEmployeesInvoiceDetails(populatedReports);
             const invoiceTableElements = await this.getInvoiceTableElements(employeesDetails);
+            end = performance.now();
+            timeElapsed = end - start;
+            console.log(`******** Data gathering: ${timeElapsed}`);
 
             let invoice = await this.invoiceService.getByFields({
                 start_date: invoiceStartDate,
@@ -91,7 +102,12 @@ export default class InvoiceController {
             
             let invoiceParams: InvoiceParameters = this.buildInvoicePdfParams(customer, invoice, invoiceTableElements)
 
+            start = performance.now();
             const invoicePdfPath = await this.invoiceService.generateInvoicePdf(invoiceParams);
+            end = performance.now();
+            timeElapsed = end - start;
+            console.log(`******** Generate invoice PDF: ${timeElapsed}`);
+
             const invoicePdfAttachment: EmailAttachment = {
                 filename: `Lulosoft Invoice #${invoiceParams.invoiceNumber}.pdf`,
                 path: invoicePdfPath
@@ -100,7 +116,12 @@ export default class InvoiceController {
             const hourlyReportPdfAttachments: EmailAttachment[] = await this.getHourlyReportPdfAttachments(populatedReports);
 
             const attachments: EmailAttachment[] = [invoicePdfAttachment].concat(hourlyReportPdfAttachments);
+
+            start = performance.now();
             await this.sendInvoiceEmail(customer, invoiceParams, attachments);
+            end = performance.now();
+            timeElapsed = end - start;
+            console.log(`******** Send email: ${timeElapsed}`);
 
             res.sendStatus(200);
         } catch (error) {
@@ -121,15 +142,24 @@ export default class InvoiceController {
     private async getHourlyReportPdfAttachments(populatedReports: PopulatedReport[]) {
         let hourlyReportPdfAttachments = [];
 
+        let start = performance.now();
         for (const report of populatedReports) {
             const hourlyReportParams = await this.buildHourlyReportParams(report);
             
+            let start = performance.now();
             const hourlyReportPdfPath = await this.hourlyReportService.generateHourlyReportPdf(hourlyReportParams);
+            let end = performance.now();
+            let timeElapsed = end - start;
+            console.log(`******** Generate single hourly report PDF: ${timeElapsed}`);
+
             hourlyReportPdfAttachments.push({
                 filename: `Lulosoft Hourly Report - ${hourlyReportParams.employeeName} - ${hourlyReportParams.reportPeriod}.pdf`,
                 path: hourlyReportPdfPath
             });
         }
+        let end = performance.now();
+        let timeElapsed = end - start;
+        console.log(`******** Generate all hourly report PDFs: ${timeElapsed}`);
 
         return hourlyReportPdfAttachments;
     }
