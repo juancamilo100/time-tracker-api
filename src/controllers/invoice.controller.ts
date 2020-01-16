@@ -57,9 +57,7 @@ export default class InvoiceController {
             this.validate.dateRange(invoiceStartDate, invoiceEndDate);
 
             const customer = await this.validate.customerId(req.params.customerId);
-            let end = performance.now();
-            let timeElapsed = end - start;
-            console.log(`******** Validation: ${timeElapsed.toFixed(2)} ms`);
+
             
             const reports = await (this.reportService as ReportService)
                 .getCustomerReportsForDates(
@@ -68,28 +66,29 @@ export default class InvoiceController {
                     invoiceEndDate
                 );
 
+            let end = performance.now();
+            let timeElapsed = end - start;
+            console.log(`******** Validation: ${timeElapsed.toFixed(2)} ms`);
+
             if(!reports.length) {
                 return next(createError(404, `No reports have been submitted for Customer ID: ${customer.id} for this time period`));
             }
-
+            
+            start = performance.now();
             const reportIds = reports.map((report) => {
                 return report.id;
             });
             
-            start = performance.now();
             const tasks = await (this.taskService as TaskService).getAllTasksForGroupOfReports(reportIds);
             const populatedReports = await this.getPopulatedReports(reports, tasks);
             const employeesDetails = this.getEmployeesInvoiceDetails(populatedReports);
             const invoiceTableElements = await this.getInvoiceTableElements(employeesDetails);
-            end = performance.now();
-            timeElapsed = end - start;
-            console.log(`******** Data gathering: ${timeElapsed.toFixed(2)} ms`);
-
+            
             let invoice = await this.invoiceService.getByFields({
                 start_date: invoiceStartDate,
                 end_date: invoiceEndDate
             });
-
+            
             if(!invoice) {
                 invoice = await this.invoiceService.create({
                     customer_id: customer.id,
@@ -101,6 +100,9 @@ export default class InvoiceController {
             }
             
             let invoiceParams: InvoiceParameters = this.buildInvoicePdfParams(customer, invoice, invoiceTableElements)
+            end = performance.now();
+            timeElapsed = end - start;
+            console.log(`******** Data gathering: ${timeElapsed.toFixed(2)} ms`);
 
             start = performance.now();
             const invoicePdfPath = await this.invoiceService.generateInvoicePdf(invoiceParams);
