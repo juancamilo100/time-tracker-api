@@ -73,3 +73,12 @@ export const addHashToFileName = (filePath: string, hash: string) => {
 export const toMoney = (value: number) => {
     return value.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
 }
+
+export const formatReturnDataPropsKeys = (object: object) => {
+    const formattedObject = toCamelCaseAllPropsKeys(object as ObjectLiteral);
+
+    delete formattedObject.createdAt;
+    delete formattedObject.updatedAt;
+
+    return formattedObject;
+}

@@ -6,11 +6,11 @@ import {
 import createError from "http-errors";
 import { ObjectLiteral } from "../../types/generics";
 import Report from "../database/entities/report.entity";
-import { toCamelCaseAllPropsKeys, toSnakeCaseAllPropsKeys } from "../utils/formatter";
+import { toSnakeCaseAllPropsKeys, formatReturnDataPropsKeys } from "../utils/formatter";
 import IDataService from "../interfaces/data.service.interface";
 import Task from '../database/entities/task.entity';
 import Validator from '../utils/validator';
-import moment from "moment";
+import { TaskService } from '../services/task.service';
 
 interface ReportWithTasks extends Report {
     tasks: Task[]
@@ -28,7 +28,7 @@ class ReportsController {
         await this.addTasksToReports(reports);
 
         res.send(reports.map((report) => {
-            return this.formatPropsKeys(report);
+            return formatReturnDataPropsKeys(report);
         }));
     }
 
@@ -39,14 +39,14 @@ class ReportsController {
 
         try {
             let report = await this.validate.reportId(req.params.reportId);
-            let tasks = await this.getTasksByReportId(report.id);
+            let tasks = await (this.taskService as TaskService).getTasksByReportId(report.id);
 
             report = {
                 ...report,
                 tasks 
             } as ReportWithTasks;
 
-            res.send(this.formatPropsKeys(report));
+            res.send(formatReturnDataPropsKeys(report));
         } catch (error) {
             return next(createError(500, error));
         }
@@ -140,7 +140,7 @@ class ReportsController {
                 tasks: createdTasks
             } as ReportWithTasks;
 
-            res.send(this.formatPropsKeys(createdReport));
+            res.send(formatReturnDataPropsKeys(createdReport));
         } catch (error) {
             return next(createError(500, error));
         }
@@ -229,7 +229,7 @@ class ReportsController {
 
     private async addTasksToReports(reports: Report[]) {
         for (const [index, report] of reports.entries()) {
-            const tasks = await this.getTasksByReportId(report.id);
+            const tasks = await (this.taskService as TaskService).getTasksByReportId(report.id);
 
             reports[index] = {
                 ...reports[index],
@@ -238,17 +238,14 @@ class ReportsController {
         }
     }
 
-    private async getTasksByReportId(reportId: number) {
-        let tasks = await this.taskService.getAllByFields({report_id: reportId});
-        return this.formatObjectsInArrayPropsKeys(tasks);
-    }
+
 
     private async createReportTasks(tasks: Task[], reportId: number) {
         const createdTasks: Task[] = [];
 
         for (let task of tasks) {
             const createdTask: Task = await this.createTask(task, reportId);
-            createdTasks.push(this.formatPropsKeys(createdTask) as Task);
+            createdTasks.push(formatReturnDataPropsKeys(createdTask) as Task);
         }
 
         return this.formatObjectsInArrayPropsKeys(createdTasks) as Task[];
@@ -260,18 +257,9 @@ class ReportsController {
         return createdTask;
     }
 
-    private formatPropsKeys(object: object) {
-        const formattedObject = toCamelCaseAllPropsKeys(object as ObjectLiteral);
-
-        delete formattedObject.createdAt;
-        delete formattedObject.updatedAt;
-
-        return formattedObject;
-    }
-
     private formatObjectsInArrayPropsKeys(arrayOfObjects: object[]) {
         const formatedArrayOfObjects = arrayOfObjects.map((task: ObjectLiteral) => {
-            return this.formatPropsKeys(task);
+            return formatReturnDataPropsKeys(task);
         });
 
         return formatedArrayOfObjects;

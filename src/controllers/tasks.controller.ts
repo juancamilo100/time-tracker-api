@@ -38,7 +38,7 @@ class TasksController {
         task.report_id = Number.parseInt(req.params.reportId!);
         const createdTask: Task = await this.taskService.create(task);
 
-        res.send(this.formatPropsKeys(createdTask));
+        res.send(this.formatReturnDataPropsKeys(createdTask));
     }
 
     public updateTaskById: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
@@ -94,7 +94,7 @@ class TasksController {
         }
     }
 
-    private formatPropsKeys(object: object) {
+    private formatReturnDataPropsKeys(object: object) {
         const formattedObject = toCamelCaseAllPropsKeys(object as ObjectLiteral);
 
         delete formattedObject.createdAt;

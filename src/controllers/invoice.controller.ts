@@ -9,7 +9,7 @@ import Report from '../database/entities/report.entity';
 import Employee from "../database/entities/employee.entity";
 import Task from '../database/entities/task.entity';
 import { InvoiceService } from "../services/invoice.service";
-import { HourlyReportService } from "../services/hourly.report.service";
+import { HourlyReportService, PopulatedReport } from "../services/hourly.report.service";
 import Validator from '../utils/validator';
 import createError from "http-errors";
 import { ReportService } from '../services/report.service';
@@ -21,14 +21,6 @@ import IEmailService, { EmailAttachment } from '../interfaces/email.service.inte
 import { INVOICE_EMAIL_SENDER_ADDRESS } from '../../config';
 import { toTitleCase, toMoney } from '../utils/formatter';
 import Customer from "../database/entities/customer.entity";
-
-interface PopulatedReport {
-    employee?: Employee
-    startDate: Date,
-    endDate: Date,
-    tasks: Task[],
-    totalHours: number
-}
 
 export default class InvoiceController {
     constructor(
@@ -65,12 +57,7 @@ export default class InvoiceController {
                 return next(createError(404, `No reports have been submitted for Customer ID: ${customer.id} for this time period`));
             }
 
-            const reportIds = reports.map((report) => {
-                return report.id;
-            });
-            
-            const tasks = await (this.taskService as TaskService).getAllTasksForGroupOfReports(reportIds);
-            const populatedReports = await this.getPopulatedReports(reports, tasks);
+            const populatedReports = await this.getPopulatedReports(reports);
             const employeesDetails = this.getEmployeesInvoiceDetails(populatedReports);
             const invoiceTableElements = await this.getInvoiceTableElements(employeesDetails);
 
@@ -97,7 +84,7 @@ export default class InvoiceController {
                 path: invoicePdfPath
             }
 
-            const hourlyReportPdfAttachments: EmailAttachment[] = await this.getHourlyReportPdfAttachments(populatedReports);
+            const hourlyReportPdfAttachments: EmailAttachment[] = await this.hourlyReportService.getHourlyReportPdfAttachments(populatedReports);
 
             const attachments: EmailAttachment[] = [invoicePdfAttachment].concat(hourlyReportPdfAttachments);
             await this.sendInvoiceEmail(customer, invoiceParams, attachments);
@@ -118,31 +105,6 @@ export default class InvoiceController {
         });
     }
 
-    private async getHourlyReportPdfAttachments(populatedReports: PopulatedReport[]) {
-        let hourlyReportPdfAttachments = [];
-
-        for (const report of populatedReports) {
-            const hourlyReportParams = await this.buildHourlyReportParams(report);
-            
-            const hourlyReportPdfPath = await this.hourlyReportService.generateHourlyReportPdf(hourlyReportParams);
-            hourlyReportPdfAttachments.push({
-                filename: `Lulosoft Hourly Report - ${hourlyReportParams.employeeName} - ${hourlyReportParams.reportPeriod}.pdf`,
-                path: hourlyReportPdfPath
-            });
-        }
-
-        return hourlyReportPdfAttachments;
-    }
-
-    private async buildHourlyReportParams(report: PopulatedReport) {
-        return {
-            employeeName: toTitleCase(`${report.employee!.first_name} ${report.employee!.last_name}`),
-            reportPeriod: `${moment(report.startDate).format("MM-DD-YYYY")} to ${moment(report.endDate).format("MM-DD-YYYY")}`,
-            tableRows: await this.getHourlyReportTasksTableElements(report.tasks),
-            totalHours: report.totalHours.toString()
-        };
-    }
-
     private buildInvoicePdfParams(customer: Customer, invoice: Invoice, invoiceTableElements: { elements: ObjectLiteral; invoiceTotal: number; }): InvoiceParameters {
         return {
             invoiceCustomerName: toTitleCase(customer.name),
@@ -161,19 +123,19 @@ export default class InvoiceController {
         };
     }
 
-    private async getPopulatedReports(reports: Report[], tasks: Task[]) {
+    private async getPopulatedReports(reports: Report[]) {
         let populatedReports: PopulatedReport[] = [];
 
         for (const report of reports) {
-            let reportTasks = this.getTasksByReportId(tasks, report.id);
+            let tasks = await (this.taskService as TaskService).getTasksByReportId(report.id);
             const reducer = (previousValue: number, currentValue: Task) => { 
                 return previousValue + Number.parseInt(currentValue.hours) 
             };
-            const totalHours = reportTasks.reduce(reducer, 0)
+            const totalHours = tasks.reduce(reducer, 0)
 
             let populatedReport: PopulatedReport = {
                 employee: await this.employeeService.get(report.employee_id.toString()),
-                tasks: reportTasks,
+                tasks,
                 startDate: report.start_date,
                 endDate: report.end_date,
                 totalHours
@@ -182,14 +144,6 @@ export default class InvoiceController {
         }
 
         return populatedReports;
-    }
-
-    private async getHourlyReportTasksTableElements(tasks: Task[]) {
-        let tableElements = "";
-        for (let i = 0; i < tasks.length; i++) {
-            tableElements += `<tr><td>${moment(tasks[i].date_performed).format('L')}</td><td>${tasks[i].description}</td><td class='align-right'>${tasks[i].hours}</td></tr>`
-        }
-        return tableElements;
     }
 
     private async getInvoiceTableElements(employees: ObjectLiteral) {
@@ -229,11 +183,4 @@ export default class InvoiceController {
 
         return employees;
     }
-
-    private getTasksByReportId(tasks: Task[], reportId: number) {
-        return tasks.filter((task) => {
-            return task.report_id === reportId;
-        })
-    }
-
 }

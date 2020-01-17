@@ -23,6 +23,16 @@ export class TaskService extends BaseDataService<Task> {
             throw new Error("Something went wrong while getting tasks for reports");
         }
     }
+    
+    public async getTasksByReportId(reportId: number) {
+        try {
+            const tasks = await this.getAllByFields({report_id: reportId});
+            return tasks;
+        } catch (error) {
+            console.error(error);
+            throw new Error("Something went wrong while getting tasks for report");
+        }
+    }
 
     private getTasksForReportsQuery(reportIds: number[]) {
         let query: FindConditions<object>[] = [];
