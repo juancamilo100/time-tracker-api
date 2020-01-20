@@ -20,3 +20,10 @@ export interface InvoiceParameters extends ObjectLiteral {
     invoiceAmountList: string;
     invoiceTotal: string;
 }
+
+export interface HourlyReportParameters extends ObjectLiteral {
+    employeeName: string,
+    reportPeriod: string,
+    tableRows: string,
+    totalHours: string
+}

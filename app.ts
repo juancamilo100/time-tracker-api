@@ -20,10 +20,10 @@ app.use(cookieParser());
 app.use(compression());
 
 app.use("/static/javascript", [
-    express.static(path.join(__dirname, 'src/invoice/static/javascript')), 
+    express.static(path.join(__dirname, 'src/assets/javascript')), 
     setJavascriptContentType
 ]);
-
+app.use("/static/images", express.static(path.join(__dirname, 'src/assets/images')));
 app.use("/api-docs", swagger.serve, swagger.setup(swaggerDocument));
 app.use("/api", apiRoutes);
 

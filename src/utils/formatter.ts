@@ -53,3 +53,32 @@ export const toLowerCaseAllPropsValues = (object: ObjectLiteral, propsToExclude?
 
     return objectLiteral;
 };
+
+export const addHashToFileName = (filePath: string, hash: string) => {
+    let newFileName = "";
+    const pathSections = filePath.split("/");
+
+    if(pathSections[pathSections.length - 1]) {
+        let fileNameAndExtension = pathSections[pathSections.length - 1].split(".");
+        fileNameAndExtension[0] = fileNameAndExtension[0] + hash;
+        newFileName = fileNameAndExtension.join(".");
+    }
+
+    pathSections[pathSections.length - 1] = newFileName;
+    const newPath = pathSections.join("/");
+    
+    return { newFileName, newPath };
+}   
+
+export const toMoney = (value: number) => {
+    return value.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+}
+
+export const formatReturnDataPropsKeys = (object: object) => {
+    const formattedObject = toCamelCaseAllPropsKeys(object as ObjectLiteral);
+
+    delete formattedObject.createdAt;
+    delete formattedObject.updatedAt;
+
+    return formattedObject;
+}

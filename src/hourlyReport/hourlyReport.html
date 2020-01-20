@@ -1,0 +1,37 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Lulosoft Report</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css?family=Heebo:700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Kulim+Park&display=swap" rel="stylesheet">
+  <script src="hourlyReportParams.js"></script>
+  <script src="http://localhost:9000/static/javascript/populateHourlyReportElements.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <img class="logo" src="http://localhost:9000/static/images/lulosoftLogo.jpg" alt="">
+        <div class="big-title-text">Hourly Report<span class="big-period">.</span></div>
+        <div class="report-info">
+            <div class="inline flex-left">
+                <div class="title-text soften padding-right">Employee: </div>
+                <div id="employee-name" class="info-text padding-top"></div>
+            </div>
+            <div class="inline flex-right">
+                <div class="title-text padding-right soften">Report period: </div>
+                <div id="report-period" class="info-text padding-top"></div>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <table id="table">
+            <tr class="title-text thead">
+                <th class="date-colum" scope="col">Date</th>
+                <th class="task-colum" scope="col">Work Description</th>
+                <th class="hours-colum" scope="col">Hours Spent</th>
+            </tr>
+          </table>
+    </div>
+</body>
+</html>

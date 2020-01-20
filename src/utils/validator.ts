@@ -102,8 +102,8 @@ export default class Validator {
     }
 
     public reportPeriodDates(reportPeriod: ReportPeriod) {
-        this.dateFormat(reportPeriod.start);
-        this.dateFormat(reportPeriod.end);
+        this.dateFormat(reportPeriod.start, "L");
+        this.dateFormat(reportPeriod.end, "L");
 
         this.dateRange(reportPeriod.start, reportPeriod.end);
     }
@@ -135,8 +135,8 @@ export default class Validator {
         }
     }
     
-    public dateFormat(date: Date) {
-        if(!moment(date).isValid()) {
+    public dateFormat(date: Date, format: string) {
+        if(!moment(date, format).isValid()) {
             throw new Error("Date is invalid");
         }
     }

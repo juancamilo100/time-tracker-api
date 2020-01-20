@@ -36,7 +36,7 @@ class CustomersController {
         try {
             await this.validate.customerId(req.params.customerId);
             await this.customerService.delete(req.params.customerId);
-            res.send(200);
+            res.sendStatus(200);
         } catch (error) {
             return next(createError(500, error));
         }
@@ -51,7 +51,7 @@ class CustomersController {
             }
             await this.validate.customerId(req.params.customerId);
             await this.customerService.update(req.params.customerId, customerToUpdate);
-            res.send(200);
+            res.sendStatus(200);
         } catch (error) {
             return next(createError(500, error));
         }

@@ -1,27 +1,5 @@
 import nodemailer, { Transporter, TransportOptions } from 'nodemailer'
-import IEmailService from '../interfaces/email.service.interface';
-
-export interface EmailServiceConfig {
-    service: string
-    auth: {
-        user: string
-        pass: string
-    }
-}
-
-export interface EmailMessage {
-    from: string
-    to: string, 
-    subject: string, 
-    body?: string,
-    html?: string,
-    attachments?: [        
-        {   
-            filename: string,
-            path: string
-        }
-    ]
-}
+import IEmailService, { EmailServiceConfig, EmailMessage } from '../interfaces/email.service.interface';
 
 export class BaseEmailService implements IEmailService {
     private transporter: Transporter;
