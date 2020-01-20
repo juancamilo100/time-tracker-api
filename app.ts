@@ -13,7 +13,7 @@ import { setJavascriptContentType } from './src/middleware/response.contentType.
 const swaggerDocument = yaml.load("./swagger.yml");
 const app = express();
 
-// app.use(logger("dev"));
+app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
