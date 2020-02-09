@@ -8,11 +8,13 @@ import apiRoutes from "./src/api";
 import errorHandler from "./src/middleware/errorHandler.middleware";
 import notFoundHandler from "./src/middleware/notFoundHandler.middleware";
 import path from 'path';
+import cors from 'cors'
 import { setJavascriptContentType } from './src/middleware/response.contentType.javascript.middleware';
 
 const swaggerDocument = yaml.load("./swagger.yml");
 const app = express();
 
+app.use(cors());
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
