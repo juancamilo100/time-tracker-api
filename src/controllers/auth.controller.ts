@@ -38,7 +38,7 @@ class AuthController {
                 { expiresIn: 3600 }
             );
 
-            res.send({ auth: true, token});
+            res.send({ auth: true, token });
         } catch (error) {
             return next(createError(500, error));
         }
