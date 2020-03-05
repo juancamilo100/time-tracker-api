@@ -35,11 +35,14 @@ export const toSnakeCaseAllPropsKeys = (object: ObjectLiteral) => {
 };
 
 export const toTitleCase = (string: string) => {
-    let split = string.split(" ");
-    for (let i = 0; i < split.length; i++) {
-        split[i] = split[i].charAt(0).toUpperCase() + split[i].slice(1); ;
+    if(string != null) {
+        let split = string.split(" ");
+        for (let i = 0; i < split.length; i++) {
+            split[i] = split[i].charAt(0).toUpperCase() + split[i].slice(1);
+        }
+        return split.join(" ");
     }
-    return split.join(" ");
+    return string;
 }
 
 export const toLowerCaseAllPropsValues = (object: ObjectLiteral, propsToExclude?: string[]) => {

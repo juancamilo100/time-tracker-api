@@ -6,7 +6,7 @@ import {
 import createError from "http-errors";
 import { ObjectLiteral } from "../../types/generics";
 import Customer from "../database/entities/customer.entity";
-import { toCamelCaseAllPropsKeys } from "../utils/formatter";
+import { toCamelCaseAllPropsKeys, toTitleCase } from "../utils/formatter";
 import IDataService from "../interfaces/data.service.interface";
 import Validator from '../utils/validator';
 
@@ -86,11 +86,17 @@ class CustomersController {
     }
 
     private formatCustomerProps(customer: Customer) {
+        customer.name = toTitleCase(customer.name);
+        customer.address_line_1 = toTitleCase(customer.address_line_1);
+        customer.address_line_2 = toTitleCase(customer.address_line_2);
+        customer.city = toTitleCase(customer.city);
+        customer.state = toTitleCase(customer.state);
+        
         const formattedCustomer = toCamelCaseAllPropsKeys(customer as ObjectLiteral);
-
+        
         delete formattedCustomer.createdAt;
         delete formattedCustomer.updatedAt;
-
+        
         return formattedCustomer;
     }
 }
