@@ -38,7 +38,7 @@ export const toTitleCase = (string: string) => {
     if(string != null) {
         let split = string.split(" ");
         for (let i = 0; i < split.length; i++) {
-            split[i] = split[i].charAt(0).toUpperCase() + split[i].slice(1); ;
+            split[i] = split[i].charAt(0).toUpperCase() + split[i].slice(1);
         }
         return split.join(" ");
     }
