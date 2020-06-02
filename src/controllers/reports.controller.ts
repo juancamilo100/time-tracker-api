@@ -26,7 +26,7 @@ class ReportsController {
         let reports = await this.reportService.getAll();
 
         await this.addTasksToReports(reports);
-
+        
         res.send(reports.map((report) => {
             return formatReturnDataPropsKeys(report);
         }));
@@ -233,7 +233,7 @@ class ReportsController {
 
             reports[index] = {
                 ...reports[index],
-                tasks
+                tasks: this.formatObjectsInArrayPropsKeys(tasks)
             } as ReportWithTasks
         }
     }
