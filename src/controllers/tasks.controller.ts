@@ -72,8 +72,8 @@ class TasksController {
         }
         
         try {
-            await this.taskService.update(taskId, task);
-            res.sendStatus(200);
+            const updatedTask = await this.taskService.update(taskId, task);
+            res.send({ ...updatedTask && { taskId: updatedTask.id} });
         } catch (error) {
             return next(createError(500, "Something went wrong"));
         }
