@@ -65,7 +65,8 @@ class TasksController {
                     task
                 );
             }
-            await this.validate.taskAndReportIdRelation(task.id, Number.parseInt(reportId));
+            
+            await this.validate.taskAndReportIdRelation(Number.parseInt(taskId), Number.parseInt(reportId));
         } catch (error) {
             return next(createError(500, error));
         }
