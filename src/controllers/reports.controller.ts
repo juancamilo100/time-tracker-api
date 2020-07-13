@@ -101,7 +101,7 @@ class ReportsController {
             await this.reportService.update(req.params.reportId, {
                 submitted: true
             } as any);
-            res.sendStatus(200);
+            res.send({reportId: req.params.reportId});
         } catch (error) {
             return next(createError(500, "Something went wrong"));
         }

@@ -89,7 +89,7 @@ class TasksController {
         
         try {
             await this.taskService.delete(taskId);
-            res.sendStatus(200);
+            res.send({ taskId });
         } catch (error) {
             return next(createError(500, "Something went wrong"));
         }
