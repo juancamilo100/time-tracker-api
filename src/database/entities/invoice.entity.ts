@@ -25,6 +25,9 @@ class Invoice {
 
     @Column()
     public submitted_date: Date;
+
+    @Column()
+    public due_date: Date;
     
     @Column()
     public paid: boolean;

@@ -34,47 +34,42 @@ export default class InvoiceController {
         private invoiceTermNumberOfDays = 14;
 
     public generateInvoice: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        const { invoiceStartDate, invoiceEndDate } = req.body;
+        const { reportIds, invoiceStartDate, invoiceEndDate } = req.body;
+        console.log("Starting invoicing");
+        
 
-        if(!invoiceStartDate || !invoiceEndDate) {
-            return next(createError(400, "Incomplete request"));
+        this.validate.dateFormat(invoiceStartDate, "L");
+        this.validate.dateFormat(invoiceEndDate, "L");
+        this.validate.dateRange(invoiceStartDate, invoiceEndDate);
+
+        if(!reportIds || reportIds.length == 0) {
+            return next(createError(400, "Report ID's missing"));
         }
 
         try {
-            this.validate.dateFormat(invoiceStartDate, "L");
-            this.validate.dateFormat(invoiceEndDate, "L");
-            this.validate.dateRange(invoiceStartDate, invoiceEndDate);
-
             const customer = await this.validate.customerId(req.params.customerId);
-            const reports = await (this.reportService as ReportService)
-                .getCustomerReportsForDates(
-                    customer.id, 
-                    invoiceStartDate, 
-                    invoiceEndDate
-                );
-
+            const reports = await this.reportService
+                .getAllByIds(reportIds.map((id: string) => Number.parseInt(id)));
+            
             if(!reports.length) {
-                return next(createError(404, `No reports have been submitted for Customer ID: ${customer.id} for this time period`));
+                return next(createError(404, `No reports were found with provided IDs`));
             }
+
+            this.validate.reportsAreInvoiceable(customer.id, reports);
 
             const populatedReports = await this.getPopulatedReports(reports);
             const employeesDetails = this.getEmployeesInvoiceDetails(populatedReports);
             const invoiceTableElements = await this.getInvoiceTableElements(employeesDetails);
 
-            let invoice = await this.invoiceService.getByFields({
+            const invoice: Invoice = await this.invoiceService.create({
+                customer_id: customer.id,
                 start_date: invoiceStartDate,
-                end_date: invoiceEndDate
-            });
+                end_date: invoiceEndDate,
+                dollar_amount: invoiceTableElements.invoiceTotal,
+                due_date: moment().add(this.invoiceTermNumberOfDays, 'days')
+            } as unknown as Invoice);
 
-            if(!invoice) {
-                invoice = await this.invoiceService.create({
-                    customer_id: customer.id,
-                    start_date: invoiceStartDate,
-                    end_date: invoiceEndDate,
-                    dollar_amount: invoiceTableElements.invoiceTotal,
-                    submitted_date: moment().format('L')
-                } as unknown as Invoice);
-            }
+            await (this.reportService as ReportService).assignReportsToInvoice(invoice.id, reports);
             
             let invoiceParams: InvoiceParameters = this.buildInvoicePdfParams(customer, invoice, invoiceTableElements)
 
@@ -88,9 +83,12 @@ export default class InvoiceController {
 
             const attachments: EmailAttachment[] = [invoicePdfAttachment].concat(hourlyReportPdfAttachments);
             await this.sendInvoiceEmail(customer, invoiceParams, attachments);
-
-            res.sendStatus(200);
+            
+            res.send({
+                invoiceId: invoice.id
+            });
         } catch (error) {
+            console.error(error);
             return next(createError(500, error));
         }
     }
@@ -113,7 +111,7 @@ export default class InvoiceController {
             invoiceCustomerAddressLine3: `${toTitleCase(customer.city)}, ${customer.state.toUpperCase()} ${customer.zip_code}`,
             invoiceNumber: invoice.id.toString(),
             invoiceDate: moment(invoice.submitted_date).format('L'),
-            invoiceDueDate: moment().add(this.invoiceTermNumberOfDays, 'days').format('L'),
+            invoiceDueDate: moment(invoice.due_date).format('L'),
             invoiceTerms: `${this.invoiceTermNumberOfDays} days`,
             invoiceDescriptionList: invoiceTableElements.elements.descriptionList,
             invoiceQuantityList: invoiceTableElements.elements.quantityList,

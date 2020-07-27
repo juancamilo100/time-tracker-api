@@ -147,4 +147,18 @@ export default class Validator {
             throw new Error(`Job title exceeds ${maxTitleLength} characters`);
         }
     }
+
+    public reportsAreInvoiceable(customerId: number, reports: Report[]) {
+        reports.forEach(report => {
+            if(report.invoice_id) {
+                throw new Error(`Report with ID ${report.id} has already been invoiced`);
+            }
+            if(report.customer_id !== customerId) {
+                throw new Error(`Report with ID ${report.id} does not belong to customer with ID: ${customerId}`);
+            }
+            if(!report.submitted) {
+                throw new Error(`Report with ID ${report.id} hasn't been submitted`);
+            }
+        })
+    }
 }
