@@ -35,8 +35,6 @@ export default class InvoiceController {
 
     public generateInvoice: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         const { reportIds, invoiceStartDate, invoiceEndDate } = req.body;
-        console.log("Starting invoicing");
-        
 
         this.validate.dateFormat(invoiceStartDate, "L");
         this.validate.dateFormat(invoiceEndDate, "L");
