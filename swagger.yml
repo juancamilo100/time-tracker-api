@@ -284,25 +284,33 @@ paths:
         - Customers
       summary: Generate customer invoice PDF and email it to customer's contact
       parameters:
-        - name: Invoice Period
+        - name: Invoice Information
           in: body
           description: Invoice date range
           schema: 
             required:
                 - invoiceStartDate
                 - invoiceEndDate
+                - reportIds
             properties:
               invoiceStartDate:
                 type: string
               invoiceEndDate:
                 type: string
+              reportIds:
+                type: array
+                items:
+                  type: number
       produces:
         - application/json
       responses:
         '200':
           description: New report has been created
           schema:
-            $ref: '#/definitions/ReportResponse'
+            type: object
+            properties:
+              invoiceId:
+                type: integer
         '400':
           description: Incomplete request
         '500':

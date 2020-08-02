@@ -51,6 +51,16 @@ class BaseDataService<T> implements IDataService<T> {
         }
     }
 
+    public async getAllByIds(ids: string[], options: QueryOptions = {}) {
+        try {
+            const resource = await getRepository(this.entity.schema).findByIds(ids);
+            return resource as any;
+        } catch (error) {
+            console.error(error);
+            throw new Error("Something went wrong while getting the resources");
+        }
+    }
+
     public async getAllByFields(fields: object, options: QueryOptions = {}) {
         try {
             const resource = await this.executeSelectManyQuery(fields, options, "AND");

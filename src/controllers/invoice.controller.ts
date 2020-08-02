@@ -34,65 +34,80 @@ export default class InvoiceController {
         private invoiceTermNumberOfDays = 14;
 
     public generateInvoice: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        const { invoiceStartDate, invoiceEndDate } = req.body;
+        const { reportIds, invoiceStartDate, invoiceEndDate } = req.body;
 
-        if(!invoiceStartDate || !invoiceEndDate) {
-            return next(createError(400, "Incomplete request"));
+        this.validate.dateFormat(invoiceStartDate, "L");
+        this.validate.dateFormat(invoiceEndDate, "L");
+        this.validate.dateRange(invoiceStartDate, invoiceEndDate);
+
+        if(!reportIds || reportIds.length == 0) {
+            return next(createError(400, "Report ID's missing"));
         }
 
         try {
-            this.validate.dateFormat(invoiceStartDate, "L");
-            this.validate.dateFormat(invoiceEndDate, "L");
-            this.validate.dateRange(invoiceStartDate, invoiceEndDate);
-
             const customer = await this.validate.customerId(req.params.customerId);
-            const reports = await (this.reportService as ReportService)
-                .getCustomerReportsForDates(
-                    customer.id, 
-                    invoiceStartDate, 
-                    invoiceEndDate
-                );
-
+            const reports = await this.reportService
+                .getAllByIds(reportIds.map((id: string) => Number.parseInt(id)));
+            
             if(!reports.length) {
-                return next(createError(404, `No reports have been submitted for Customer ID: ${customer.id} for this time period`));
+                return next(createError(404, `No reports were found with provided IDs`));
             }
 
-            const populatedReports = await this.getPopulatedReports(reports);
-            const employeesDetails = this.getEmployeesInvoiceDetails(populatedReports);
+            this.validate.reportsAreInvoiceable(customer.id, reports);
+
+            const fullReports = await this.getFullReports(reports);
+            const employeesDetails = this.getEmployeesInvoiceDetails(fullReports);
             const invoiceTableElements = await this.getInvoiceTableElements(employeesDetails);
 
-            let invoice = await this.invoiceService.getByFields({
+            const invoice: Invoice = await this.invoiceService.create({
+                customer_id: customer.id,
                 start_date: invoiceStartDate,
-                end_date: invoiceEndDate
-            });
+                end_date: invoiceEndDate,
+                dollar_amount: invoiceTableElements.invoiceTotal,
+                due_date: moment().add(this.invoiceTermNumberOfDays, 'days')
+            } as unknown as Invoice);
 
-            if(!invoice) {
-                invoice = await this.invoiceService.create({
-                    customer_id: customer.id,
-                    start_date: invoiceStartDate,
-                    end_date: invoiceEndDate,
-                    dollar_amount: invoiceTableElements.invoiceTotal,
-                    submitted_date: moment().format('L')
-                } as unknown as Invoice);
-            }
+            await (this.reportService as ReportService).assignInvoiceToReports(invoice.id, reports);
             
             let invoiceParams: InvoiceParameters = this.buildInvoicePdfParams(customer, invoice, invoiceTableElements)
+            let invoicePdfPath = '';
 
-            const invoicePdfPath = await this.invoiceService.generateInvoicePdf(invoiceParams);
+            try {
+                invoicePdfPath = await this.invoiceService.generateInvoicePdf(invoiceParams);
+            } catch (error) {
+                await this.revertDatabaseOperations(reports, invoice);
+                console.error(`Error while generating PDF: ${error}`);
+                return next(createError(500, "Error while generating PDF"));
+            }
+
             const invoicePdfAttachment: EmailAttachment = {
                 filename: `Lulosoft Invoice #${invoiceParams.invoiceNumber}.pdf`,
                 path: invoicePdfPath
             }
 
-            const hourlyReportPdfAttachments: EmailAttachment[] = await this.hourlyReportService.getHourlyReportPdfAttachments(populatedReports);
-
+            const hourlyReportPdfAttachments: EmailAttachment[] = await this.hourlyReportService.getHourlyReportPdfAttachments(fullReports);
             const attachments: EmailAttachment[] = [invoicePdfAttachment].concat(hourlyReportPdfAttachments);
-            await this.sendInvoiceEmail(customer, invoiceParams, attachments);
 
-            res.sendStatus(200);
+            try {
+                await this.sendInvoiceEmail(customer, invoiceParams, attachments);
+                
+                res.send({
+                    invoiceId: invoice.id
+                });
+            } catch (error) {
+                await this.revertDatabaseOperations(reports, invoice);
+                console.error(`Error while sending email: ${error}`);
+                return next(createError(500, "Error while sending email"));
+            }
         } catch (error) {
-            return next(createError(500, error));
+            console.error(`Something happened while generating the invoice: ${error}`);
+            return next(createError(500, "Something happened while generating the invoice"));
         }
+    }
+
+    private async revertDatabaseOperations(reports: Report[], invoice: Invoice) {
+        await (this.reportService as ReportService).clearInvoiceFromReports(reports);
+        await this.invoiceService.delete(invoice.id.toString());
     }
 
     private async sendInvoiceEmail(customer: Customer, invoiceParams: InvoiceParameters, attachments: EmailAttachment[]) {
@@ -113,7 +128,7 @@ export default class InvoiceController {
             invoiceCustomerAddressLine3: `${toTitleCase(customer.city)}, ${customer.state.toUpperCase()} ${customer.zip_code}`,
             invoiceNumber: invoice.id.toString(),
             invoiceDate: moment(invoice.submitted_date).format('L'),
-            invoiceDueDate: moment().add(this.invoiceTermNumberOfDays, 'days').format('L'),
+            invoiceDueDate: moment(invoice.due_date).format('L'),
             invoiceTerms: `${this.invoiceTermNumberOfDays} days`,
             invoiceDescriptionList: invoiceTableElements.elements.descriptionList,
             invoiceQuantityList: invoiceTableElements.elements.quantityList,
@@ -123,8 +138,8 @@ export default class InvoiceController {
         };
     }
 
-    private async getPopulatedReports(reports: Report[]) {
-        let populatedReports: PopulatedReport[] = [];
+    private async getFullReports(reports: Report[]) {
+        let fullReports: PopulatedReport[] = [];
 
         for (const report of reports) {
             let tasks = await (this.taskService as TaskService).getTasksByReportId(report.id);
@@ -140,10 +155,10 @@ export default class InvoiceController {
                 endDate: report.end_date,
                 totalHours
             };
-            populatedReports.push(populatedReport);
+            fullReports.push(populatedReport);
         }
 
-        return populatedReports;
+        return fullReports;
     }
 
     private async getInvoiceTableElements(employees: ObjectLiteral) {
@@ -169,10 +184,10 @@ export default class InvoiceController {
         return {elements, invoiceTotal};
     }
 
-    private getEmployeesInvoiceDetails(populatedReports: PopulatedReport[]) {
+    private getEmployeesInvoiceDetails(fullReports: PopulatedReport[]) {
         const employees = {} as ObjectLiteral;
 
-        populatedReports.forEach((report: PopulatedReport) => {
+        fullReports.forEach((report: PopulatedReport) => {
             employees[report.employee!.id] = employees[report.employee!.id] || {};
 
             const currentTotalHours = employees[report.employee!.id]['totalHours'];

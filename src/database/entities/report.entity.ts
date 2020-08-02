@@ -16,6 +16,9 @@ class Report {
 
     @Column()
     public employee_id: number;
+
+    @Column()
+    public invoice_id: number;
     
     @Column()
     public start_date: Date;

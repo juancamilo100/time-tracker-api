@@ -41,6 +41,7 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
                 "start_date" date,
                 "end_date" date,
                 "submitted" boolean DEFAULT false,
+                "invoice_id" int,
                 "created_at" timestamp DEFAULT current_timestamp,
                 "updated_at" timestamp DEFAULT current_timestamp
             );
@@ -51,7 +52,8 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
                 "dollar_amount" int,
                 "start_date" date,
                 "end_date" date,
-                "submitted_date" date,
+                "submitted_date" timestamp DEFAULT current_timestamp,
+                "due_date" date,
                 "paid" boolean DEFAULT false,
                 "created_at" timestamp DEFAULT current_timestamp,
                 "updated_at" timestamp DEFAULT current_timestamp
@@ -67,9 +69,10 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
                 "updated_at" timestamp DEFAULT current_timestamp
             );
 
-            ALTER TABLE employee ADD FOREIGN KEY ("customer_id") REFERENCES customer ("id") ON DELETE CASCADE;
+            ALTER TABLE employee ADD FOREIGN KEY ("customer_id") REFERENCES customer ("id");
             ALTER TABLE report ADD FOREIGN KEY ("customer_id") REFERENCES customer ("id") ON DELETE CASCADE;
             ALTER TABLE report ADD FOREIGN KEY ("employee_id") REFERENCES employee ("id") ON DELETE CASCADE;
+            ALTER TABLE report ADD FOREIGN KEY ("invoice_id") REFERENCES invoice ("id") ON DELETE CASCADE;
             ALTER TABLE invoice ADD FOREIGN KEY ("customer_id") REFERENCES customer ("id") ON DELETE CASCADE;
             ALTER TABLE task ADD FOREIGN KEY ("report_id") REFERENCES report ("id") ON DELETE CASCADE;
 
