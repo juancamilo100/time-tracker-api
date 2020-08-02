@@ -128,7 +128,7 @@ class BaseDataService<T> implements IDataService<T> {
 
     private buildSelectQuery(fields: object, operand: string, options: QueryOptions) {
         const clause = this.buildWhereClauseFromFields(fields, operand);
-
+        
         let query = getRepository(this.entity.schema)
             .createQueryBuilder(this.entity.alias)
             .where(clause, fields);
@@ -144,12 +144,18 @@ class BaseDataService<T> implements IDataService<T> {
 
     private buildWhereClauseFromFields(fields: object, operator: string) {
         let clause = "";
-        Object.keys(fields).forEach((field, index) => {
-            clause += `${this.entity.alias}.${camelToSnake(field)} = :${camelToSnake(field)}`;
+        let fieldsLiteral = fields as ObjectLiteral;
+        Object.keys(fieldsLiteral).forEach((field, index) => {
+            const clauseSegment = fieldsLiteral[field] == null ? 
+                `${this.entity.alias}.${camelToSnake(field)} IS NULL` :
+                `${this.entity.alias}.${camelToSnake(field)} = :${camelToSnake(field)}`
+
+            clause += clauseSegment;
             if (index !== Object.keys(fields).length - 1) {
                 clause += ` ${operator} `;
             }
         });
+
         return clause;
     }
 }

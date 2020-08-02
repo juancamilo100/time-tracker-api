@@ -23,7 +23,13 @@ class ReportsController {
         private validate: Validator) {}
 
     public getReports: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        let reports = await this.reportService.getAll();
+
+        const reports = req.query.invoiceable ? 
+            await this.reportService.getAllByFields({
+                submitted: true,
+                invoice_id: null
+            }) :
+            await this.reportService.getAll();
 
         await this.addTasksToReports(reports);
         
