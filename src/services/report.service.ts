@@ -14,11 +14,20 @@ export class ReportService extends BaseDataService<Report> {
 		});
 	}
 
-    public async assignReportsToInvoice(invoiceId: number, reports: Report[]) {
+    public async assignInvoiceToReports(invoiceId: number, reports: Report[]) {
         getRepository(this.entity.schema)
             .createQueryBuilder()
             .update(this.entity.schema)
             .set({invoice_id: invoiceId} as any)
+            .where({id: In(reports.map(report => report.id))})
+            .execute();
+    }
+
+    public async clearInvoiceFromReports(reports: Report[]) {
+        getRepository(this.entity.schema)
+            .createQueryBuilder()
+            .update(this.entity.schema)
+            .set({invoice_id: undefined} as any)
             .where({id: In(reports.map(report => report.id))})
             .execute();
     }

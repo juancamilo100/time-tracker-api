@@ -67,27 +67,41 @@ export default class InvoiceController {
                 due_date: moment().add(this.invoiceTermNumberOfDays, 'days')
             } as unknown as Invoice);
 
-            await (this.reportService as ReportService).assignReportsToInvoice(invoice.id, reports);
+            await (this.reportService as ReportService).assignInvoiceToReports(invoice.id, reports);
             
             let invoiceParams: InvoiceParameters = this.buildInvoicePdfParams(customer, invoice, invoiceTableElements)
+            let invoicePdfPath = '';
+            
+            try {
+                invoicePdfPath = await this.invoiceService.generateInvoicePdf(invoiceParams);
+            } catch (error) {
+                console.error(`Error while generating PDF: ${error}`);
+                return next(createError(500, "Error while generating PDF"));
+            }
 
-            const invoicePdfPath = await this.invoiceService.generateInvoicePdf(invoiceParams);
             const invoicePdfAttachment: EmailAttachment = {
                 filename: `Lulosoft Invoice #${invoiceParams.invoiceNumber}.pdf`,
                 path: invoicePdfPath
             }
 
             const hourlyReportPdfAttachments: EmailAttachment[] = await this.hourlyReportService.getHourlyReportPdfAttachments(populatedReports);
-
             const attachments: EmailAttachment[] = [invoicePdfAttachment].concat(hourlyReportPdfAttachments);
-            await this.sendInvoiceEmail(customer, invoiceParams, attachments);
-            
-            res.send({
-                invoiceId: invoice.id
-            });
+
+            try {
+                await this.sendInvoiceEmail(customer, invoiceParams, attachments);
+                
+                res.send({
+                    invoiceId: invoice.id
+                });
+            } catch (error) {
+                await this.invoiceService.delete(invoice.id.toString());
+                await (this.reportService as ReportService).clearInvoiceFromReports(reports);
+                console.error(`Error while sending email: ${error}`);
+                return next(createError(500, "Error while sending email"));
+            }
         } catch (error) {
-            console.error(error);
-            return next(createError(500, error));
+            console.error(`Something happened while generating the invoice: ${error}`);
+            return next(createError(500, "Something happened while generating the invoice"));
         }
     }
 
