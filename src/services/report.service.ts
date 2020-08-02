@@ -31,23 +31,6 @@ export class ReportService extends BaseDataService<Report> {
             .where({id: In(reports.map(report => report.id))})
             .execute();
     }
-	// public async getCustomerReportsForDates(customerId: number, startDate: string, endDate: string) {
-	//     try {
-	//         const reports = await getRepository(this.entity.schema)
-	//             .find({
-	//                 where: {
-	//                     start_date: MoreThanOrEqual(startDate),
-	//                     end_date: LessThanOrEqual(endDate),
-	//                     submitted: true,
-	//                     customer_id: customerId
-	//                 }
-	//             });
-	//         return reports;
-	//     } catch (error) {
-	//         console.error(error);
-	//         throw new Error("Something went wrong while getting the reports by date");
-	//     }
-	// }
 }
 
 export default new ReportService();

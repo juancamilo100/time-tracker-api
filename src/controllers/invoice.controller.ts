@@ -55,8 +55,8 @@ export default class InvoiceController {
 
             this.validate.reportsAreInvoiceable(customer.id, reports);
 
-            const populatedReports = await this.getPopulatedReports(reports);
-            const employeesDetails = this.getEmployeesInvoiceDetails(populatedReports);
+            const fullReports = await this.getFullReports(reports);
+            const employeesDetails = this.getEmployeesInvoiceDetails(fullReports);
             const invoiceTableElements = await this.getInvoiceTableElements(employeesDetails);
 
             const invoice: Invoice = await this.invoiceService.create({
@@ -71,7 +71,7 @@ export default class InvoiceController {
             
             let invoiceParams: InvoiceParameters = this.buildInvoicePdfParams(customer, invoice, invoiceTableElements)
             let invoicePdfPath = '';
-            
+
             try {
                 invoicePdfPath = await this.invoiceService.generateInvoicePdf(invoiceParams);
             } catch (error) {
@@ -84,7 +84,7 @@ export default class InvoiceController {
                 path: invoicePdfPath
             }
 
-            const hourlyReportPdfAttachments: EmailAttachment[] = await this.hourlyReportService.getHourlyReportPdfAttachments(populatedReports);
+            const hourlyReportPdfAttachments: EmailAttachment[] = await this.hourlyReportService.getHourlyReportPdfAttachments(fullReports);
             const attachments: EmailAttachment[] = [invoicePdfAttachment].concat(hourlyReportPdfAttachments);
 
             try {
@@ -94,8 +94,8 @@ export default class InvoiceController {
                     invoiceId: invoice.id
                 });
             } catch (error) {
-                await this.invoiceService.delete(invoice.id.toString());
                 await (this.reportService as ReportService).clearInvoiceFromReports(reports);
+                await this.invoiceService.delete(invoice.id.toString());
                 console.error(`Error while sending email: ${error}`);
                 return next(createError(500, "Error while sending email"));
             }
@@ -133,8 +133,8 @@ export default class InvoiceController {
         };
     }
 
-    private async getPopulatedReports(reports: Report[]) {
-        let populatedReports: PopulatedReport[] = [];
+    private async getFullReports(reports: Report[]) {
+        let fullReports: PopulatedReport[] = [];
 
         for (const report of reports) {
             let tasks = await (this.taskService as TaskService).getTasksByReportId(report.id);
@@ -150,10 +150,10 @@ export default class InvoiceController {
                 endDate: report.end_date,
                 totalHours
             };
-            populatedReports.push(populatedReport);
+            fullReports.push(populatedReport);
         }
 
-        return populatedReports;
+        return fullReports;
     }
 
     private async getInvoiceTableElements(employees: ObjectLiteral) {
@@ -179,10 +179,10 @@ export default class InvoiceController {
         return {elements, invoiceTotal};
     }
 
-    private getEmployeesInvoiceDetails(populatedReports: PopulatedReport[]) {
+    private getEmployeesInvoiceDetails(fullReports: PopulatedReport[]) {
         const employees = {} as ObjectLiteral;
 
-        populatedReports.forEach((report: PopulatedReport) => {
+        fullReports.forEach((report: PopulatedReport) => {
             employees[report.employee!.id] = employees[report.employee!.id] || {};
 
             const currentTotalHours = employees[report.employee!.id]['totalHours'];
