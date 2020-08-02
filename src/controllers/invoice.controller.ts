@@ -75,6 +75,7 @@ export default class InvoiceController {
             try {
                 invoicePdfPath = await this.invoiceService.generateInvoicePdf(invoiceParams);
             } catch (error) {
+                await this.revertDatabaseOperations(reports, invoice);
                 console.error(`Error while generating PDF: ${error}`);
                 return next(createError(500, "Error while generating PDF"));
             }
@@ -94,8 +95,7 @@ export default class InvoiceController {
                     invoiceId: invoice.id
                 });
             } catch (error) {
-                await (this.reportService as ReportService).clearInvoiceFromReports(reports);
-                await this.invoiceService.delete(invoice.id.toString());
+                await this.revertDatabaseOperations(reports, invoice);
                 console.error(`Error while sending email: ${error}`);
                 return next(createError(500, "Error while sending email"));
             }
@@ -103,6 +103,11 @@ export default class InvoiceController {
             console.error(`Something happened while generating the invoice: ${error}`);
             return next(createError(500, "Something happened while generating the invoice"));
         }
+    }
+
+    private async revertDatabaseOperations(reports: Report[], invoice: Invoice) {
+        await (this.reportService as ReportService).clearInvoiceFromReports(reports);
+        await this.invoiceService.delete(invoice.id.toString());
     }
 
     private async sendInvoiceEmail(customer: Customer, invoiceParams: InvoiceParameters, attachments: EmailAttachment[]) {
