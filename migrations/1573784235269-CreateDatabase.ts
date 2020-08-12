@@ -29,7 +29,7 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
                 "city" varchar,
                 "state" varchar,
                 "zip_code" varchar,
-                "email" varchar NOT NULL,
+                "emails" varchar[] NOT NULL,
                 "created_at" timestamp DEFAULT current_timestamp,
                 "updated_at" timestamp DEFAULT current_timestamp
             );
@@ -76,8 +76,8 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
             ALTER TABLE invoice ADD FOREIGN KEY ("customer_id") REFERENCES customer ("id") ON DELETE CASCADE;
             ALTER TABLE task ADD FOREIGN KEY ("report_id") REFERENCES report ("id") ON DELETE CASCADE;
 
-            INSERT INTO customer (id, name, city, state, email)
-            VALUES (0, 'Lulosoft', 'Louisville', 'KY', 'contact@lulosoft.com');
+            INSERT INTO customer (id, name, city, state, emails)
+            VALUES (0, 'Lulosoft', 'Louisville', 'KY', ARRAY['contact@lulosoft.com']);
 
             INSERT INTO employee (first_name, last_name, job_title, email, password, customer_id, role)
             VALUES (

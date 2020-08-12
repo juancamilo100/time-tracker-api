@@ -653,7 +653,7 @@ definitions:
   CustomerCreate:
     required:
       - name
-      - email
+      - emails
       - addressLine1
       - city
       - state
@@ -661,8 +661,10 @@ definitions:
     properties:
       name:
         type: string
-      email:
-        type: string
+      emails: 
+        type: array
+        items:
+          type: string
       addressLine1:
         type: string
       addressLine2:

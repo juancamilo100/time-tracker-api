@@ -5,6 +5,7 @@ import Report from '../database/entities/report.entity';
 import Employee from '../database/entities/employee.entity';
 import Customer from '../database/entities/customer.entity';
 import { ReportPeriod } from '../../types/types';
+import { CustomerService } from '../services/customer.service';
 
 export default class Validator {
     constructor(
@@ -59,9 +60,10 @@ export default class Validator {
         return customerFound;
     }
 
-    public async customerExists(name: string, email: string) {
-        const customerFound = await this.customerService.getByEitherFields({ name, email });
-        if(!!customerFound) {
+    public async customerExists(name: string, emails: string[]) {
+        const nameFound = await this.customerService.getByFields({ name });
+        const emailFound = await (this.customerService as CustomerService).getByEmails(emails)
+        if(!!nameFound || !!emailFound) {
             throw new Error("Customer already exists");
         }
     }
@@ -81,17 +83,17 @@ export default class Validator {
     }
 
     public async taskAndReportIdRelation(taskId: number, reportId: number) {
-            const foundTask = await this.taskService.getByFields(
-                { 
-                    id: taskId,
-                    report_id: reportId
-                }
-            );
-            if (!foundTask) {
-                throw new Error(`Task with ID: ${taskId} was not found or doesn't belong to report with ID: ${reportId}`);
+        const foundTask = await this.taskService.getByFields(
+            { 
+                id: taskId,
+                report_id: reportId
             }
+        );
+        if (!foundTask) {
+            throw new Error(`Task with ID: ${taskId} was not found or doesn't belong to report with ID: ${reportId}`);
+        }
 
-            return foundTask;
+        return foundTask;
     }
 
     public taskFields(task: Task) {
