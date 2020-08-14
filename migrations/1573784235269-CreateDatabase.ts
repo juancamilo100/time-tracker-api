@@ -8,13 +8,13 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
         await queryRunner.query(`
             CREATE TABLE employee (
                 "id" SERIAL UNIQUE PRIMARY KEY,
-                "first_name" varchar,
-                "last_name" varchar,
-                "email" varchar NOT NULL,
-                "job_title" varchar NOT NULL,
-                "password" varchar NOT NULL,
+                "first_name" text,
+                "last_name" text,
+                "email" text NOT NULL,
+                "job_title" text NOT NULL,
+                "password" text NOT NULL,
                 "customer_id" int,
-                "role" varchar,
+                "role" text,
                 "employee_rate" int,
                 "customer_rate" int,
                 "created_at" timestamp DEFAULT current_timestamp,
@@ -23,13 +23,13 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
 
             CREATE TABLE customer (
                 "id" SERIAL UNIQUE PRIMARY KEY,
-                "name" varchar NOT NULL,
-                "address_line_1" varchar,
-                "address_line_2" varchar,
-                "city" varchar,
-                "state" varchar,
-                "zip_code" varchar,
-                "email" varchar NOT NULL,
+                "name" text NOT NULL,
+                "address_line_1" text,
+                "address_line_2" text,
+                "city" text,
+                "state" text,
+                "zip_code" text,
+                "emails" text[] NOT NULL,
                 "created_at" timestamp DEFAULT current_timestamp,
                 "updated_at" timestamp DEFAULT current_timestamp
             );
@@ -63,7 +63,7 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
                 "id" SERIAL UNIQUE PRIMARY KEY,
                 "report_id" int,
                 "hours" int,
-                "description" varchar,
+                "description" text,
                 "date_performed" date,
                 "created_at" timestamp DEFAULT current_timestamp,
                 "updated_at" timestamp DEFAULT current_timestamp
@@ -76,8 +76,8 @@ export class CreateDatabase1573784235269 implements MigrationInterface {
             ALTER TABLE invoice ADD FOREIGN KEY ("customer_id") REFERENCES customer ("id") ON DELETE CASCADE;
             ALTER TABLE task ADD FOREIGN KEY ("report_id") REFERENCES report ("id") ON DELETE CASCADE;
 
-            INSERT INTO customer (id, name, city, state, email)
-            VALUES (0, 'Lulosoft', 'Louisville', 'KY', 'contact@lulosoft.com');
+            INSERT INTO customer (id, name, city, state, emails)
+            VALUES (0, 'Lulosoft', 'Louisville', 'KY', ARRAY['contact@lulosoft.com']);
 
             INSERT INTO employee (first_name, last_name, job_title, email, password, customer_id, role)
             VALUES (

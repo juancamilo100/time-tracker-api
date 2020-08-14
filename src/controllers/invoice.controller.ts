@@ -113,7 +113,8 @@ export default class InvoiceController {
     private async sendInvoiceEmail(customer: Customer, invoiceParams: InvoiceParameters, attachments: EmailAttachment[]) {
         await this.emailService.sendMail({
             from: INVOICE_EMAIL_SENDER_ADDRESS!,
-            to: customer.email,
+            to: customer.emails,
+            priority: 'high',
             subject: `Invoice #${invoiceParams.invoiceNumber} Lulosoft`,
             body: "Hello,\n\nPlease find attached the invoice and hourly report for this cycle.\n\nRegards,\n\n",
             attachments

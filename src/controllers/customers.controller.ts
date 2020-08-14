@@ -46,8 +46,10 @@ class CustomersController {
         const customerToUpdate = req.body;
         
         try {
-            if(customerToUpdate.email) {
-                this.validate.isEmail(customerToUpdate.email);
+            if(customerToUpdate.emails) {
+                customerToUpdate.emails.forEach((email: string) => {
+                    this.validate.isEmail(email);
+                });
             }
             await this.validate.customerId(req.params.customerId);
             await this.customerService.update(req.params.customerId, customerToUpdate);
@@ -60,7 +62,8 @@ class CustomersController {
     public createCustomer: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         if (
             !req.body.name || 
-            !req.body.email ||
+            !req.body.emails ||
+            !req.body.emails.length ||
             !req.body.addressLine1 || 
             !req.body.city || 
             !req.body.state || 
@@ -71,8 +74,10 @@ class CustomersController {
         const customerToCreate = req.body;
 
         try {
-            this.validate.isEmail(customerToCreate.email);
-            await this.validate.customerExists(customerToCreate.name, customerToCreate.email);
+            customerToCreate.emails.forEach((email: string) => {
+                this.validate.isEmail(email);
+            });
+            await this.validate.customerExists(customerToCreate.name, customerToCreate.emails);
         } catch (error) {
             return next(createError(400, error));
         }

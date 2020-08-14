@@ -29,8 +29,8 @@ class Customer {
     @Column()
     public zip_code: string;
 
-    @Column()
-    public email: string;
+    @Column("text", { array: true })
+    public emails: string[];
 
     @CreateDateColumn()
     public created_at: string;
