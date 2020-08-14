@@ -13,6 +13,7 @@ export class BaseEmailService implements IEmailService {
             from: message.from, 
             to: message.to, 
             subject: message.subject,
+            priority: message.priority,
             text: message.body,
             html: message.html,
             attachments: message.attachments

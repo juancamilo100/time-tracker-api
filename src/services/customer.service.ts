@@ -14,7 +14,8 @@ export class CustomerService extends BaseDataService<Customer> {
 		const customer = await getRepository(this.entity.schema)
 			.createQueryBuilder("customer")
 			.where("customer.emails && ARRAY[:...emails]", { emails })
-            .execute();
+            .getOne();
+
         return customer;
 	}
 }

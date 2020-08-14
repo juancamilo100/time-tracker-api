@@ -13,7 +13,8 @@ export interface EmailAttachment {
 
 export interface EmailMessage {
     from: string
-    to: string, 
+    to: string | string[],
+    priority?: "high"|"normal"|"low",
     subject: string, 
     body?: string,
     html?: string,
